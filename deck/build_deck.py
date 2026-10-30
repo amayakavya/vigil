@@ -127,12 +127,13 @@ s.shapes.add_picture(os.path.join(FIG, "qr.png"), Inches(8.62), Inches(4.38), wi
 
 # 2 · Problem ----------------------------------------------------------------
 s = S[1]
-put(sh(s, "Text 7"), "Generators, pumps, motors and vehicles are serviced by the calendar. Healthy parts get replaced on "
-    "schedule, and a part that starts failing between services is not seen until the machine stops. Seeing inside a "
-    "running machine has meant an analyser costing over $50,000 and a trained analyst (US DOE, 2010).", size=8.5)
-put(sh(s, "Text 10"), "Maharashtra Police (Home Department): the generators, pumps and motors at its establishments, and "
-    "later its vehicle fleet. The same gap sits in forces MRO units. Proposed pilot: one police establishment, such as "
-    "a district headquarters or an SRPF group campus.", size=8.5)
+put(sh(s, "Text 7"), "Defence and security forces service the generators, pumps and motors at their bases, posts and camps "
+    "by the calendar. Healthy parts get replaced on schedule, and a part that starts failing between services is not "
+    "seen until the machine stops, often when the post needs it. Seeing inside a running machine has meant an analyser "
+    "over $50,000 and a trained analyst (US DOE, 2010).", size=8.2)
+put(sh(s, "Text 10"), "The armed forces' maintenance units, and Maharashtra's own security forces under the Home "
+    "Department, the department this challenge names for defence and security. Proposed pilot: one police "
+    "establishment, such as an SRPF group campus.", size=8.5)
 put(sh(s, "Text 13"), [
     "Maharashtra Police: 2,07,035 personnel, 1,193 police stations and 15,823 vehicles (BPR&D, 1 Jan 2024).",
     "In large electric motors, bearings cause 41 to 44% of failures (EPRI 1982, IEEE 1985).",
@@ -141,7 +142,7 @@ put(sh(s, "Text 16"), [
     "Predictive maintenance cuts breakdowns by 70 to 75% (US DOE, 2010), but the same guide puts its equipment at over $50,000, with trained staff.",
     "Systems that send machine data to a vendor's cloud need clearances a security force may not give."], size=8.2, space=3)
 put(sh(s, "Text 18"), "2,07,035", size=28, color=ORANGE, bold=True, align=PP_ALIGN.CENTER)
-put(sh(s, "Text 19"), "police personnel in Maharashtra, who depend on the force's machines (BPR&D, 2024)",
+put(sh(s, "Text 19"), "security personnel in Maharashtra's police, who depend on the force's machines (BPR&D, 2024)",
     size=9, color=WHITE, align=PP_ALIGN.CENTER)
 sh(s, "Text 19").height = Inches(0.85)
 put(sh(s, "Text 21"), "Each breakdown takes a station off backup power, or a vehicle off the road, until the workshop clears it.", size=9,
