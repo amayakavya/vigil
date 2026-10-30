@@ -198,7 +198,7 @@ put(sh(s, "Text 22"), [
 put(sh(s, "Text 25"), [
     [("3 months: ", True), ("10 nodes bench tested, the site's machines listed, 30 points live.", False)],
     [("6 months: ", True), ("60 points. Every warning checked when the machine is opened.", False)],
-    [("12 months: ", True), ("report to the Home Department, second site, vehicle speed tracking on a bench, iDEX entry.", False)]],
+    [("12 months: ", True), ("report to the Home Department, second site, vehicle speed tracking, and an AI model trained on the pilot's confirmed findings.", False)]],
     size=7.3, space=3)
 put(sh(s, "Text 28"), [
     "Pilot host (proposed): a Maharashtra Police establishment, Home Department.",
