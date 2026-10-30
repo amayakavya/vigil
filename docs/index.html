@@ -121,6 +121,8 @@ code, .mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size:
 .hint { font-size: 0.85rem !important; line-height: 1.55 !important; color: rgba(255,255,255,0.67) !important; margin: 0 0 18px !important; max-width: 68ch; }
 .out { margin-top: 22px; border-top: 1px solid var(--hair); padding-top: 6px; }
 .out[hidden] { display: none; }
+.out { transition: opacity .2s; }
+.out.stale { opacity: .35; }
 .err { color: #ff9a9a !important; white-space: normal !important; font-size: 1rem !important; }
 
 /* ---- figures ---- */
@@ -383,12 +385,20 @@ function parseWav(buf) {
 
 async function run() {
   if (pending) return;
+  // lock the button and dim the last result at once: on a slow connection the
+  // recording takes a moment to arrive, and the old answer must not pass for the new one
+  pending = true;
   const btn = $("run");
+  btn.disabled = true; btn.textContent = "Working"; $("out").classList.add("stale");
   let x, fs, rpm, orders, truth = null, note = "";
   try {
     if (!$("p-rec").hidden) {
+      if (!META) throw new Error("The reference data has not loaded yet. Reload the page.");
       const s = META.samples.find(s => s.id === $("sample").value);
-      const buf = await (await fetch(`data/samples/${s.id}.i16`)).arrayBuffer();
+      const res = await fetch(`data/samples/${s.id}.i16`).catch(() => null);
+      if (!res || !res.ok) throw new Error("That recording did not load. Check the connection and try again.");
+      const buf = await res.arrayBuffer();
+      if (buf.byteLength !== 2 * s.n) throw new Error("That recording arrived incomplete. Try again.");
       const q = new Int16Array(buf);
       x = Float64Array.from(q, v => v * s.scale); fs = s.fs; rpm = s.rpm; orders = META.bearings[s.bearing].orders; truth = s.truth;
       note = `${s.source}. ${(s.n / s.fs).toFixed(1)} s at ${s.fs.toLocaleString("en-IN")} Hz, shaft ${s.rpm.toFixed(0)} rpm. The Python reference said: ${s.expect.verdict ? PART[s.expect.verdict] : "declined"}.`;
@@ -405,17 +415,17 @@ async function run() {
       const cap = 1 << 18;
       if (x.length > cap) { x = x.slice(0, cap); note = `Only the first ${(cap / fs).toFixed(1)} s were used. `; }
       const b = $("brg").value;
+      if (!META && b !== "custom") throw new Error("The reference data has not loaded yet. Reload the page.");
       orders = b === "custom" ? geometryOrders(+$("g-n").value, +$("g-d").value, +$("g-p").value, +$("g-a").value) : META.bearings[b].orders;
       note += `${f.name}, ${(x.length / fs).toFixed(1)} s at ${fs.toLocaleString("en-IN")} Hz, shaft ${rpm} rpm.`;
     }
-  } catch (e) { show({ error: e.message }); return; }
-  pending = true; btn.disabled = true; btn.textContent = "Working";
-  try { show({ r: await workerRun(x, fs, rpm, orders), truth, note }); }
-  catch (e) { show({ error: e.message }); }
-  finally { pending = false; btn.disabled = false; btn.textContent = "Diagnose"; }
+    show({ r: await workerRun(x, fs, rpm, orders), truth, note });
+  } catch (e) { show({ error: e.message }); }
+  finally { pending = false; btn.disabled = false; btn.textContent = "Diagnose"; $("out").classList.remove("stale"); }
 }
 function show({ r, truth, note, error }) {
   $("out").hidden = false;
+  $("out").dataset.runs = String(+($("out").dataset.runs || 0) + 1);
   if (error) {
     $("o-verdict").innerHTML = ""; $("o-verdict").textContent = error; $("o-verdict").className = "err";
     ["BPFO", "BPFI", "BSF", "band", "truth"].forEach(k => $("o-" + k).textContent = ""); $("ses").innerHTML = ""; $("ses-cap").textContent = "";
@@ -556,7 +566,9 @@ Promise.all(["data/replay.json", "data/cwru.json", "data/samples.json"].map(u =>
   const sel = $("sample");
   for (const s of meta.samples) { const o = document.createElement("option"); o.value = s.id; o.textContent = s.label; sel.appendChild(o); }
   const note = () => { const s = meta.samples.find(s => s.id === sel.value); $("sample-note").textContent = s.source + "."; };
-  sel.onchange = note; note();
+  sel.onchange = () => { note(); $("out").hidden = true; };
+  note();
+  $("file").onchange = () => { $("out").hidden = true; };
   let rt = 0;
   addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { chart(); scrub(); if (LAST_SES) drawSES(LAST_SES); }, 150); });
 }).catch(() => { $("clock").textContent = "The measured data did not load. Reload the page."; });

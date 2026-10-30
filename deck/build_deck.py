@@ -223,7 +223,7 @@ put(sh(s, "Text 16"), "technician jobs, and maintenance staff trained in conditi
     italic=True, align=PP_ALIGN.CENTER)
 sh(s, "Text 16").height = Inches(0.4)
 put(sh(s, "Text 19"), [
-    "Generators and pumps that keep running keep police sites working through power cuts.",
+    "Generators and pumps that do not fail keep police sites working through power cuts.",
     "Parts get changed when they are actually worn, so less goes to scrap."], size=8, space=3)
 put(sh(s, "Text 22"), [
     "Paid from the maintenance budget the department already spends, as a yearly fee per point priced below what one avoided breakdown saves.",
