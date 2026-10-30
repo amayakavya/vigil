@@ -1,0 +1,928 @@
+{
+ "held_out": "NASA IMS, last 72 h of the four failed bearings, every running snapshot",
+ "snapshots": 1412,
+ "physics": {
+  "named": 656,
+  "right": 647,
+  "wrong": 9,
+  "by_part": {
+   "BPFO": {
+    "right": 547,
+    "of": 820
+   },
+   "BPFI": {
+    "right": 25,
+    "of": 296
+   },
+   "BSF": {
+    "right": 75,
+    "of": 296
+   }
+  }
+ },
+ "grid": [
+  {
+   "l2": 0.1,
+   "confidence": 0.5,
+   "cwru_recordings_right": 45,
+   "model_alone": {
+    "named": 1361,
+    "right": 987,
+    "wrong": 374,
+    "by_part": {
+     "BPFO": {
+      "right": 797,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 26,
+      "of": 296
+     },
+     "BSF": {
+      "right": 164,
+      "of": 296
+     }
+    }
+   },
+   "physics_then_model": {
+    "named": 1367,
+    "right": 1004,
+    "wrong": 363,
+    "by_part": {
+     "BPFO": {
+      "right": 793,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 34,
+      "of": 296
+     },
+     "BSF": {
+      "right": 177,
+      "of": 296
+     }
+    }
+   }
+  },
+  {
+   "l2": 0.1,
+   "confidence": 0.7,
+   "cwru_recordings_right": 45,
+   "model_alone": {
+    "named": 1024,
+    "right": 862,
+    "wrong": 162,
+    "by_part": {
+     "BPFO": {
+      "right": 754,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 13,
+      "of": 296
+     },
+     "BSF": {
+      "right": 95,
+      "of": 296
+     }
+    }
+   },
+   "physics_then_model": {
+    "named": 1058,
+    "right": 894,
+    "wrong": 164,
+    "by_part": {
+     "BPFO": {
+      "right": 750,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 25,
+      "of": 296
+     },
+     "BSF": {
+      "right": 119,
+      "of": 296
+     }
+    }
+   }
+  },
+  {
+   "l2": 0.1,
+   "confidence": 0.8,
+   "cwru_recordings_right": 45,
+   "model_alone": {
+    "named": 882,
+    "right": 790,
+    "wrong": 92,
+    "by_part": {
+     "BPFO": {
+      "right": 714,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 12,
+      "of": 296
+     },
+     "BSF": {
+      "right": 64,
+      "of": 296
+     }
+    }
+   },
+   "physics_then_model": {
+    "named": 940,
+    "right": 840,
+    "wrong": 100,
+    "by_part": {
+     "BPFO": {
+      "right": 712,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 25,
+      "of": 296
+     },
+     "BSF": {
+      "right": 103,
+      "of": 296
+     }
+    }
+   }
+  },
+  {
+   "l2": 0.1,
+   "confidence": 0.9,
+   "cwru_recordings_right": 45,
+   "model_alone": {
+    "named": 708,
+    "right": 680,
+    "wrong": 28,
+    "by_part": {
+     "BPFO": {
+      "right": 644,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 9,
+      "of": 296
+     },
+     "BSF": {
+      "right": 27,
+      "of": 296
+     }
+    }
+   },
+   "physics_then_model": {
+    "named": 791,
+    "right": 754,
+    "wrong": 37,
+    "by_part": {
+     "BPFO": {
+      "right": 646,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 25,
+      "of": 296
+     },
+     "BSF": {
+      "right": 83,
+      "of": 296
+     }
+    }
+   }
+  },
+  {
+   "l2": 0.1,
+   "confidence": 0.95,
+   "cwru_recordings_right": 45,
+   "model_alone": {
+    "named": 616,
+    "right": 607,
+    "wrong": 9,
+    "by_part": {
+     "BPFO": {
+      "right": 593,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 7,
+      "of": 296
+     },
+     "BSF": {
+      "right": 7,
+      "of": 296
+     }
+    }
+   },
+   "physics_then_model": {
+    "named": 716,
+    "right": 698,
+    "wrong": 18,
+    "by_part": {
+     "BPFO": {
+      "right": 596,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 25,
+      "of": 296
+     },
+     "BSF": {
+      "right": 77,
+      "of": 296
+     }
+    }
+   }
+  },
+  {
+   "l2": 1,
+   "confidence": 0.5,
+   "cwru_recordings_right": 45,
+   "model_alone": {
+    "named": 1349,
+    "right": 981,
+    "wrong": 368,
+    "by_part": {
+     "BPFO": {
+      "right": 793,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 19,
+      "of": 296
+     },
+     "BSF": {
+      "right": 169,
+      "of": 296
+     }
+    }
+   },
+   "physics_then_model": {
+    "named": 1358,
+    "right": 999,
+    "wrong": 359,
+    "by_part": {
+     "BPFO": {
+      "right": 789,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 30,
+      "of": 296
+     },
+     "BSF": {
+      "right": 180,
+      "of": 296
+     }
+    }
+   }
+  },
+  {
+   "l2": 1,
+   "confidence": 0.7,
+   "cwru_recordings_right": 45,
+   "model_alone": {
+    "named": 997,
+    "right": 847,
+    "wrong": 150,
+    "by_part": {
+     "BPFO": {
+      "right": 744,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 12,
+      "of": 296
+     },
+     "BSF": {
+      "right": 91,
+      "of": 296
+     }
+    }
+   },
+   "physics_then_model": {
+    "named": 1033,
+    "right": 879,
+    "wrong": 154,
+    "by_part": {
+     "BPFO": {
+      "right": 740,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 25,
+      "of": 296
+     },
+     "BSF": {
+      "right": 114,
+      "of": 296
+     }
+    }
+   }
+  },
+  {
+   "l2": 1,
+   "confidence": 0.8,
+   "cwru_recordings_right": 45,
+   "model_alone": {
+    "named": 844,
+    "right": 766,
+    "wrong": 78,
+    "by_part": {
+     "BPFO": {
+      "right": 697,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 10,
+      "of": 296
+     },
+     "BSF": {
+      "right": 59,
+      "of": 296
+     }
+    }
+   },
+   "physics_then_model": {
+    "named": 905,
+    "right": 819,
+    "wrong": 86,
+    "by_part": {
+     "BPFO": {
+      "right": 695,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 25,
+      "of": 296
+     },
+     "BSF": {
+      "right": 99,
+      "of": 296
+     }
+    }
+   }
+  },
+  {
+   "l2": 1,
+   "confidence": 0.9,
+   "cwru_recordings_right": 45,
+   "model_alone": {
+    "named": 674,
+    "right": 653,
+    "wrong": 21,
+    "by_part": {
+     "BPFO": {
+      "right": 627,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 8,
+      "of": 296
+     },
+     "BSF": {
+      "right": 18,
+      "of": 296
+     }
+    }
+   },
+   "physics_then_model": {
+    "named": 765,
+    "right": 735,
+    "wrong": 30,
+    "by_part": {
+     "BPFO": {
+      "right": 629,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 25,
+      "of": 296
+     },
+     "BSF": {
+      "right": 81,
+      "of": 296
+     }
+    }
+   }
+  },
+  {
+   "l2": 1,
+   "confidence": 0.95,
+   "cwru_recordings_right": 45,
+   "model_alone": {
+    "named": 592,
+    "right": 590,
+    "wrong": 2,
+    "by_part": {
+     "BPFO": {
+      "right": 583,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 4,
+      "of": 296
+     },
+     "BSF": {
+      "right": 3,
+      "of": 296
+     }
+    }
+   },
+   "physics_then_model": {
+    "named": 699,
+    "right": 688,
+    "wrong": 11,
+    "by_part": {
+     "BPFO": {
+      "right": 588,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 25,
+      "of": 296
+     },
+     "BSF": {
+      "right": 75,
+      "of": 296
+     }
+    }
+   }
+  },
+  {
+   "l2": 10,
+   "confidence": 0.5,
+   "cwru_recordings_right": 45,
+   "model_alone": {
+    "named": 1295,
+    "right": 977,
+    "wrong": 318,
+    "by_part": {
+     "BPFO": {
+      "right": 781,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 13,
+      "of": 296
+     },
+     "BSF": {
+      "right": 183,
+      "of": 296
+     }
+    }
+   },
+   "physics_then_model": {
+    "named": 1312,
+    "right": 996,
+    "wrong": 316,
+    "by_part": {
+     "BPFO": {
+      "right": 777,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 25,
+      "of": 296
+     },
+     "BSF": {
+      "right": 194,
+      "of": 296
+     }
+    }
+   }
+  },
+  {
+   "l2": 10,
+   "confidence": 0.7,
+   "cwru_recordings_right": 45,
+   "model_alone": {
+    "named": 851,
+    "right": 766,
+    "wrong": 85,
+    "by_part": {
+     "BPFO": {
+      "right": 685,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 9,
+      "of": 296
+     },
+     "BSF": {
+      "right": 72,
+      "of": 296
+     }
+    }
+   },
+   "physics_then_model": {
+    "named": 908,
+    "right": 816,
+    "wrong": 92,
+    "by_part": {
+     "BPFO": {
+      "right": 682,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 25,
+      "of": 296
+     },
+     "BSF": {
+      "right": 109,
+      "of": 296
+     }
+    }
+   }
+  },
+  {
+   "l2": 10,
+   "confidence": 0.8,
+   "cwru_recordings_right": 45,
+   "model_alone": {
+    "named": 675,
+    "right": 652,
+    "wrong": 23,
+    "by_part": {
+     "BPFO": {
+      "right": 619,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 5,
+      "of": 296
+     },
+     "BSF": {
+      "right": 28,
+      "of": 296
+     }
+    }
+   },
+   "physics_then_model": {
+    "named": 764,
+    "right": 732,
+    "wrong": 32,
+    "by_part": {
+     "BPFO": {
+      "right": 621,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 25,
+      "of": 296
+     },
+     "BSF": {
+      "right": 86,
+      "of": 296
+     }
+    }
+   }
+  },
+  {
+   "l2": 10,
+   "confidence": 0.9,
+   "cwru_recordings_right": 45,
+   "model_alone": {
+    "named": 548,
+    "right": 548,
+    "wrong": 0,
+    "by_part": {
+     "BPFO": {
+      "right": 543,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 1,
+      "of": 296
+     },
+     "BSF": {
+      "right": 4,
+      "of": 296
+     }
+    }
+   },
+   "physics_then_model": {
+    "named": 671,
+    "right": 662,
+    "wrong": 9,
+    "by_part": {
+     "BPFO": {
+      "right": 562,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 25,
+      "of": 296
+     },
+     "BSF": {
+      "right": 75,
+      "of": 296
+     }
+    }
+   }
+  },
+  {
+   "l2": 10,
+   "confidence": 0.95,
+   "cwru_recordings_right": 45,
+   "model_alone": {
+    "named": 476,
+    "right": 476,
+    "wrong": 0,
+    "by_part": {
+     "BPFO": {
+      "right": 476,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 0,
+      "of": 296
+     },
+     "BSF": {
+      "right": 0,
+      "of": 296
+     }
+    }
+   },
+   "physics_then_model": {
+    "named": 657,
+    "right": 648,
+    "wrong": 9,
+    "by_part": {
+     "BPFO": {
+      "right": 548,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 25,
+      "of": 296
+     },
+     "BSF": {
+      "right": 75,
+      "of": 296
+     }
+    }
+   }
+  },
+  {
+   "l2": 100,
+   "confidence": 0.5,
+   "cwru_recordings_right": 39,
+   "model_alone": {
+    "named": 1059,
+    "right": 839,
+    "wrong": 220,
+    "by_part": {
+     "BPFO": {
+      "right": 711,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 9,
+      "of": 296
+     },
+     "BSF": {
+      "right": 119,
+      "of": 296
+     }
+    }
+   },
+   "physics_then_model": {
+    "named": 1116,
+    "right": 897,
+    "wrong": 219,
+    "by_part": {
+     "BPFO": {
+      "right": 707,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 25,
+      "of": 296
+     },
+     "BSF": {
+      "right": 165,
+      "of": 296
+     }
+    }
+   }
+  },
+  {
+   "l2": 100,
+   "confidence": 0.7,
+   "cwru_recordings_right": 39,
+   "model_alone": {
+    "named": 540,
+    "right": 531,
+    "wrong": 9,
+    "by_part": {
+     "BPFO": {
+      "right": 525,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 2,
+      "of": 296
+     },
+     "BSF": {
+      "right": 4,
+      "of": 296
+     }
+    }
+   },
+   "physics_then_model": {
+    "named": 680,
+    "right": 662,
+    "wrong": 18,
+    "by_part": {
+     "BPFO": {
+      "right": 559,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 25,
+      "of": 296
+     },
+     "BSF": {
+      "right": 78,
+      "of": 296
+     }
+    }
+   }
+  },
+  {
+   "l2": 100,
+   "confidence": 0.8,
+   "cwru_recordings_right": 39,
+   "model_alone": {
+    "named": 398,
+    "right": 398,
+    "wrong": 0,
+    "by_part": {
+     "BPFO": {
+      "right": 398,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 0,
+      "of": 296
+     },
+     "BSF": {
+      "right": 0,
+      "of": 296
+     }
+    }
+   },
+   "physics_then_model": {
+    "named": 656,
+    "right": 647,
+    "wrong": 9,
+    "by_part": {
+     "BPFO": {
+      "right": 547,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 25,
+      "of": 296
+     },
+     "BSF": {
+      "right": 75,
+      "of": 296
+     }
+    }
+   }
+  },
+  {
+   "l2": 100,
+   "confidence": 0.9,
+   "cwru_recordings_right": 39,
+   "model_alone": {
+    "named": 183,
+    "right": 183,
+    "wrong": 0,
+    "by_part": {
+     "BPFO": {
+      "right": 183,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 0,
+      "of": 296
+     },
+     "BSF": {
+      "right": 0,
+      "of": 296
+     }
+    }
+   },
+   "physics_then_model": {
+    "named": 656,
+    "right": 647,
+    "wrong": 9,
+    "by_part": {
+     "BPFO": {
+      "right": 547,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 25,
+      "of": 296
+     },
+     "BSF": {
+      "right": 75,
+      "of": 296
+     }
+    }
+   }
+  },
+  {
+   "l2": 100,
+   "confidence": 0.95,
+   "cwru_recordings_right": 39,
+   "model_alone": {
+    "named": 11,
+    "right": 11,
+    "wrong": 0,
+    "by_part": {
+     "BPFO": {
+      "right": 11,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 0,
+      "of": 296
+     },
+     "BSF": {
+      "right": 0,
+      "of": 296
+     }
+    }
+   },
+   "physics_then_model": {
+    "named": 656,
+    "right": 647,
+    "wrong": 9,
+    "by_part": {
+     "BPFO": {
+      "right": 547,
+      "of": 820
+     },
+     "BPFI": {
+      "right": 25,
+      "of": 296
+     },
+     "BSF": {
+      "right": 75,
+      "of": 296
+     }
+    }
+   }
+  }
+ ],
+ "headline": {
+  "l2": 1,
+  "confidence": 0.9,
+  "cwru_recordings_right": 45,
+  "model_alone": {
+   "named": 674,
+   "right": 653,
+   "wrong": 21,
+   "by_part": {
+    "BPFO": {
+     "right": 627,
+     "of": 820
+    },
+    "BPFI": {
+     "right": 8,
+     "of": 296
+    },
+    "BSF": {
+     "right": 18,
+     "of": 296
+    }
+   }
+  },
+  "physics_then_model": {
+   "named": 765,
+   "right": 735,
+   "wrong": 30,
+   "by_part": {
+    "BPFO": {
+     "right": 629,
+     "of": 820
+    },
+    "BPFI": {
+     "right": 25,
+     "of": 296
+    },
+    "BSF": {
+     "right": 81,
+     "of": 296
+    }
+   }
+  }
+ }
+}

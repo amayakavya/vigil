@@ -34,6 +34,9 @@ claims = {
     "pre-fault running hours": f"{pre_h:,.0f}",
     "Case Western named": f"{cw['named_correctly']} of {cw['files']}",
 }
+L = json.load(open(os.path.join(ROOT, "docs", "data", "learned.json")))
+claims["learned model"] = f"named {L['headline']['model_alone']['right']} right and {L['headline']['model_alone']['wrong']} wrong"
+claims["physics on held-out"] = f"names {L['physics']['right']} right and {L['physics']['wrong']} wrong"
 print("from the data:", json.dumps(claims), f"| single crossings {crossings}, post-fault healthy alarms {after}, traced {traced}")
 assert crossings == 7 and after == 8, "the page's 'seven single readings' or 'eight healthy bearings' is out of date"
 assert f"{0.1 / 13.73 * 100:.2f}" == "0.73"
@@ -52,6 +55,7 @@ pages = ""
 for name in ("index.html", "results.html"):
     t = Text(); t.feed(open(os.path.join(ROOT, "docs", name)).read()); pages += " " + " ".join(t.out)
 sources = {"page": pages}
+t = Text(); t.feed(open(os.path.join(ROOT, "docs", "results.html")).read()); sources["results"] = " ".join(t.out)
 # the demonstration stands on its own: nothing published may link to the author's personal site
 for name in os.listdir(os.path.join(ROOT, "docs")):
     if name.endswith((".html", ".js", ".css", ".webmanifest")) and "amayakavya.com" in open(os.path.join(ROOT, "docs", name)).read():
@@ -78,6 +82,7 @@ need = {
     "deck": ["failures warned", "sustained range", "earlier than level doubled", "named in last 72 h", "pre-fault running hours"],
     "form": ["sustained range", "earlier than level doubled", "named in last 72 h", "pre-fault running hours"],
     "readme": [],
+    "results": ["learned model", "physics on held-out"],
 }
 bad = 0
 for where, keys in need.items():
