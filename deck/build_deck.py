@@ -11,8 +11,8 @@ from pptx.enum.shapes import MSO_SHAPE
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 FIG = os.path.join(HERE, "..", "figures")
-OUT = os.path.join(HERE, "YantraNadi-HEISENBUG-Seva2026")
-DEMO = "amayakavya.github.io/yantra-nadi"
+OUT = os.path.join(HERE, "VIGIL-HEISENBUG-Seva2026")
+DEMO = "amayakavya.github.io/vigil"
 
 NAVY, ORANGE, INK, GREY, PALE, WHITE, PEACH = (RGBColor.from_string(c) for c in
     ("1B2A5C", "F28C28", "1F2937", "6B7280", "C9D2EC", "FFFFFF", "FDEBD7"))
@@ -99,9 +99,8 @@ def sources(slide, text):
 s = S[0]
 put(sh(s, "Text 0"), "SEVA FIRST INNOVATION CHALLENGE 2026  •  DEFENCE  •  PREDICTIVE MAINTENANCE, MRO AND LIFECYCLE INTELLIGENCE",
     size=9, color=ORANGE, bold=True)
-put(sh(s, "Text 1"), "Yantra Nadi", size=34, color=WHITE, bold=True)
-dev = box(s, 3.3, 1.02, 2.4, 0.5, "यंत्र नाडी", size=19, color=PALE)
-dev.text_frame.paragraphs[0].runs[0].font.name = "Nirmala UI"
+put(sh(s, "Text 1"), "VIGIL", size=38, color=WHITE, bold=True)
+box(s, 0.5, 1.5, 5.6, 0.3, "VIBRATION INTELLIGENCE GRID FOR INTEGRITY AND LIFECYCLE", size=9.5, color=PALE, bold=True)
 put(sh(s, "Text 2"), [[("Pulse diagnosis for machines. ", True)],
                       [("A clip-on vibration sensor that tells a police or forces mechanic which part of a generator, "
                         "pump or vehicle is failing, days before it fails. It needs no internet.", False)]],
@@ -129,8 +128,8 @@ s.shapes.add_picture(os.path.join(FIG, "qr.png"), Inches(8.62), Inches(4.38), wi
 # 2 · Problem ----------------------------------------------------------------
 s = S[1]
 put(sh(s, "Text 7"), "Generators, pumps and vehicles are serviced by the calendar. Healthy parts get replaced on schedule, "
-    "and a part that starts failing between services is not seen until the machine stops. The root cause: nobody "
-    "can see inside a running machine without costly analysers and a trained analyst.", size=8.5)
+    "and a part that starts failing between services is not seen until the machine stops. Seeing inside a running "
+    "machine today takes a costly analyser and a trained analyst, and the workshops have neither.", size=8.5)
 put(sh(s, "Text 10"), "Motor Transport sections of Maharashtra Police (Home Department), which keep the force's vehicles "
     "and station generators running, and the personnel who depend on them. The same gap sits in forces MRO units. "
     "Proposed pilot: one MT section, Navi Mumbai.", size=8.5)
@@ -155,7 +154,7 @@ s = S[2]
 put(sh(s, "Text 6"), "A clip-on node with a vibration sensor and its own processor. It learns each machine's normal in its "
     "first day, then checks every reading against it and against the defect frequencies of that machine's bearings. "
     "When a defect line rises, it names the part and the spare to indent. Results reach a workshop console over "
-    "Bluetooth, never the internet.", size=8.5)
+    "Bluetooth. Nothing goes over the internet.", size=8.5)
 sh(s, "Text 6").height = Inches(0.95)
 put(sh(s, "Text 12"), "1 s of vibration every 10 min, and the bearing number from the asset register", size=7.5)
 put(sh(s, "Text 18"), "Compare with the machine's own normal, then check the bearing's defect lines", size=7.5)
@@ -171,8 +170,8 @@ for i, (a, b) in enumerate(rows, start=1):
     for j, text in ((1, a), (2, b)):
         cell = tbl.cell(i, j)
         put(cell, text, size=7.5, color=INK, bold=(j == 2))
-put(sh(s, "Text 27"), "It names the failing part from the bearing's own geometry, with no failure data to train on, and "
-    "never needs the internet. Every number on the demo page reruns from public data.", size=8.5)
+put(sh(s, "Text 27"), "It names the failing part, working from the bearing's own geometry, so it needs no failure history "
+    "to learn from. It also runs without the internet. Anyone can rerun every number on the demo page from public data.", size=8.5)
 sh(s, "Text 27").height = Inches(0.8)
 sources(s, "Existing-approach cost: US DOE FEMP, O&M Best Practices Guide R3.0 (2010), sec. 5.4. Demo and code: " + DEMO)
 
@@ -221,16 +220,15 @@ put(sh(s, "Text 16"), "technician jobs, and MT mechanics trained in condition mo
     italic=True, align=PP_ALIGN.CENTER)
 sh(s, "Text 16").height = Inches(0.4)
 put(sh(s, "Text 19"), [
-    "Vehicles and generators that do not fail on duty mean a faster answer when a citizen dials 112.",
-    "Fewer breakdowns in the field put fewer personnel at risk.",
-    "Changing parts only when they are worn means less scrap."], size=8, space=3)
+    "A police vehicle that does not break down on duty reaches the 112 call it was sent to.",
+    "Fewer breakdowns also leave fewer personnel stranded in the field. Parts get changed when they are actually worn, so less goes to scrap."], size=8, space=3)
 put(sh(s, "Text 22"), [
-    "Paid from the maintenance budget the department already spends, as a yearly fee per point that is smaller than one avoided breakdown.",
+    "Paid from the maintenance budget the department already spends, as a yearly fee per point, priced below what one avoided breakdown saves.",
     "No cloud subscription. Nodes built and serviced in Maharashtra."], size=8, space=3)
 put(sh(s, "Text 25"), [
-    "One MT section, then every district MT section, then SRPF.",
-    "Forces MRO through iDEX, where the Navy has already asked for this.",
-    "The node stays the same everywhere. Only the asset register changes."], size=8, space=3)
+    "One MT section first, then every district MT section and the SRPF.",
+    "The forces' MRO units come through iDEX, where the Navy has already asked for this.",
+    "The same node goes everywhere. Each site needs only its own asset register."], size=8, space=3)
 
 # 6 · Team and support ----------------------------------------------------------
 s = S[5]
@@ -252,8 +250,8 @@ s.shapes.add_picture(os.path.join(FIG, "qr.png"), Inches(3.8), Inches(3.02), wid
 box(s, 3.8, 4.07, 1.5, 0.55, [DEMO.split("/")[0] + "/", DEMO.split("/")[1]], size=7.5, color=PALE, space=0)
 for shape_name in ("Shape 31", "Shape 33", "Shape 35", "Shape 39"):
     tick(sh(s, shape_name))
-put(sh(s, "Text 41"), "A pilot with one Police Motor Transport section turns a method proven on laboratory data into a measured "
-    "result on Maharashtra's own machines.", size=8.5, color=INK, italic=True)
+put(sh(s, "Text 41"), "The method works on laboratory data. A pilot with one Police Motor Transport section is how we find "
+    "out what it does on Maharashtra's own machines.", size=8.5, color=INK, italic=True)
 sh(s, "Text 41").height = Inches(0.75)
 put(sh(s, "Text 42"), "Thank you  |  kav.ama.rt25@dypatil.edu", size=10.5, color=ORANGE, bold=True)
 sh(s, "Text 42").top = Inches(4.82)

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Yantra Nadi</title>
+<title>VIGIL</title>
 <meta name="description" content="Pulse diagnosis for machines. A clip-on vibration sensor that names the failing part of a generator, pump or vehicle days before it fails, without the internet.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -36,6 +36,7 @@ a { color: var(--navy); }
 header { padding: 56px 0 28px; border-bottom: 1px solid var(--line); }
 .kicker { font: 500 12px/1.4 "IBM Plex Mono", monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--saffron-ink); }
 h1 { font-size: clamp(40px, 7vw, 64px); line-height: 1.02; margin: 12px 0 6px; letter-spacing: -.02em; font-weight: 600; }
+.expand { font: 500 13px/1.4 "IBM Plex Mono", monospace; color: var(--muted); letter-spacing: .04em; margin: 0 0 14px; }
 h1 .dev { font-family: "Noto Sans Devanagari", sans-serif; font-weight: 500; font-size: .52em; color: var(--muted); letter-spacing: 0; margin-left: 10px; white-space: nowrap; }
 .tag { font-size: 22px; margin: 0 0 18px; color: var(--ink); }
 .lede { font-size: 18px; max-width: 720px; margin: 0 0 18px; }
@@ -128,9 +129,10 @@ footer { padding: 32px 0 56px; font-size: 13px; color: var(--muted); }
 <header>
   <div class="wrap">
     <div class="kicker">Seva First Innovation Challenge 2026 &middot; Defence</div>
-    <h1>Yantra Nadi <span class="dev">यंत्र नाडी</span></h1>
+    <h1>VIGIL</h1>
+    <p class="expand">Vibration Intelligence Grid for Integrity and Lifecycle</p>
     <p class="tag">Pulse diagnosis for machines.</p>
-    <p class="lede">A clip-on vibration sensor that tells a mechanic which part of a generator, pump or vehicle is wearing out, days before it fails. It learns each machine's own normal in its first day, names the failing part from the bearing's geometry, and works without the internet.</p>
+    <p class="lede">A clip-on vibration sensor that tells a mechanic which part of a generator, pump or vehicle is wearing out, days before it fails. It spends its first day on a machine learning what normal looks like for that one machine. After that it listens for the vibration a damaged bearing makes and says which part is going. It needs no internet connection at any point.</p>
     <p class="meta">Team HEISENBUG &middot; Maharashtra zone &middot; Predictive maintenance, defence MRO and lifecycle intelligence</p>
   </div>
 </header>
@@ -138,7 +140,7 @@ footer { padding: 32px 0 56px; font-size: 13px; color: var(--muted); }
 <section id="numbers">
   <div class="wrap">
     <h2>Measured on public run-to-failure data</h2>
-    <p class="sub">Every number here comes from code in this project, run on two public bearing datasets. None is an estimate.</p>
+    <p class="sub">Every number in this section was produced by the code in this project, run on two public bearing datasets.</p>
     <div class="tiles">
       <div class="tile"><div class="num">4 of 4</div><p>bearing failures warned, between <span id="t-lead">42 and 603</span> hours before the test rig was stopped</p></div>
       <div class="tile"><div class="num">4 of 4</div><p>failing parts named correctly: outer race twice, inner race, rolling element</p></div>
@@ -198,7 +200,7 @@ footer { padding: 32px 0 56px; font-size: 13px; color: var(--muted); }
 <section id="naming">
   <div class="wrap">
     <h2>Naming test: 52 recordings with seeded faults</h2>
-    <p>Case Western Reserve University cut faults of 0.18 to 0.53 mm into test bearings and recorded them at four loads. Each square below is one recording. The system names the part only when one defect line stands at least 10 dB clear of its neighbourhood. Otherwise it declines: sending a mechanic to the wrong part costs a day, and saying "inspect, part not identified" costs nothing.</p>
+    <p>Case Western Reserve University cut faults of 0.18 to 0.53 mm into test bearings and recorded them at four loads. Each square below is one recording. The system names the part only when one defect line stands at least 10 dB clear of its neighbourhood. Otherwise it declines and asks for an inspection, because a mechanic sent to strip the wrong part loses a day in the workshop.</p>
     <div class="legend"><span><i class="sw" style="background:var(--navy)"></i>Named correctly</span><span><i class="sw" style="border:1.5px solid var(--grey-line)"></i>Declined</span><span><i class="sw" style="background:var(--saffron)"></i>Named wrong</span></div>
     <div id="groups"></div>
     <p class="sub">Rolling-element faults are the weak spot. Raising that figure is the first technical job of the pilot.</p>
@@ -250,11 +252,11 @@ footer { padding: 32px 0 56px; font-size: 13px; color: var(--muted); }
     <div class="grid2" style="margin-top:22px">
       <div>
         <h3>The node, as designed</h3>
-        <p style="font-size:15px">ESP32-S3 microcontroller and ST's IIS3DWB vibration accelerometer, flat to about 6 kHz, which is the bandwidth every result on this page was computed within. Sealed metal housing on a magnet or stud mount, powered from the machine's own 12/24 V battery with a backup cell. About &#8377;4,000 a point at one-off retail prices (estimate).</p>
+        <p style="font-size:15px">ESP32-S3 microcontroller and ST's IIS3DWB vibration accelerometer, flat to about 6 kHz, which is the bandwidth every measured result on this page was computed within. Sealed metal housing on a magnet or stud mount, powered from the machine's own 12/24 V battery with a backup cell. About &#8377;4,000 a point at one-off retail prices (estimate).</p>
       </div>
       <div>
         <h3>Why offline</h3>
-        <p style="font-size:15px">The health of a security force's vehicles and generators is operational information. Most commercial condition-monitoring runs through a vendor's cloud. Yantra Nadi never needs a connection outside the premises.</p>
+        <p style="font-size:15px">The health of a security force's vehicles and generators is operational information. Most commercial condition-monitoring runs through a vendor's cloud. VIGIL never needs a connection outside the premises.</p>
       </div>
     </div>
   </div>
@@ -279,11 +281,11 @@ footer { padding: 32px 0 56px; font-size: 13px; color: var(--muted); }
   <div class="wrap">
     <h2>What is proven, and what is not</h2>
     <ul class="plain">
-      <li><b>Proven:</b> the method, on two public laboratory datasets, with the numbers above.</li>
-      <li><b>Not yet:</b> the hardware node (bench build from November 2026), any data from a police or forces machine, and vehicle drivelines at changing speed.</li>
-      <li><b>How the rules were set:</b> the alarm thresholds and the band search were fixed while looking at IMS run 2 and the Case Western set. IMS runs 1 and 3 were then scored once, with nothing changed.</li>
-      <li><b>Healthy-bearing alarms:</b> eight healthy bearings did alarm late in their runs, every one after the failing bearing had already warned, and in every case the failing bearing's sensor was the loudest on the shaft at that moment. On one machine the system reports the loudest point as the source.</li>
-      <li><b>Code and data:</b> <a href="https://github.com/amayakavya/yantra-nadi">github.com/amayakavya/yantra-nadi</a>. The analysis reruns from the public datasets in about six minutes on a laptop.</li>
+      <li>The method has been tested on two public laboratory datasets, with the results above.</li>
+      <li>The hardware node has not been built yet. The bench build starts in November 2026. Nothing has run on a police or forces machine so far, and vehicle drivelines at changing speed are a later problem.</li>
+      <li>The alarm thresholds and the band search were fixed while looking at IMS run 2 and the Case Western set. IMS runs 1 and 3 were then scored once, with nothing changed.</li>
+      <li>Eight healthy bearings did alarm late in their runs, every one after the failing bearing had already warned, and in every case the failing bearing's sensor was the loudest on the shaft at that moment. On one machine the system reports the loudest point as the source.</li>
+      <li>Code and data: <a href="https://github.com/amayakavya/vigil">github.com/amayakavya/vigil</a>. The analysis reruns from the public datasets in about six minutes on a laptop.</li>
     </ul>
   </div>
 </section>

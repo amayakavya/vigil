@@ -12,9 +12,9 @@ import json, os, sys
 import numpy as np
 import scipy.io as sio
 from scipy import signal
-from nadi import CWRU_6205, diagnose
+from vigil import CWRU_6205, diagnose
 
-DATA = os.path.expanduser("~/yantra-nadi-data/cwru")
+DATA = os.path.expanduser("~/vigil-data/cwru")
 OUT = os.path.join(os.path.dirname(__file__), "..", "docs", "data")
 FS = 12000
 # 12 kHz drive-end files. Label, fault size (inch), load (hp).

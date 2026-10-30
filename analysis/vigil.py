@@ -1,4 +1,4 @@
-"""Yantra Nadi signal core.
+"""VIGIL signal core.
 
 Everything here is classical, explainable signal processing. No model is trained
 on labelled faults: a machine is compared only against its own healthy history,

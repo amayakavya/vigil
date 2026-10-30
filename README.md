@@ -1,8 +1,8 @@
-# Yantra Nadi
+# VIGIL
 
-Pulse diagnosis for machines. A clip-on vibration sensor that tells a mechanic which part of a generator, pump or vehicle is wearing out, days before it fails, without the internet.
+Vibration Intelligence Grid for Integrity and Lifecycle. Pulse diagnosis for machines. A clip-on vibration sensor that tells a mechanic which part of a generator, pump or vehicle is wearing out, days before it fails, without the internet.
 
-Live demo: https://amayakavya.github.io/yantra-nadi/
+Live demo: https://amayakavya.github.io/vigil/
 
 ## What is measured
 
@@ -31,8 +31,8 @@ The IMS sampling rate is taken as 20,480 Hz because at that rate the outer-race 
 
 ```
 pip install numpy scipy matplotlib
-# IMS: https://phm-datasets.s3.amazonaws.com/NASA/4.+Bearings.zip, unpacked to ~/yantra-nadi-data/ims
-# CWRU: https://engineering.case.edu/bearingdatacenter, files listed in analysis/cwru.py, to ~/yantra-nadi-data/cwru
+# IMS: https://phm-datasets.s3.amazonaws.com/NASA/4.+Bearings.zip, unpacked to ~/vigil-data/ims
+# CWRU: https://engineering.case.edu/bearingdatacenter, files listed in analysis/cwru.py, to ~/vigil-data/cwru
 cd analysis
 python3 cwru.py
 python3 ims.py 2 1 3

@@ -5,12 +5,12 @@ import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from nadi import IMS_ZA2115, diagnose
+from vigil import IMS_ZA2115, diagnose
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SITE = os.path.join(HERE, "..", "docs", "data")
 FIG = os.path.join(HERE, "..", "figures")
-ROOT = os.path.expanduser("~/yantra-nadi-data/ims/4. Bearings/2nd_test")
+ROOT = os.path.expanduser("~/vigil-data/ims/4. Bearings/2nd_test")
 FS, SHAFT = 20480, 2000 / 60
 
 ims = json.load(open(os.path.join(SITE, "ims.json")))

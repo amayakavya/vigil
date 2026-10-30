@@ -14,9 +14,9 @@ import json, os, sys
 from datetime import datetime
 from multiprocessing import Pool
 import numpy as np
-from nadi import IMS_ZA2115, FEATURE_NAMES, condition_features, diagnose, first_alarm, health_index, running
+from vigil import IMS_ZA2115, FEATURE_NAMES, condition_features, diagnose, first_alarm, health_index, running
 
-ROOT = os.path.expanduser("~/yantra-nadi-data/ims/4. Bearings")
+ROOT = os.path.expanduser("~/vigil-data/ims/4. Bearings")
 OUT = os.path.join(os.path.dirname(__file__), "..", "docs", "data")
 FS = 20480
 SHAFT = 2000 / 60
@@ -48,7 +48,7 @@ def main(run_ids):
         names = sorted(os.listdir(d))
         t = [stamp(n) for n in names]
         hours = np.array([(ti - t[0]).total_seconds() / 3600 for ti in t])
-        cache = os.path.expanduser(f"~/yantra-nadi-data/ims_run{rid}_features.npy")
+        cache = os.path.expanduser(f"~/vigil-data/ims_run{rid}_features.npy")
         if os.path.exists(cache):
             F = np.load(cache)
         else:
