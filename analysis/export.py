@@ -75,9 +75,10 @@ ax.axhline(6, color=ORANGE, lw=1, ls="--")
 ax.text(2, 7.5, "alarm level", color=ORANGE, fontsize=9)
 ax.axvspan(0, run["hours"][run["n_base"]], color="#eef0f7", zorder=0)
 ax.text(1.5, 52, "learns its\nown normal", fontsize=9, color=INK, va="top")
-w = run["bearings"]["1"]["named_h"]
+lead = run["summary"]["failed"]["1"]["sustained_lead_h"]
+w = run["end_h"] - lead
 ax.axvline(w, color=ORANGE, lw=1.6)
-ax.annotate(f"Warned and named: outer race\n{run['end_h'] - w:.1f} h before the rig stopped",
+ax.annotate(f"Warning holds from here, named outer race:\n{lead:.1f} h before the rig stopped",
             xy=(w, 9), xytext=(w - 62, 38), fontsize=9.5, color=INK,
             arrowprops=dict(arrowstyle="->", color=INK, lw=0.8))
 ax.set_xlim(0, run["end_h"])

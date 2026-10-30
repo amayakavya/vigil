@@ -1,0 +1,237 @@
+{
+ "bearings": {
+  "ZA-2115": {
+   "name": "Rexnord ZA-2115 (NASA IMS rig)",
+   "orders": {
+    "BPFO": 7.09210413867826,
+    "BPFI": 8.90789586132174,
+    "BSF": 4.197499673587625,
+    "FTF": 0.44325650866739125
+   },
+   "geometry": {
+    "rollers": 16,
+    "roller_in": 0.331,
+    "pitch_in": 2.815,
+    "contact_deg": 15.17
+   }
+  },
+  "6205": {
+   "name": "SKF 6205-2RS JEM (Case Western drive end)",
+   "orders": {
+    "BPFO": 3.5848,
+    "BPFI": 5.4152,
+    "BSF": 4.7135,
+    "FTF": 0.39828
+   }
+  }
+ },
+ "samples": [
+  {
+   "id": "ims2-b1-30h",
+   "label": "Run 2, bearing 1, hour 30 (healthy)",
+   "source": "NASA IMS test 2, file 2004.02.13.16.32.39, channel for bearing 1",
+   "truth": "BPFO",
+   "fs": 20480,
+   "rpm": 2000,
+   "bearing": "ZA-2115",
+   "n": 20480,
+   "scale": 1.5700075831343272e-05,
+   "expect": {
+    "verdict": null,
+    "band": [
+     3950.0,
+     5450.0
+    ],
+    "scores": {
+     "BPFO": 7.5651,
+     "BPFI": 5.959,
+     "BSF": 7.5994
+    }
+   }
+  },
+  {
+   "id": "ims2-b1-96h",
+   "label": "Run 2, bearing 1, first warning",
+   "source": "NASA IMS test 2, file 2004.02.16.10.42.39, channel for bearing 1",
+   "truth": "BPFO",
+   "fs": 20480,
+   "rpm": 2000,
+   "bearing": "ZA-2115",
+   "n": 20480,
+   "scale": 1.2911898546937469e-05,
+   "expect": {
+    "verdict": "BPFO",
+    "band": [
+     3700.0,
+     5700.0
+    ],
+    "scores": {
+     "BPFO": 12.1473,
+     "BPFI": 5.9511,
+     "BSF": 6.5614
+    }
+   }
+  },
+  {
+   "id": "ims2-b1-150h",
+   "label": "Run 2, bearing 1, hour 150",
+   "source": "NASA IMS test 2, file 2004.02.18.16.32.39, channel for bearing 1",
+   "truth": "BPFO",
+   "fs": 20480,
+   "rpm": 2000,
+   "bearing": "ZA-2115",
+   "n": 20480,
+   "scale": 1.860180491948836e-05,
+   "expect": {
+    "verdict": "BPFO",
+    "band": [
+     1700.0,
+     3700.0
+    ],
+    "scores": {
+     "BPFO": 10.9163,
+     "BPFI": 6.1739,
+     "BSF": 4.7092
+    }
+   }
+  },
+  {
+   "id": "ims1-b3-816h",
+   "label": "Run 1, bearing 3, 12 h before the rig stopped",
+   "source": "NASA IMS test 1, file 2003.11.25.11.37.32, channel for bearing 3",
+   "truth": "BPFI",
+   "fs": 20480,
+   "rpm": 2000,
+   "bearing": "ZA-2115",
+   "n": 20480,
+   "scale": 6.127321254520554e-05,
+   "expect": {
+    "verdict": null,
+    "band": [
+     4700.0,
+     5700.0
+    ],
+    "scores": {
+     "BPFO": 6.6909,
+     "BPFI": 7.4543,
+     "BSF": 3.5444
+    }
+   }
+  },
+  {
+   "id": "ims1-b4-816h",
+   "label": "Run 1, bearing 4, 12 h before the rig stopped",
+   "source": "NASA IMS test 1, file 2003.11.25.11.37.32, channel for bearing 4",
+   "truth": "BSF",
+   "fs": 20480,
+   "rpm": 2000,
+   "bearing": "ZA-2115",
+   "n": 20480,
+   "scale": 2.36240220367481e-05,
+   "expect": {
+    "verdict": null,
+    "band": [
+     2700.0,
+     4700.0
+    ],
+    "scores": {
+     "BPFO": 8.4801,
+     "BPFI": 8.0283,
+     "BSF": 9.257
+    }
+   }
+  },
+  {
+   "id": "ims3-b3-1061h",
+   "label": "Run 3, bearing 3, 12 h before the rig stopped",
+   "source": "NASA IMS test 3, file 2004.04.17.14.42.55, channel for bearing 3",
+   "truth": "BPFO",
+   "fs": 20480,
+   "rpm": 2000,
+   "bearing": "ZA-2115",
+   "n": 20480,
+   "scale": 2.554123265213477e-05,
+   "expect": {
+    "verdict": "BPFO",
+    "band": [
+     3575.0,
+     5075.0
+    ],
+    "scores": {
+     "BPFO": 16.9344,
+     "BPFI": 8.2779,
+     "BSF": 4.2949
+    }
+   }
+  },
+  {
+   "id": "cwru-105",
+   "label": "Case Western 105: inner race, 0.18 mm, 0 hp",
+   "source": "Case Western Reserve University Bearing Data Center, file 105.mat, drive end",
+   "truth": "BPFI",
+   "fs": 12000,
+   "rpm": 1797.0,
+   "bearing": "6205",
+   "n": 121265,
+   "scale": 5.2662341366579953e-05,
+   "expect": {
+    "verdict": "BPFI",
+    "band": [
+     950.0,
+     1950.0
+    ],
+    "scores": {
+     "BPFO": 12.7422,
+     "BPFI": 24.1711,
+     "BSF": 10.4153
+    }
+   }
+  },
+  {
+   "id": "cwru-130",
+   "label": "Case Western 130: outer race, 0.18 mm, 0 hp",
+   "source": "Case Western Reserve University Bearing Data Center, file 130.mat, drive end",
+   "truth": "BPFO",
+   "fs": 12000,
+   "rpm": 1796.0,
+   "bearing": "6205",
+   "n": 121991,
+   "scale": 0.00011008800541556079,
+   "expect": {
+    "verdict": "BPFO",
+    "band": [
+     2450.0,
+     3950.0
+    ],
+    "scores": {
+     "BPFO": 28.7832,
+     "BPFI": 15.2552,
+     "BSF": 11.2939
+    }
+   }
+  },
+  {
+   "id": "cwru-118",
+   "label": "Case Western 118: rolling element, 0.18 mm, 0 hp",
+   "source": "Case Western Reserve University Bearing Data Center, file 118.mat, drive end",
+   "truth": "BSF",
+   "fs": 12000,
+   "rpm": 1796.0,
+   "bearing": "6205",
+   "n": 122571,
+   "scale": 1.8910096389027517e-05,
+   "expect": {
+    "verdict": "BSF",
+    "band": [
+     200.0,
+     1700.0
+    ],
+    "scores": {
+     "BPFO": 8.0135,
+     "BPFI": 9.1742,
+     "BSF": 10.2949
+    }
+   }
+  }
+ ]
+}

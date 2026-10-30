@@ -6,21 +6,28 @@ until a bearing fails. The system learns each bearing's first 24 hours as its
 healthy baseline and is never shown a failure. Bearings that did not fail are
 the false-alarm test.
 
-Sampling rate is 20,480 Hz: measured, not assumed. With it the outer-race line
-lands at 236.0 Hz against 236.4 Hz predicted from the bearing geometry; at the
-20 kHz the readme also mentions, it lands 2.5% low.
+Sampling rate is 20,480 Hz because the readme defines each file as a 1-second
+snapshot of 20,480 points. Its looser "20 kHz" would put every line 2.4% low.
+As a check, not as the basis: at 20,480 Hz the outer-race line in run 2 lands
+at 236.0 Hz against 236.4 Hz predicted from the bearing geometry.
+
+Two level-only alarms are scored on the same snapshots as controls, with the
+same three-in-a-row rule: overall level up 35% (the level feature alone under
+the same z rule and floor) and overall level doubled. They answer the obvious
+question, whether a plain vibration-level alarm would have done as well.
 """
 import json, os, sys
 from datetime import datetime
 from multiprocessing import Pool
 import numpy as np
-from vigil import IMS_ZA2115, FEATURE_NAMES, condition_features, diagnose, first_alarm, health_index, running
+from vigil import IMS_ZA2115, FEATURE_FLOOR, FEATURE_NAMES, condition_features, diagnose, first_alarm, health_index, running
 
 ROOT = os.path.expanduser("~/vigil-data/ims/4. Bearings")
 OUT = os.path.join(os.path.dirname(__file__), "..", "docs", "data")
 FS = 20480
 SHAFT = 2000 / 60
 BASE_HOURS = 24
+QUIET_H = 12   # a warning is sustained once the index is never quiet for longer than this again
 
 RUNS = {
     # Test 1 has two accelerometers per bearing; the first of each pair is used.
@@ -105,7 +112,6 @@ def main(run_ids):
                     x = np.loadtxt(os.path.join(d, n))[:, cfg["cols"][b]]
                     verdicts.append(diagnose(x, FS, SHAFT, IMS_ZA2115)["verdict"])
                 info["alarm_verdicts"] = verdicts
-                # When does the name first become available, for the failed bearing?
             run["bearings"][str(b + 1)] = info
             print(f"run {rid} bearing {b + 1} failed={info['failed']} alarm_h={info['alarm_h']} "
                   f"lead_h={info['lead_h']} driver={info.get('alarm_driver')} loudest={info.get('loudest_at_alarm')} "
@@ -114,18 +120,68 @@ def main(run_ids):
         first = {b: min(x for x in (v["alarm_h"], v.get("named_h")) if x is not None)
                  for b, v in bs.items() if v["alarm_h"] is not None or v.get("named_h") is not None}
         failed = [b for b, v in bs.items() if v["failed"]]
-        run["summary"] = {
-            "failed": {b: {"part": bs[b]["failed"], "first_warning_lead_h": round(end - first[b], 1) if b in first else None,
-                           "named_as": bs[b].get("named_as"), "named_lead_h": bs[b].get("named_lead_h")} for b in failed},
-            "healthy_bearing_hours": round(end * (4 - len(failed)), 1),
-            "healthy_alarms": sum(1 for b, v in bs.items() if not v["failed"] and b in first),
-            "healthy_alarms_not_traced_to_failed": sum(
-                1 for b, v in bs.items() if not v["failed"] and b in first and not (
-                    (v["alarm_h"] is None or str(v.get("loudest_at_alarm")) in failed) and
-                    (v.get("named_h") is None or str(v.get("named_loudest")) in failed))),
-            "healthy_alarms_before_any_failed_warning": sum(
-                1 for b, v in bs.items() if not v["failed"] and b in first and first[b] < min(first[f] for f in failed if f in first)),
-        }
+        t_fault = min(first[f] for f in failed if f in first)
+        snap_h = 10 / 60
+        summ = {"failed": {}, "pre_fault": {"running_h": 0.0, "alarms": {"vigil": 0, "level_35": 0, "level_x2": 0},
+                                            "single_crossings": 0},
+                "after_fault_healthy_alarms": 0, "after_fault_traced": 0}
+        for b in range(4):
+            key = str(b + 1)
+            f = F[:, b, :]
+            on = running(f, n_base)
+            hi = HI[b]
+            lvl35, _ = health_index(f[:, :1], n_base, floor=FEATURE_FLOOR[:1])
+            ratio = np.exp(f[:, 0] - np.median(f[:n_base, 0]))
+            lvl2 = np.where(ratio >= 2, 99.0, 0.0)
+            if bs[key]["failed"]:
+                t0 = first[key]
+                sus = None
+                for i in np.where(hours >= t0)[0]:
+                    if not (on[i] and hi[i] >= 6):
+                        continue
+                    quiet = longest = 0
+                    for j in range(i, len(hi)):
+                        quiet = quiet + 1 if (on[j] and hi[j] < 6) else 0
+                        longest = max(longest, quiet)
+                    if longest * snap_h <= QUIET_H:
+                        sus = hours[i]
+                        break
+                lead = lambda x: None if x is None else round(end - hours[x], 1)
+                named_i = bs[key].get("named_idx")
+                share = None
+                if named_i is not None:
+                    line = ["BPFO", "BPFI", "BSF"].index(bs[key]["named_as"])
+                    after = on[named_i:]
+                    hit = (np.argmax(f[named_i:, 3:6], axis=1) == line) & (f[named_i:, 3 + line] >= 10)
+                    share = round(float(hit[after].mean()), 2)
+                # What a mechanic would have been told in the last three days:
+                # every running snapshot whose strongest line cleared 10 dB.
+                w = (hours >= end - 72) & on
+                said = np.array(["BPFO", "BPFI", "BSF"])[np.argmax(f[w, 3:6], axis=1)][f[w, 3:6].max(axis=1) >= 10]
+                summ["failed"][key] = {
+                    "final_72h_named": int(len(said)), "final_72h_correct": int((said == bs[key]["failed"]).sum()),
+                    "part": bs[key]["failed"], "named_as": bs[key].get("named_as"),
+                    "first_warning_lead_h": round(end - t0, 1),
+                    "sustained_lead_h": None if sus is None else round(end - sus, 1),
+                    "named_lead_h": bs[key].get("named_lead_h"), "named_share_after": share,
+                    "level_35_lead_h": lead(first_alarm(lvl35, n_base, on=on)),
+                    "level_x2_lead_h": lead(first_alarm(lvl2, n_base, on=on)),
+                }
+            else:
+                w = (hours >= hours[n_base]) & (hours < t_fault) & on
+                summ["pre_fault"]["running_h"] += float(w.sum() * snap_h)
+                summ["pre_fault"]["single_crossings"] += int((hi[w] >= 6).sum())
+                for name, x in (("vigil", hi), ("level_35", lvl35), ("level_x2", lvl2)):
+                    a = first_alarm(np.where(w, x, 0), n_base, on=on)
+                    summ["pre_fault"]["alarms"][name] += int(a is not None)
+                if key in first:
+                    summ["after_fault_healthy_alarms"] += 1
+                    v = bs[key]
+                    summ["after_fault_traced"] += int(
+                        (v["alarm_h"] is None or str(v.get("loudest_at_alarm")) in failed) and
+                        (v.get("named_h") is None or str(v.get("named_loudest")) in failed))
+        summ["pre_fault"]["running_h"] = round(summ["pre_fault"]["running_h"], 1)
+        run["summary"] = summ
         print(json.dumps(run["summary"]))
         results[rid] = run
         print(f"run {rid}: {len(names)} snapshots, {end:.1f} h, baseline {n_base} snapshots")

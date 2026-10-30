@@ -102,19 +102,19 @@ put(sh(s, "Text 0"), "SEVA FIRST INNOVATION CHALLENGE 2026  •  DEFENCE  •  P
 put(sh(s, "Text 1"), "VIGIL", size=38, color=WHITE, bold=True)
 box(s, 0.5, 1.5, 5.6, 0.3, "VIBRATION INTELLIGENCE GRID FOR INTEGRITY AND LIFECYCLE", size=9.5, color=PALE, bold=True)
 put(sh(s, "Text 2"), [[("Pulse diagnosis for machines. ", True)],
-                      [("A clip-on vibration sensor that tells a police or forces mechanic which part of a generator, "
-                        "pump or vehicle is failing, days before it fails. It needs no internet.", False)]],
+                      [("A clip-on vibration sensor that tells a mechanic which part of a generator, pump or motor "
+                        "is wearing out, days before it fails. It needs no internet.", False)]],
     size=11, color=PALE, space=3)
 sh(s, "Text 2").height = Inches(0.75)
 put(sh(s, "Text 16"), "Measured so far", size=13, color=ORANGE, bold=True)
 t17 = sh(s, "Text 17")
 t17.height = Inches(2.7)
 put(t17, [
-    [("4 of 4 ", True), ("bearing failures warned, 42 to 603 h before the test rig was stopped", False)],
-    [("4 of 4 ", True), ("failing parts named correctly", False)],
-    [("0 ", True), ("alarms not traced to the failing bearing in 5,366 healthy bearing-hours", False)],
-    [("40 of 52 ", True), ("seeded faults named on a second dataset. 2 wrong, 10 declined", False)],
-    [("NASA IMS and Case Western public bearing data. Hardware node not yet built.", False)],
+    [("4 of 4 ", True), ("bearing failures warned, a sustained 40 to 256 h before the test rig was stopped", False)],
+    [("15 to 244 h ", True), ("earlier than an alarm on vibration doubling, on every failure", False)],
+    [("647 of 656 ", True), ("readings in each failure's last 72 h named the right part", False)],
+    [("0 ", True), ("alarms on healthy bearings before any fault, in 3,245 running hours", False)],
+    [("NASA IMS run-to-failure data. The method runs live on the demo page. Hardware node not yet built.", False)],
 ], size=9.5, color=WHITE, space=6)
 t17.text_frame.paragraphs[-1].runs[0].font.color.rgb = PALE
 t17.text_frame.paragraphs[-1].runs[0].font.size = Pt(8)
@@ -127,86 +127,89 @@ s.shapes.add_picture(os.path.join(FIG, "qr.png"), Inches(8.62), Inches(4.38), wi
 
 # 2 · Problem ----------------------------------------------------------------
 s = S[1]
-put(sh(s, "Text 7"), "Generators, pumps and vehicles are serviced by the calendar. Healthy parts get replaced on schedule, "
-    "and a part that starts failing between services is not seen until the machine stops. Seeing inside a running "
-    "machine today takes a costly analyser and a trained analyst, and the workshops have neither.", size=8.5)
-put(sh(s, "Text 10"), "Motor Transport sections of Maharashtra Police (Home Department), which keep the force's vehicles "
-    "and station generators running, and the personnel who depend on them. The same gap sits in forces MRO units. "
-    "Proposed pilot: one MT section, Navi Mumbai.", size=8.5)
+put(sh(s, "Text 7"), "Generators, pumps, motors and vehicles are serviced by the calendar. Healthy parts get replaced on "
+    "schedule, and a part that starts failing between services is not seen until the machine stops. Seeing inside a "
+    "running machine has meant an analyser costing over $50,000 and a trained analyst (US DOE, 2010).", size=8.5)
+put(sh(s, "Text 10"), "Maharashtra Police (Home Department): the generators, pumps and motors at its establishments, and "
+    "later its vehicle fleet. The same gap sits in forces MRO units. Proposed pilot: one police establishment, such as "
+    "a district headquarters or an SRPF group campus.", size=8.5)
 put(sh(s, "Text 13"), [
-    "Maharashtra Police run 15,823 vehicles, including 3,281 special vehicles such as 72 mine-protected ones (BPR&D, 1 Jan 2024).",
-    "Bearings cause 41 to 44% of motor failures (EPRI 1982, IEEE 1985).",
-    "The Indian Navy has put AI-based predictive maintenance out as an iDEX challenge (DISC XI)."], size=8.2, space=3)
+    "Maharashtra Police: 2,07,035 personnel, 1,193 police stations and 15,823 vehicles (BPR&D, 1 Jan 2024).",
+    "In large electric motors, bearings cause 41 to 44% of failures (EPRI 1982, IEEE 1985).",
+    "The Indian Navy has run iDEX challenges for AI-based predictive maintenance (DISC XI)."], size=8.2, space=3)
 put(sh(s, "Text 16"), [
-    "Predictive maintenance cuts breakdowns by 70 to 75% (US DOE, 2010). The same guide notes its equipment often costs over $50,000 and needs trained staff.",
-    "Commercial systems mostly report to a vendor's cloud, which a security force cannot use."], size=8.2, space=3)
-put(sh(s, "Text 18"), "15,823", size=30, color=ORANGE, bold=True, align=PP_ALIGN.CENTER)
-put(sh(s, "Text 19"), "vehicles with Maharashtra Police, plus the generators and pumps behind its 1,193 police stations",
+    "Predictive maintenance cuts breakdowns by 70 to 75% (US DOE, 2010), but the same guide puts its equipment at over $50,000, with trained staff.",
+    "Systems that send machine data to a vendor's cloud need clearances a security force may not give."], size=8.2, space=3)
+put(sh(s, "Text 18"), "2,07,035", size=28, color=ORANGE, bold=True, align=PP_ALIGN.CENTER)
+put(sh(s, "Text 19"), "police personnel in Maharashtra, who depend on the force's machines (BPR&D, 2024)",
     size=9, color=WHITE, align=PP_ALIGN.CENTER)
 sh(s, "Text 19").height = Inches(0.85)
-put(sh(s, "Text 21"), "Each breakdown takes a vehicle off the road, or a station off backup power, until the workshop clears it.", size=9,
+put(sh(s, "Text 21"), "Each breakdown takes a station off backup power, or a vehicle off the road, until the workshop clears it.", size=9,
     color=PALE, align=PP_ALIGN.CENTER)
-sources(s, "Sources: BPR&D, Data on Police Organisations as on 01.01.2024, Tables 5.1.6, 5.1.6(A), 5.1.9. EPRI EL-2678 (1982). "
+sources(s, "Sources: BPR&D, Data on Police Organisations as on 01.01.2024, Tables 5.1.6, 5.1.7, 5.1.9. EPRI EL-2678 (1982). "
            "IEEE-IAS Motor Reliability Working Group (1985). US DOE FEMP, O&M Best Practices Guide R3.0 (2010), sec. 5.4. iDEX DISC XI results.")
 
 # 3 · Solution and innovation ------------------------------------------------
 s = S[2]
 put(sh(s, "Text 6"), "A clip-on node with a vibration sensor and its own processor. It learns each machine's normal in its "
     "first day, then checks every reading against it and against the defect frequencies of that machine's bearings. "
-    "When a defect line rises, it names the part and the spare to indent. Results reach a workshop console over "
-    "Bluetooth. Nothing goes over the internet.", size=8.5)
+    "When a defect line rises, it names the part. Results reach a maintenance board over Bluetooth, or a cable where "
+    "radio is barred. Nothing goes over the internet.", size=8.5)
 sh(s, "Text 6").height = Inches(0.95)
 put(sh(s, "Text 12"), "1 s of vibration every 10 min, and the bearing number from the asset register", size=7.5)
 put(sh(s, "Text 18"), "Compare with the machine's own normal, then check the bearing's defect lines", size=7.5)
-put(sh(s, "Text 24"), "“Alternator bearing 6309, outer race: replace at next stop”", size=7.5)
+put(sh(s, "Text 24"), "“Bearing 1, ZA-2115: outer race defect. Plan the replacement.”", size=7.5)
 tbl = next(x for x in s.shapes if x.has_table).table
 rows = [
     ("Analyser often over $50,000, plus a trained analyst", "About ₹4,000 a point (estimate), no subscription"),
-    ("Found at the next service, or at breakdown", "Warned 42 to 603 h ahead on NASA failure data"),
-    ("Vendor cloud, or a visiting expert", "Fully offline, inside the premises"),
-    ("Spectra that an analyst must read", "Names the part and the spare in plain words"),
+    ("Found at the next service, or at breakdown", "Warned 40 to 256 h ahead on NASA failure data"),
+    ("Vendor cloud, or a visiting expert", "Offline, inside the premises"),
+    ("A vibration level an analyst must interpret", "Names the part in plain words"),
 ]
 for i, (a, b) in enumerate(rows, start=1):
     for j, text in ((1, a), (2, b)):
         cell = tbl.cell(i, j)
         put(cell, text, size=7.5, color=INK, bold=(j == 2))
-put(sh(s, "Text 27"), "It names the failing part, working from the bearing's own geometry, so it needs no failure history "
-    "to learn from. It also runs without the internet. Anyone can rerun every number on the demo page from public data.", size=8.5)
+put(sh(s, "Text 27"), "It names the failing part from the bearing's own geometry, so it needs no failure history, and it "
+    "runs offline. On NASA data it warned 15 to 244 h earlier than an alarm on vibration doubling. The same code runs "
+    "live on the demo page.", size=8.5)
 sh(s, "Text 27").height = Inches(0.8)
-sources(s, "Existing-approach cost: US DOE FEMP, O&M Best Practices Guide R3.0 (2010), sec. 5.4. Demo and code: " + DEMO)
+sources(s, "Existing-approach cost: US DOE FEMP, O&M Best Practices Guide R3.0 (2010), sec. 5.4. Lead times: VIGIL on NASA IMS data. Demo and code: " + DEMO)
 
 # 4 · Feasibility -------------------------------------------------------------
 s = S[3]
 tick(sh(s, "Shape 7"))
 tick(sh(s, "Shape 9"))
 put(sh(s, "Text 10"), "Proof of Concept", size=9, color=ORANGE, bold=True, align=PP_ALIGN.CENTER)
-box(s, 1.6, 2.47, 7.0, 0.22, "Method proven on public laboratory data. Hardware node designed, not yet built: bench build from November 2026.",
-    size=7.5, color=GREY, italic=True, align=PP_ALIGN.CENTER)
+box(s, 1.2, 2.42, 7.6, 0.32, ["Method tested on public test-rig data. Hardware not yet built, bench build from November 2026.",
+                               "The first version failed twice (26 of 52 named, false alarms on NASA run 2). Fixed, then runs 1 and 3 were scored once."],
+    size=7.2, color=GREY, italic=True, align=PP_ALIGN.CENTER, space=0)
 put(sh(s, "Text 19"), [
-    "Node: ESP32-S3 and ST IIS3DWB accelerometer (flat to 6 kHz), sealed housing, magnet or stud mount, 12/24 V.",
-    "Gateway: small Linux board with Bluetooth.",
-    "Analysis: Python, ported to C on the node.",
-    "Bench: seeded-fault rig at the college EXTC lab."], size=7.4, space=2)
+    "Node: ESP32-S3 and ST IIS3DWB accelerometer (within 3 dB to 6 kHz), sealed housing, magnet or stud mount.",
+    "Gateway: small board with Bluetooth, or a cable.",
+    "Method: Python reference, and a browser port that matches it on 9 recordings.",
+    "Bench: seeded-fault rig, college EXTC lab."], size=7.3, space=2)
 put(sh(s, "Text 22"), [
     "Node about ₹4,000, gateway about ₹15,000 (retail estimates).",
-    "Pilot, 60 points, 6 months: ₹10 lakh.",
+    "Pilot, 60 points, 6 months: ₹10 lakh, 0.73% of the state's 2023-24 police modernisation grant.",
     "Hardware 3.7 L. Two field technicians 2.4 L. Test rig, IP and EMC checks 1.5 L. Software and security review 1.2 L. Travel 0.5 L. Contingency 0.7 L."],
-    size=7.4, space=2)
+    size=7.3, space=2)
 put(sh(s, "Text 25"), [
-    [("3 months: ", True), ("10 nodes bench tested, asset survey done, 40 points on generators and pumps.", False)],
-    [("6 months: ", True), ("20 points on vehicles at idle. Warnings checked against strip-down findings.", False)],
-    [("12 months: ", True), ("report to the Home Department, second district, iDEX entry for forces MRO.", False)]],
-    size=7.4, space=3)
+    [("3 months: ", True), ("10 nodes bench tested, the site's machines listed, 30 points live.", False)],
+    [("6 months: ", True), ("60 points. Every warning checked when the machine is opened.", False)],
+    [("12 months: ", True), ("report to the Home Department, second site, vehicle speed tracking on a bench, iDEX entry.", False)]],
+    size=7.3, space=3)
 put(sh(s, "Text 28"), [
-    "Pilot host (proposed): Maharashtra Police Motor Transport, Home Department.",
+    "Pilot host (proposed): a Maharashtra Police establishment, Home Department.",
     "Facilitation: MSInS.",
-    "Scale-up: SRPF, then Army, Navy and Air Force MRO units through iDEX."], size=7.4, space=3)
+    "Later: Motor Transport sections for vehicles, forces MRO through iDEX."], size=7.3, space=3)
+sources(s, "Modernisation grant: BPR&D, Data on Police Organisations 2024, Table 4.1.4(B), ₹13.73 crore, 2023-24 (tentative). Costs are estimates.")
 
 # 5 · Impact and scale ---------------------------------------------------------
 s = S[4]
 put(sh(s, "Text 6"), "60", size=30, color=NAVY, bold=True, align=PP_ALIGN.CENTER)
 put(sh(s, "Text 7"), "Machines monitored", size=11, color=INK, bold=True, align=PP_ALIGN.CENTER)
-put(sh(s, "Text 8"), "in one MT section in year one, and the crews and stations they serve", size=7.5, color=GREY,
+put(sh(s, "Text 8"), "at one police establishment in year one", size=7.5, color=GREY,
     italic=True, align=PP_ALIGN.CENTER)
 sh(s, "Text 8").height = Inches(0.4)
 put(sh(s, "Text 10"), "25 to 30%", size=30, color=NAVY, bold=True, align=PP_ALIGN.CENTER)
@@ -216,19 +219,19 @@ put(sh(s, "Text 12"), "reported for predictive programmes (US DOE, 2010). The pi
 sh(s, "Text 12").height = Inches(0.4)
 put(sh(s, "Text 14"), "2 + 10", size=30, color=NAVY, bold=True, align=PP_ALIGN.CENTER)
 put(sh(s, "Text 15"), "Jobs and skills", size=11, color=INK, bold=True, align=PP_ALIGN.CENTER)
-put(sh(s, "Text 16"), "technician jobs, and MT mechanics trained in condition monitoring", size=7.5, color=GREY,
+put(sh(s, "Text 16"), "technician jobs, and maintenance staff trained in condition monitoring (targets)", size=7.5, color=GREY,
     italic=True, align=PP_ALIGN.CENTER)
 sh(s, "Text 16").height = Inches(0.4)
 put(sh(s, "Text 19"), [
-    "A police vehicle that does not break down on duty reaches the 112 call it was sent to.",
-    "Fewer breakdowns also leave fewer personnel stranded in the field. Parts get changed when they are actually worn, so less goes to scrap."], size=8, space=3)
+    "Generators and pumps that keep running keep police sites working through power cuts.",
+    "Parts get changed when they are actually worn, so less goes to scrap."], size=8, space=3)
 put(sh(s, "Text 22"), [
-    "Paid from the maintenance budget the department already spends, as a yearly fee per point, priced below what one avoided breakdown saves.",
+    "Paid from the maintenance budget the department already spends, as a yearly fee per point priced below what one avoided breakdown saves.",
     "No cloud subscription. Nodes built and serviced in Maharashtra."], size=8, space=3)
 put(sh(s, "Text 25"), [
-    "One MT section first, then every district MT section and the SRPF.",
-    "The forces' MRO units come through iDEX, where the Navy has already asked for this.",
-    "The same node goes everywhere. Each site needs only its own asset register."], size=8, space=3)
+    "One establishment first, then district headquarters and SRPF campuses.",
+    "Vehicles through the Motor Transport sections, once speed tracking is proven.",
+    "Forces MRO through iDEX. The same node goes everywhere."], size=8, space=3)
 
 # 6 · Team and support ----------------------------------------------------------
 s = S[5]
@@ -245,13 +248,13 @@ put(sh(s, "Text 9"), "B.E. Electronics and Telecommunication, second year, Ramra
 sh(s, "Text 9").width = Inches(3.75)
 sh(s, "Text 9").height = Inches(0.55)
 box(s, 0.5, 2.72, 4.8, 0.25, "Working demo, open code", size=10.5, color=ORANGE, bold=True)
-s.shapes.add_picture(os.path.join(FIG, "replay-shot.png"), Inches(0.5), Inches(3.02), width=Inches(2.95))
-s.shapes.add_picture(os.path.join(FIG, "qr.png"), Inches(3.8), Inches(3.02), width=Inches(1.0))
-box(s, 3.8, 4.07, 1.5, 0.55, [DEMO.split("/")[0] + "/", DEMO.split("/")[1]], size=7.5, color=PALE, space=0)
+s.shapes.add_picture(os.path.join(FIG, "replay-shot.png"), Inches(0.5), Inches(3.04), width=Inches(3.15))
+s.shapes.add_picture(os.path.join(FIG, "qr.png"), Inches(3.85), Inches(3.02), width=Inches(1.0))
+box(s, 3.85, 4.07, 1.5, 0.55, [DEMO.split("/")[0] + "/", DEMO.split("/")[1]], size=7.5, color=PALE, space=0)
 for shape_name in ("Shape 31", "Shape 33", "Shape 35", "Shape 39"):
     tick(sh(s, shape_name))
-put(sh(s, "Text 41"), "The method works on laboratory data. A pilot with one Police Motor Transport section is how we find "
-    "out what it does on Maharashtra's own machines.", size=8.5, color=INK, italic=True)
+put(sh(s, "Text 41"), "The method works on test-rig data. A pilot at one Maharashtra Police establishment is how we find "
+    "out what it does on the state's own machines.", size=8.5, color=INK, italic=True)
 sh(s, "Text 41").height = Inches(0.75)
 put(sh(s, "Text 42"), "Thank you  |  kav.ama.rt25@dypatil.edu", size=10.5, color=ORANGE, bold=True)
 sh(s, "Text 42").top = Inches(4.82)

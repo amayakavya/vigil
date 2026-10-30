@@ -4,535 +4,562 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>VIGIL</title>
-<meta name="description" content="Pulse diagnosis for machines. A clip-on vibration sensor that names the failing part of a generator, pump or vehicle days before it fails, without the internet.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+Devanagari:wght@500&display=swap" rel="stylesheet">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231f2a5c'/%3E%3Cpath d='M4 17h6l3-8 5 15 3-9 2 2h5' fill='none' stroke='%23f28c28' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<meta name="description" content="Vibration Intelligence Grid for Integrity and Lifecycle. A clip-on sensor that names the failing part of a generator, pump or motor days before it fails, with no internet connection. Tested on NASA and Case Western bearing data, and runnable here on raw recordings.">
+<meta name="author" content="Amaya Kavya">
+<meta name="theme-color" content="#08090d">
+<meta property="og:type" content="website">
+<meta property="og:title" content="VIGIL">
+<meta property="og:description" content="A clip-on sensor that names the failing part of a generator, pump or motor days before it fails, with no internet connection. Tested on NASA run-to-failure data and runnable in the browser.">
+<meta property="og:url" content="https://amayakavya.github.io/vigil/">
+<meta property="og:image" content="https://amayakavya.github.io/vigil/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preload" href="fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="sheet.svg" as="image" fetchpriority="low">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2308090d'/%3E%3Ctext x='32' y='45' text-anchor='middle' font-family='Inter,Arial,sans-serif' font-weight='500' font-size='40' fill='%23e8eaee'%3EV%3C/text%3E%3C/svg%3E">
 <style>
+@font-face { font-family: "Inter"; font-style: normal; font-weight: 100 900; font-display: swap; src: url("fonts/inter.woff2") format("woff2"); }
 :root {
-  --paper: #f7f6f1; --card: #ffffff; --ink: #1b2040; --muted: #636a88; --line: #dcdee8;
-  --navy: #1f2a5c; --navy-soft: #e9ecf6; --saffron: #e07a12; --saffron-ink: #a85700; --saffron-soft: #fdf0e2;
-  --grey-line: #b7bdd2; --ok: #1f2a5c;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --paper: #0f1220; --card: #171b2e; --ink: #e7e9f3; --muted: #9aa0bd; --line: #2a3150;
-    --navy: #a9b8ff; --navy-soft: #1e2542; --saffron: #ff9d3d; --saffron-ink: #ffb066; --saffron-soft: #2c2214;
-    --grey-line: #4b5375; --ok: #a9b8ff;
-  }
-}
-:root[data-theme="dark"] {
-  --paper: #0f1220; --card: #171b2e; --ink: #e7e9f3; --muted: #9aa0bd; --line: #2a3150;
-  --navy: #a9b8ff; --navy-soft: #1e2542; --saffron: #ff9d3d; --saffron-ink: #ffb066; --saffron-soft: #2c2214;
-  --grey-line: #4b5375; --ok: #a9b8ff;
+  --bg: #08090d;
+  --ink: #eef1f6;
+  --prose: rgba(238,241,246,0.86);
+  --dim: rgba(255,255,255,0.67);
+  --hair: rgba(255,255,255,0.12);
+  --hair-soft: rgba(255,255,255,0.07);
+  --tag: 239, 233, 17;
+  --ease: cubic-bezier(.22,.61,.36,1);
 }
 * { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; }
-body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.55 "IBM Plex Sans", system-ui, sans-serif; }
-.wrap { max-width: 980px; margin: 0 auto; padding: 0 16px; }
-a { color: var(--navy); }
-.mono, .num { font-family: "IBM Plex Mono", ui-monospace, monospace; }
-header { padding: 56px 0 28px; border-bottom: 1px solid var(--line); }
-.kicker { font: 500 12px/1.4 "IBM Plex Mono", monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--saffron-ink); }
-h1 { font-size: clamp(40px, 7vw, 64px); line-height: 1.02; margin: 12px 0 6px; letter-spacing: -.02em; font-weight: 600; }
-.expand { font: 500 13px/1.4 "IBM Plex Mono", monospace; color: var(--muted); letter-spacing: .04em; margin: 0 0 14px; }
-h1 .dev { font-family: "Noto Sans Devanagari", sans-serif; font-weight: 500; font-size: .52em; color: var(--muted); letter-spacing: 0; margin-left: 10px; white-space: nowrap; }
-.tag { font-size: 22px; margin: 0 0 18px; color: var(--ink); }
-.lede { font-size: 18px; max-width: 720px; margin: 0 0 18px; }
-.meta { font-size: 13px; color: var(--muted); }
-section { padding: 44px 0; border-bottom: 1px solid var(--line); }
-h2 { font-size: 26px; line-height: 1.2; margin: 0 0 10px; letter-spacing: -.01em; font-weight: 600; }
-h3 { font-size: 16px; margin: 0 0 6px; font-weight: 600; }
-p { margin: 0 0 12px; max-width: 720px; }
-.sub { color: var(--muted); font-size: 15px; }
-.tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 22px 0 10px; }
-.tile { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
-.tile .num { font-size: 30px; font-weight: 500; color: var(--navy); line-height: 1.1; }
-.tile .num.zero { color: var(--saffron-ink); }
-.tile p { font-size: 14px; margin: 8px 0 0; color: var(--ink); }
-.src { font-size: 12.5px; color: var(--muted); }
-.panel { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 18px; margin-top: 18px; }
-.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-button { font: 500 14px "IBM Plex Sans", sans-serif; border: 1px solid var(--navy); background: var(--navy); color: var(--paper); padding: 9px 16px; border-radius: 8px; cursor: pointer; }
-button.ghost { background: transparent; color: var(--navy); }
-button:disabled { opacity: .45; cursor: default; }
-button[aria-pressed="true"] { background: var(--navy); color: var(--paper); }
-.pill { font: 500 12px "IBM Plex Mono", monospace; padding: 5px 10px; border-radius: 999px; background: var(--navy-soft); color: var(--navy); text-transform: uppercase; letter-spacing: .06em; }
-.pill.warn { background: var(--saffron-soft); color: var(--saffron-ink); }
-.readout { display: grid; grid-template-columns: 160px 1fr; gap: 16px; margin-top: 14px; align-items: start; }
-.hi-num { font: 500 40px/1 "IBM Plex Mono", monospace; color: var(--navy); }
-.hi-num.warn { color: var(--saffron-ink); }
-.hi-cap { font-size: 12px; color: var(--muted); margin-top: 4px; }
-canvas { width: 100%; display: block; border-radius: 8px; background: var(--paper); }
-#spec { height: 220px; margin-top: 14px; }
-.msg { font-size: 15px; min-height: 48px; }
-.tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
-.tabs button { background: transparent; color: var(--navy); padding: 7px 12px; }
-.tabs button[aria-selected="true"] { background: var(--navy); color: var(--paper); }
-svg text { fill: var(--muted); font: 11px "IBM Plex Mono", monospace; }
-.chart { width: 100%; height: auto; display: block; }
-input[type=range] { width: 100%; accent-color: var(--saffron); margin: 8px 0 4px; }
-.console { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
-.bearing { border: 1px solid var(--line); border-radius: 8px; padding: 10px; font-size: 13.5px; min-height: 92px; }
-.bearing b { display: block; font-size: 12px; font-family: "IBM Plex Mono", monospace; color: var(--muted); font-weight: 500; margin-bottom: 4px; }
-.bearing.warn { border-color: var(--saffron); background: var(--saffron-soft); }
-.bearing.sym { border-style: dashed; }
-.clock { font: 500 14px "IBM Plex Mono", monospace; color: var(--ink); }
-.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-.legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 13px; color: var(--muted); margin: 8px 0 14px; }
-.sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -1px; margin-right: 6px; }
-.group { margin-bottom: 14px; }
-.group h3 span { font: 400 13px "IBM Plex Mono", monospace; color: var(--muted); margin-left: 8px; }
-.cells { display: flex; flex-wrap: wrap; gap: 5px; }
-.cell { width: 26px; height: 26px; border-radius: 5px; position: relative; cursor: default; }
-.cell.ok { background: var(--navy); }
-.cell.no { background: transparent; border: 1.5px solid var(--grey-line); }
-.cell.bad { background: var(--saffron); }
-#tip { position: fixed; pointer-events: none; background: var(--ink); color: var(--paper); font: 12px/1.4 "IBM Plex Mono", monospace; padding: 8px 10px; border-radius: 6px; opacity: 0; transition: opacity .1s; max-width: 280px; z-index: 5; }
-.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px; }
-.step { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
-.step .n { font: 500 13px "IBM Plex Mono", monospace; color: var(--saffron-ink); }
-.step p { font-size: 14.5px; margin: 6px 0 0; }
-table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
-th, td { text-align: left; padding: 9px 10px 9px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
-th { font: 500 12px "IBM Plex Mono", monospace; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
-td.r, th.r { text-align: right; padding-right: 0; }
-td.mono { white-space: nowrap; }
-ul.plain { padding-left: 18px; margin: 0; max-width: 760px; }
-ul.plain li { margin-bottom: 8px; }
-footer { padding: 32px 0 56px; font-size: 13px; color: var(--muted); }
-.diagram { width: 100%; height: auto; margin-top: 16px; }
-.flow { display: none; margin-top: 16px; border: 1.5px dotted var(--navy); border-radius: 12px; padding: 14px; }
-.flow .wl { font: 500 11px "IBM Plex Mono", monospace; color: var(--navy); margin-bottom: 10px; }
-.flow .fb { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px; font-size: 14px; }
-.flow .fb b { display: block; margin-bottom: 2px; }
-.flow .fa { font: 500 12px "IBM Plex Mono", monospace; color: var(--saffron-ink); padding: 6px 0 6px 14px; }
-.diagram .box { fill: var(--card); stroke: var(--line); }
-.diagram .t { fill: var(--ink); font: 600 13px "IBM Plex Sans", sans-serif; }
-.diagram .s { fill: var(--muted); font: 12px "IBM Plex Sans", sans-serif; }
-.diagram .link { stroke: var(--saffron); stroke-width: 2; stroke-dasharray: 5 5; fill: none; }
-.diagram .wall { stroke: var(--navy); stroke-width: 1.5; fill: none; stroke-dasharray: 2 4; }
-.diagram .wl { fill: var(--navy); font: 500 11px "IBM Plex Mono", monospace; }
-@media (max-width: 760px) {
-  .tiles { grid-template-columns: 1fr 1fr; }
-  .console { grid-template-columns: 1fr 1fr; }
-  .grid2, .steps { grid-template-columns: 1fr; }
-  .readout { grid-template-columns: 1fr; }
-  .diagram { display: none; }
-  .flow { display: block; }
-  header { padding-top: 36px; }
+html { background: var(--bg); -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
+body { margin: 0; color: #ededed; font: 400 16px/1.6 Inter, -apple-system, system-ui, "Segoe UI", sans-serif; font-feature-settings: "cv11", "ss01"; overflow-x: clip; }
+body::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; background: url("sheet.svg") center / cover no-repeat; }
+a { color: inherit; }
+
+/* ---- topbar: the house bar, wordmark and the line the streak settles into ---- */
+.topbar { position: fixed; top: 0; left: 0; right: 0; height: 88px; z-index: 50; display: flex; align-items: center; justify-content: space-between; padding: 0 5vw;
+  background: radial-gradient(120% 180% at 12% -40%, rgba(196,210,255,0.048) 0%, transparent 55%), linear-gradient(180deg, #0d0e13 0%, #06070a 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.07); }
+.topbar::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: rgba(255,255,255,0.22); opacity: .6; }
+.topbar::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: rgba(255,255,255,0.9);
+  box-shadow: 0 0 4px rgba(255,255,255,0.55), 0 0 10px rgba(255,255,255,0.28); opacity: 0; animation: lineIn .5s var(--ease) 1.4s forwards; }
+@keyframes lineIn { to { opacity: 1; } }
+.brand { font-size: 1.05rem; letter-spacing: 0.22em; white-space: nowrap; text-decoration: none;
+  background-image: repeating-linear-gradient(100deg, #8991a3 0%, #f2f3f5 12.5%, #8991a3 25%); background-size: 200% auto;
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;
+  animation: wordmark 14s steps(210) infinite; transition: letter-spacing .35s var(--ease); }
+.brand:hover { letter-spacing: 0.26em; }
+@keyframes wordmark { 0% { background-position: 50% center; } 100% { background-position: -150% center; } }
+.nav { display: flex; gap: 2rem; }
+.nav a { position: relative; font-size: 0.9rem; letter-spacing: 0.12em; color: rgba(255,255,255,0.6); text-decoration: none; padding-bottom: 6px; transition: color .25s var(--ease); }
+.nav a:hover { color: #fff; }
+.nav a::after { content: ""; position: absolute; left: 50%; bottom: 0; width: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.85), transparent); transition: width .3s var(--ease), left .3s var(--ease); }
+.nav a:hover::after { width: 100%; left: 0; }
+
+/* ---- edge trace: the light that runs round the page as it opens ---- */
+.edge-trace { position: fixed; inset: 0; pointer-events: none; z-index: 60; animation: etFade .6s ease 1.35s forwards; }
+.et { position: absolute; background: rgba(255,255,255,0.92); box-shadow: 0 0 4px rgba(255,255,255,0.55), 0 0 10px rgba(255,255,255,0.28); }
+.et-t, .et-b { left: 0; right: 0; height: 3px; transform: scaleX(0); animation: etGrow .62s cubic-bezier(.4,0,.3,1) .1s forwards; }
+.et-t { top: 0; } .et-b { bottom: 0; }
+.et-lt, .et-rt, .et-lb, .et-rb { width: 3px; height: 50%; transform: scaleY(0); animation: etGrow .5s cubic-bezier(.3,0,.2,1) .72s forwards; }
+.et-lt, .et-rt { top: 0; transform-origin: top; } .et-lb, .et-rb { bottom: 0; transform-origin: bottom; }
+.et-lt, .et-lb { left: 0; } .et-rt, .et-rb { right: 0; }
+@keyframes etGrow { to { transform: none; } }
+@keyframes etFade { to { opacity: 0; } }
+
+/* ---- the one column ---- */
+.page { max-width: 1100px; margin: 0 auto; padding: 88px 6vw 0; }
+.page-header { padding: 115px 0 40px; border-bottom: 1px solid var(--hair); }
+h1 { font-size: 60px; font-weight: 620; letter-spacing: -0.035em; line-height: 1.03; color: #f4f6fa; margin: 0; }
+.expand { margin: 14px 0 0; font-size: 1.02rem; color: var(--dim); letter-spacing: 0.01em; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px 22px; margin-top: 22px; font-size: 0.7rem; font-weight: 550; letter-spacing: 0.075em; text-transform: uppercase; color: rgba(255,255,255,0.69); }
+.tag { color: rgb(var(--tag)); text-shadow: 0 0 10px rgba(var(--tag), 0.35); }
+.meta a { text-decoration: none; }
+.meta a:hover { color: #fff; }
+.content { padding: 56px 0 0; }
+.content > p, .content > ul, .content > h2, .content > h3, .lede { max-width: 68ch; }
+.content p { font-size: 17px; line-height: 1.72; color: var(--prose); margin: 0 0 24px; }
+.content ul { margin: 0 0 24px; padding-left: 1.1em; }
+.content li { font-size: 17px; line-height: 1.72; color: var(--prose); margin-bottom: 10px; }
+.content strong { color: #f4f6fa; font-weight: 560; }
+.content h2 { font-size: clamp(1.45rem, 2.3vw, 1.9rem); font-weight: 600; letter-spacing: -0.022em; line-height: 1.18; color: #eef1f6; margin: 2.6em 0 0.7em; }
+.content h3 { font-size: 1.18rem; font-weight: 600; letter-spacing: -0.012em; color: #e6eaf1; margin: 2em 0 0.5em; }
+.content a { text-decoration: underline; text-decoration-color: rgba(162,162,162,0.6); text-underline-offset: 3px; }
+.content a:hover { text-decoration-color: #fff; }
+code, .mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.86em; color: #e6e9ef; }
+.formula { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.92rem; color: #e6e9ef; padding: 14px 0; border-top: 1px solid var(--hair-soft); border-bottom: 1px solid var(--hair-soft); margin: 0 0 24px; max-width: 68ch; line-height: 1.9; overflow-x: auto; white-space: nowrap; }
+
+/* ---- results rows, tabs, fields and the button: the Labs tools' own parts ---- */
+.res { margin: 8px 0 28px; max-width: 820px; }
+.res-row { display: flex; align-items: baseline; justify-content: space-between; gap: 1.2rem; padding: 0.7rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.res-row dt { font-size: 0.86rem; letter-spacing: 0.02em; color: rgba(255,255,255,0.66); margin: 0; }
+.res-row dd { margin: 0; text-align: right; font-size: 1rem; color: #eef0f2; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.res-row.big dd { font-size: 1.55rem; font-weight: 500; color: #fff; }
+.tool { max-width: 820px; margin: 10px 0 36px; }
+.tabs { display: flex; flex-wrap: wrap; gap: 6px; padding-bottom: 14px; border-bottom: 1px solid var(--hair); margin-bottom: 22px; }
+.tab { appearance: none; font: inherit; font-size: 0.74rem; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.6); background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.14); border-radius: 2px; padding: 9px 14px; cursor: pointer; touch-action: manipulation; transition: color .2s, border-color .2s, background .2s; }
+.tab:hover { color: #fff; border-color: rgba(255,255,255,0.4); }
+.tab[aria-selected="true"] { color: #0a0c11; background: #f2f3f5; border-color: #f2f3f5; }
+.tab:focus-visible, .go:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid rgba(255,255,255,0.6); outline-offset: 2px; }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 18px; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field.wide { grid-column: 1 / -1; }
+.field[hidden] { display: none; }
+.field > span { font-size: 0.72rem; letter-spacing: 0.06em; color: rgba(255,255,255,0.6); }
+.field input, .field select { appearance: none; font: inherit; font-size: 0.95rem; color: #f2f3f5; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 2px; padding: 11px 12px; min-height: 44px; width: 100%; }
+.field input[type=file] { padding: 9px 10px; font-size: 0.85rem; }
+.field input:focus, .field select:focus { outline: none; border-color: rgba(255,255,255,0.55); background: rgba(255,255,255,0.06); }
+.field select { cursor: pointer; background-image: linear-gradient(45deg, transparent 50%, rgba(255,255,255,.6) 50%), linear-gradient(135deg, rgba(255,255,255,.6) 50%, transparent 50%);
+  background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%; background-size: 5px 5px; background-repeat: no-repeat; padding-right: 34px; }
+.field select option { background: #12141a; }
+.go { appearance: none; margin-top: 22px; font: inherit; font-size: 0.82rem; letter-spacing: 0.1em; text-transform: uppercase; color: #0a0c11; background: #f2f3f5;
+  border: 1px solid #f2f3f5; border-radius: 2px; padding: 12px 26px; min-height: 46px; cursor: pointer; transition: opacity .2s; }
+.go:hover { opacity: .86; }
+.go:disabled { opacity: .5; cursor: progress; }
+.hint { font-size: 0.85rem !important; line-height: 1.55 !important; color: rgba(255,255,255,0.67) !important; margin: 0 0 18px !important; max-width: 68ch; }
+.out { margin-top: 22px; border-top: 1px solid var(--hair); padding-top: 6px; }
+.out[hidden] { display: none; }
+.err { color: #ff9a9a !important; white-space: normal !important; font-size: 1rem !important; }
+
+/* ---- figures ---- */
+figure { margin: 6px 0 30px; max-width: 1000px; }
+figcaption { font-size: 0.8rem; line-height: 1.55; color: rgba(255,255,255,0.6); margin-top: 10px; max-width: 80ch; }
+svg.chart { width: 100%; height: auto; display: block; overflow: visible; }
+svg.chart text { fill: rgba(255,255,255,0.6); font: 11px Inter, system-ui, sans-serif; font-variant-numeric: tabular-nums; }
+input[type=range] { width: 100%; accent-color: #f2f3f5; margin: 10px 0 2px; }
+.clock { display: flex; justify-content: space-between; gap: 12px; font-size: 0.8rem; color: rgba(255,255,255,0.66); font-variant-numeric: tabular-nums; }
+
+/* ---- tables ---- */
+.tablewrap { max-width: 1000px; overflow-x: auto; margin: 4px 0 28px; }
+table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+th, td { text-align: right; padding: 10px 12px; font-size: 0.86rem; border-bottom: 1px solid rgba(255,255,255,0.07); white-space: nowrap; }
+th { color: rgba(255,255,255,0.55); font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; font-size: 0.68rem; vertical-align: bottom; white-space: normal; }
+th:first-child, td:first-child { text-align: left; padding-left: 0; }
+td { color: rgba(255,255,255,0.84); }
+td.lead { color: #fff; font-weight: 520; }
+table.plan td { white-space: normal; text-align: left; vertical-align: top; }
+table.plan th { text-align: left; }
+
+/* ---- naming grid ---- */
+.cells { display: flex; flex-wrap: wrap; gap: 5px; margin: 8px 0 4px; }
+.cell { width: 22px; height: 22px; border-radius: 2px; }
+.cell.ok { background: #e9ecf1; }
+.cell.no { border: 1px solid rgba(255,255,255,0.32); }
+.cell.bad { border: 1px solid rgba(255,255,255,0.7); background: linear-gradient(135deg, transparent 46%, rgba(255,255,255,.85) 46%, rgba(255,255,255,.85) 54%, transparent 54%); }
+.group { margin: 0 0 16px; }
+.group b { font-size: 0.86rem; font-weight: 560; color: #eef0f2; }
+.group span { font-size: 0.8rem; color: rgba(255,255,255,0.6); margin-left: 10px; font-variant-numeric: tabular-nums; }
+.legend { display: flex; gap: 18px; flex-wrap: wrap; font-size: 0.8rem; color: rgba(255,255,255,0.6); margin: 4px 0 14px; }
+.legend i { display: inline-block; width: 12px; height: 12px; vertical-align: -1px; margin-right: 7px; }
+
+footer { margin-top: 90px; padding: 30px 6vw 40px; text-align: center; font-size: 0.7rem; letter-spacing: 0.14em; color: rgba(255,255,255,0.6); }
+footer p { margin: 0 auto 8px; max-width: 760px; letter-spacing: 0.02em; font-size: 0.72rem; line-height: 1.6; color: rgba(255,255,255,0.5); }
+
+@media (max-width: 880px) { .nav a:not(:last-child) { display: none; } }
+@media (max-width: 768px) {
+  .topbar { height: 72px; }
+  .topbar::before { box-shadow: 0 0 2px rgba(255,255,255,0.5); }
+  .page { padding-top: 72px; }
+  .page-header { padding: 54px 0 30px; }
+  h1 { font-size: 2.6rem; }
+  .content p, .content li { font-size: 16px; }
 }
+@media (max-width: 560px) {
+  .nav { display: none; }
+  .brand { letter-spacing: 0.18em; }
+  .grid { grid-template-columns: 1fr; }
+  .res-row dt { flex: 1; }
+  #board .res-row { display: block; }
+  #board .res-row dd { text-align: left; margin-top: 4px; }
+  .formula { font-size: 0.78rem; white-space: normal; }
+  .res-row.big dd { font-size: 1.3rem; }
+}
+@media print { .edge-trace, body::after { display: none; } }
 </style>
 </head>
 <body>
-<header>
-  <div class="wrap">
-    <div class="kicker">Seva First Innovation Challenge 2026 &middot; Defence</div>
-    <h1>VIGIL</h1>
-    <p class="expand">Vibration Intelligence Grid for Integrity and Lifecycle</p>
-    <p class="tag">Pulse diagnosis for machines.</p>
-    <p class="lede">A clip-on vibration sensor that tells a mechanic which part of a generator, pump or vehicle is wearing out, days before it fails. It spends its first day on a machine learning what normal looks like for that one machine. After that it listens for the vibration a damaged bearing makes and says which part is going. It needs no internet connection at any point.</p>
-    <p class="meta">Team HEISENBUG &middot; Maharashtra zone &middot; Predictive maintenance, defence MRO and lifecycle intelligence</p>
-  </div>
+<div class="edge-trace" aria-hidden="true"><i class="et et-t"></i><i class="et et-b"></i><i class="et et-lt"></i><i class="et et-rt"></i><i class="et et-lb"></i><i class="et et-rb"></i></div>
+<header class="topbar">
+  <a class="brand" href="https://amayakavya.com/">AMAYA KAVYA</a>
+  <nav class="nav" aria-label="amayakavya.com">
+    <a href="https://amayakavya.com/about">About</a>
+    <a href="https://amayakavya.com/research">Research</a>
+    <a href="https://amayakavya.com/posts">Posts</a>
+    <a href="https://github.com/amayakavya/vigil">Code</a>
+  </nav>
 </header>
 
-<section id="numbers">
-  <div class="wrap">
-    <h2>Measured on public run-to-failure data</h2>
-    <p class="sub">Every number in this section was produced by the code in this project, run on two public bearing datasets.</p>
-    <div class="tiles">
-      <div class="tile"><div class="num">4 of 4</div><p>bearing failures warned, between <span id="t-lead">42 and 603</span> hours before the test rig was stopped</p></div>
-      <div class="tile"><div class="num">4 of 4</div><p>failing parts named correctly: outer race twice, inner race, rolling element</p></div>
-      <div class="tile"><div class="num zero">0</div><p>alarms on a healthy bearing that were not traced back to the failing one, across <span id="t-hours">5,366</span> bearing-hours</p></div>
-      <div class="tile"><div class="num">40 of 52</div><p>seeded faults named on a second dataset. 2 named wrong, 10 left unnamed rather than guessed</p></div>
-    </div>
-    <p class="src">NASA Prognostics Data Repository, IMS bearing data (University of Cincinnati): three run-to-failure tests, 12 bearings, 2,065 hours. Case Western Reserve University Bearing Data Center: 52 drive-end recordings at 12 kHz.</p>
-  </div>
-</section>
+<main class="page">
+  <section class="page-header">
+    <h1>VIGIL</h1>
+    <p class="expand">Vibration Intelligence Grid for Integrity and Lifecycle</p>
+    <div class="meta"><span class="tag">Signal processing</span><span>October 2026</span><span>Seva First Innovation Challenge, Defence</span><a href="https://github.com/amayakavya/vigil">github.com/amayakavya/vigil</a></div>
+  </section>
 
-<section id="listen">
-  <div class="wrap">
-    <h2>Try it on a machine near you</h2>
-    <p>Your phone's microphone stands in for the vibration sensor. Hold it near a running fan, fridge or pump. It listens for ten seconds to learn what normal sounds like, then watches for change. Tuck a strip of paper so it brushes the fan blade and watch it flag the change, and the band it came from.</p>
-    <p class="sub">Nothing is recorded or sent anywhere. The analysis runs in this page.</p>
-    <div class="panel">
-      <div class="row">
-        <button id="b-start">Start listening</button>
-        <button id="b-relearn" class="ghost" disabled>Learn again</button>
-        <button id="b-stop" class="ghost" disabled>Stop</button>
-        <span id="pill" class="pill">Idle</span>
-      </div>
-      <canvas id="spec" aria-label="Live spectrum against the learned normal"></canvas>
-      <div class="readout">
-        <div><div id="hi" class="hi-num">--</div><div class="hi-cap">health index, alarm at 6</div></div>
-        <div id="msg" class="msg">Press start. Your browser will ask for the microphone.</div>
-      </div>
-    </div>
-  </div>
-</section>
+  <article class="content">
+    <p class="lede">A clip-on sensor that tells a mechanic which part of a generator, pump or motor is wearing out, days before it fails. It learns each machine from its own first day of running, names the failing part from the bearing's dimensions, and needs no internet connection. Everything below was measured on public test-rig data, and the method itself runs on this page, on raw recordings or on a file of your own.</p>
 
-<section id="replay">
-  <div class="wrap">
-    <h2>Replay a bearing running to failure</h2>
-    <p>On NASA's IMS rig, four bearings shared one shaft under a 2,700 kg load until one of them failed, with one second of vibration recorded every ten minutes. Drag through a run. The system saw only the first 24 hours of each bearing before it started judging, and was never shown a failure.</p>
-    <div class="panel">
-      <div class="tabs" role="tablist" id="tabs"></div>
-      <svg id="chart" class="chart" viewBox="0 0 900 270" role="img" aria-label="Health index of four bearings over the run"></svg>
-      <input type="range" id="scrub" min="0" max="1000" value="0" aria-label="Hour of the run">
-      <div class="row" style="justify-content:space-between"><span class="clock" id="clock"></span><span class="src" id="runnote"></span></div>
-      <div class="console" id="console"></div>
+    <h2>What it found</h2>
+    <p>NASA's IMS rig ran four bearings on one shaft until one failed, three times over. VIGIL saw only the first 24 hours of each bearing before it started judging, and it was never shown a failure. Four bearings failed across the three runs.</p>
+    <dl class="res" id="headline">
+      <div class="res-row big"><dt>Failures warned</dt><dd>4 of 4</dd></div>
+      <div class="res-row"><dt>Sustained warning before the rig was stopped</dt><dd>40 to 256 h</dd></div>
+      <div class="res-row"><dt>Ahead of an alarm on overall vibration doubling, on every failure</dt><dd>by 15 to 244 h</dd></div>
+      <div class="res-row"><dt>Right part named, readings in each failure's last 72 hours</dt><dd>647 of 656</dd></div>
+      <div class="res-row"><dt>Alarms on healthy bearings before any fault, in 3,245 running hours</dt><dd>0</dd></div>
+    </dl>
+    <p>A warning counts as sustained once the alarm never goes quiet for more than 12 hours again. The comparison is with what a workshop could set up without VIGIL: an alarm when the overall vibration level doubles, or rises by 35%, on the same snapshots with the same three-readings-in-a-row rule. Those alarms never name a part.</p>
+    <div class="tablewrap">
+      <table id="leadtable">
+        <thead><tr><th>Failure</th><th>VIGIL warning, sustained</th><th>Level doubled</th><th>Level up 35%</th><th>Named, last 72 h</th></tr></thead>
+        <tbody></tbody>
+      </table>
     </div>
-    <div class="panel">
-      <div class="grid2">
-        <div>
-          <h3>Why it can name the part</h3>
-          <p style="font-size:15px">A spall on an outer race is struck by each roller in turn. With 16 rollers in a row at 2,000 rpm, the ZA-2115 bearing's geometry puts that at 236.4 strikes a second. The envelope spectrum of bearing 1 in run 2 shows that line, and its double, once the damage starts. Inner-race and ball defects would sit at 296.9 Hz and 279.8 Hz instead.</p>
-          <div class="tabs" id="spectabs"></div>
-          <p class="src" id="specnote"></p>
-        </div>
-        <svg id="ses" class="chart" viewBox="0 0 440 240" role="img" aria-label="Envelope spectrum of bearing 1"></svg>
-      </div>
-    </div>
-  </div>
-</section>
+    <p>Three things in that table are weaker than they look, and they are stated here so nobody has to find them. Bearing 4 in run 1 was first flagged 603 hours before the stop, but on and off: only from 159 hours out did the warning hold. After each fault began, eight healthy bearings on the same shafts also alarmed, every time later than the failing one, and in every case the failing bearing's sensor was the loudest on the shaft at that moment, so the system points to it. And in run 3 two healthy bearings crossed the alarm level on seven single readings before any fault. The three-in-a-row rule, fixed before run 3 was scored, is what kept them quiet.</p>
 
-<section id="naming">
-  <div class="wrap">
-    <h2>Naming test: 52 recordings with seeded faults</h2>
-    <p>Case Western Reserve University cut faults of 0.18 to 0.53 mm into test bearings and recorded them at four loads. Each square below is one recording. The system names the part only when one defect line stands at least 10 dB clear of its neighbourhood. Otherwise it declines and asks for an inspection, because a mechanic sent to strip the wrong part loses a day in the workshop.</p>
-    <div class="legend"><span><i class="sw" style="background:var(--navy)"></i>Named correctly</span><span><i class="sw" style="border:1.5px solid var(--grey-line)"></i>Declined</span><span><i class="sw" style="background:var(--saffron)"></i>Named wrong</span></div>
+    <h3>Naming, on a second dataset</h3>
+    <p>Case Western Reserve University cut faults of 0.18 to 0.53 mm into test bearings and recorded them at four loads: 52 recordings. VIGIL names a part only when one defect line stands at least 10 dB clear of its neighbourhood, and otherwise declines. This set was used while the method was built, so it shows what the method can do, not a blind test.</p>
+    <div class="legend"><span><i style="background:#e9ecf1"></i>Named right</span><span><i style="border:1px solid rgba(255,255,255,.32)"></i>Declined</span><span><i class="cell bad" style="width:12px;height:12px"></i>Named wrong</span></div>
     <div id="groups"></div>
-    <p class="sub">Rolling-element faults are the weak spot. Raising that figure is the first technical job of the pilot.</p>
-  </div>
-</section>
+    <p>Rolling-element faults are the weak spot, 3 of 12. Raising that is the first technical job of the pilot.</p>
 
-<section id="how">
-  <div class="wrap">
-    <h2>How it works</h2>
-    <div class="steps">
-      <div class="step"><div class="n">01 &middot; Learn</div><p>For its first day on a machine the node records one second of vibration every ten minutes and builds that machine's own normal. It needs no failure data from anywhere else.</p></div>
-      <div class="step"><div class="n">02 &middot; Watch</div><p>Each new second is compared with that normal: overall level, how spiky the signal is, and the strength of each defect line. A warning needs three readings in a row, so a door slam does not page anyone.</p></div>
-      <div class="step"><div class="n">03 &middot; Name</div><p>The asset register holds the bearing number at each point. From its geometry the node knows where an outer race, inner race or ball defect will show, and looks there. The mechanic is told the part and its spare number.</p></div>
-    </div>
-    <svg class="diagram" viewBox="0 0 900 230" role="img" aria-label="Node to gateway to workshop console, all inside the premises">
-      <rect x="6" y="6" width="888" height="218" rx="14" class="wall"/>
-      <text x="22" y="28" class="wl">INSIDE THE PREMISES &middot; NO SIM, NO CLOUD, NO INTERNET</text>
-      <rect x="30" y="58" width="230" height="130" rx="10" class="box"/>
-      <text x="48" y="88" class="t">Sensor node</text>
-      <text x="48" y="110" class="s">clip-on, on each bearing point</text>
-      <text x="48" y="130" class="s">vibration + temperature</text>
-      <text x="48" y="150" class="s">analysis on the node</text>
-      <text x="48" y="170" class="s">sends only its results</text>
-      <path d="M262 123 H 330" class="link"/>
-      <text x="268" y="112" class="s">Bluetooth</text>
-      <rect x="335" y="58" width="230" height="130" rx="10" class="box"/>
-      <text x="353" y="88" class="t">Gateway</text>
-      <text x="353" y="110" class="s">at the MT fuel pump or</text>
-      <text x="353" y="130" class="s">workshop gate, where every</text>
-      <text x="353" y="150" class="s">vehicle already stops. Or the</text>
-      <text x="353" y="170" class="s">mechanic's phone on rounds</text>
-      <path d="M567 123 H 635" class="link"/>
-      <text x="575" y="112" class="s">local link</text>
-      <rect x="640" y="58" width="230" height="130" rx="10" class="box"/>
-      <text x="658" y="88" class="t">Workshop console</text>
-      <text x="658" y="110" class="s">fleet health board</text>
-      <text x="658" y="130" class="s">part and spare to indent</text>
-      <text x="658" y="150" class="s">jobs ranked by urgency</text>
-      <text x="658" y="170" class="s">life history per asset</text>
-    </svg>
-    <div class="flow" aria-hidden="true">
-      <div class="wl">INSIDE THE PREMISES &middot; NO SIM, NO CLOUD, NO INTERNET</div>
-      <div class="fb"><b>Sensor node</b>Clip-on, on each bearing point. Vibration and temperature, analysed on the node. Sends only its results.</div>
-      <div class="fa">&darr; Bluetooth</div>
-      <div class="fb"><b>Gateway</b>At the MT fuel pump or workshop gate, where every vehicle already stops. Or the mechanic's phone on rounds.</div>
-      <div class="fa">&darr; local link</div>
-      <div class="fb"><b>Workshop console</b>Fleet health board, part and spare to indent, jobs ranked by urgency, life history per asset.</div>
-    </div>
-    <div class="grid2" style="margin-top:22px">
-      <div>
-        <h3>The node, as designed</h3>
-        <p style="font-size:15px">ESP32-S3 microcontroller and ST's IIS3DWB vibration accelerometer, flat to about 6 kHz, which is the bandwidth every measured result on this page was computed within. Sealed metal housing on a magnet or stud mount, powered from the machine's own 12/24 V battery with a backup cell. About &#8377;4,000 a point at one-off retail prices (estimate).</p>
+    <h2>Run it on raw data</h2>
+    <p>This is the same method as the analysis, written again in JavaScript, running in your browser. On the nine reference recordings below it gives the same answer as the Python code to within 0.0001 dB, checked by <a href="https://github.com/amayakavya/vigil/blob/main/analysis/check_js.mjs">check_js.mjs</a>. The NASA snapshots were picked by rule, not by result, which is why two of them come back declined.</p>
+    <div class="tool">
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" id="t-rec" aria-selected="true">Reference recordings</button>
+        <button class="tab" role="tab" id="t-file" aria-selected="false">Your own recording</button>
       </div>
-      <div>
-        <h3>Why offline</h3>
-        <p style="font-size:15px">The health of a security force's vehicles and generators is operational information. Most commercial condition-monitoring runs through a vendor's cloud. VIGIL never needs a connection outside the premises.</p>
+      <div id="p-rec">
+        <div class="grid">
+          <label class="field wide"><span>Recording</span><select id="sample"></select></label>
+        </div>
+        <p class="hint" id="sample-note"></p>
+      </div>
+      <div id="p-file" hidden>
+        <p class="hint">A vibration recording from an accelerometer fixed to the bearing housing, at least one second long, with the machine at a steady speed. CSV or text with one number per line (the first column is used if there are more), or a 16-bit or 32-bit float WAV. The file is read in this tab and never leaves it.</p>
+        <div class="grid">
+          <label class="field wide"><span>File</span><input type="file" id="file" accept=".csv,.txt,.wav,.dat"></label>
+          <label class="field"><span>Sample rate (Hz)</span><input type="number" id="fs" min="2000" step="1" value="20480"></label>
+          <label class="field"><span>Shaft speed (rpm)</span><input type="number" id="rpm" min="60" step="0.1" value="2000"></label>
+          <label class="field"><span>Bearing</span><select id="brg"><option value="ZA-2115">Rexnord ZA-2115</option><option value="6205">SKF 6205-2RS JEM</option><option value="custom">Other: enter its geometry</option></select></label>
+          <label class="field" data-custom hidden><span>Rolling elements (per row)</span><input type="number" id="g-n" min="3" step="1" value="9"></label>
+          <label class="field" data-custom hidden><span>Element diameter (mm)</span><input type="number" id="g-d" min="0.1" step="0.001" value="7.94"></label>
+          <label class="field" data-custom hidden><span>Pitch diameter (mm)</span><input type="number" id="g-p" min="1" step="0.01" value="39.04"></label>
+          <label class="field" data-custom hidden><span>Contact angle (degrees)</span><input type="number" id="g-a" min="0" max="45" step="0.01" value="0"></label>
+        </div>
+      </div>
+      <button class="go" id="run">Diagnose</button>
+      <div class="out" id="out" hidden>
+        <dl class="res">
+          <div class="res-row big"><dt>Verdict</dt><dd id="o-verdict"></dd></div>
+          <div class="res-row"><dt>Outer race line</dt><dd id="o-BPFO"></dd></div>
+          <div class="res-row"><dt>Inner race line</dt><dd id="o-BPFI"></dd></div>
+          <div class="res-row"><dt>Rolling element line</dt><dd id="o-BSF"></dd></div>
+          <div class="res-row"><dt>Band the impacts ring in</dt><dd id="o-band"></dd></div>
+          <div class="res-row" id="o-truth-row"><dt>What the bearing actually had</dt><dd id="o-truth"></dd></div>
+        </dl>
+        <figure>
+          <svg class="chart" id="ses" viewBox="0 0 820 250" role="img" aria-label="Envelope spectrum with the predicted defect lines"></svg>
+          <figcaption id="ses-cap"></figcaption>
+        </figure>
       </div>
     </div>
-  </div>
-</section>
 
-<section id="pilot">
-  <div class="wrap">
-    <h2>Proposed pilot</h2>
-    <p>Six months with one Maharashtra Police Motor Transport section, about 60 measuring points. Generators and pumps first, where the method above applies directly. Vehicles second, measured at idle, when the engine and everything belted to it turns at a steady speed.</p>
-    <table>
-      <thead><tr><th>Month</th><th>What</th><th>Measured by</th></tr></thead>
-      <tbody>
-        <tr><td class="mono">0 to 1</td><td>Asset survey with the MT officer, bearing numbers into the register, 10 nodes built and bench tested</td><td>Survey sheet, and a bench test against a seeded-fault bearing</td></tr>
-        <tr><td class="mono">1 to 3</td><td>40 points on generators and pumps, with a gateway at the workshop</td><td>Warnings, findings at strip-down, false alarms per 100 machine-days</td></tr>
-        <tr><td class="mono">3 to 6</td><td>20 points on heavy and medium vehicles at idle, with a gateway at the fuel pump</td><td>Same, plus breakdowns and workshop hours against the section's previous year</td></tr>
-      </tbody>
-    </table>
-  </div>
-</section>
+    <h2>Replay a run to failure</h2>
+    <p>Drag through a run and read the workshop board as a mechanic would have seen it at that hour. A warning stays on the board until a mechanic clears it, as it would in a workshop, so a bearing whose readings later dip below the alarm keeps its warning.</p>
+    <div class="tool" style="max-width:1000px">
+      <div class="tabs" role="tablist" id="runtabs"></div>
+      <figure style="margin-bottom:0">
+        <svg class="chart" id="hi" viewBox="0 0 1000 300" role="img" aria-label="Health index of the four bearings across the run"></svg>
+      </figure>
+      <input type="range" id="scrub" min="0" max="1000" value="0" aria-label="Hour of the run">
+      <div class="clock"><span id="clock"></span><span id="left"></span></div>
+      <dl class="res" id="board" style="max-width:none;margin-top:14px"></dl>
+    </div>
 
-<section id="honest">
-  <div class="wrap">
-    <h2>What is proven, and what is not</h2>
-    <ul class="plain">
-      <li>The method has been tested on two public laboratory datasets, with the results above.</li>
-      <li>The hardware node has not been built yet. The bench build starts in November 2026. Nothing has run on a police or forces machine so far, and vehicle drivelines at changing speed are a later problem.</li>
-      <li>The alarm thresholds and the band search were fixed while looking at IMS run 2 and the Case Western set. IMS runs 1 and 3 were then scored once, with nothing changed.</li>
-      <li>Eight healthy bearings did alarm late in their runs, every one after the failing bearing had already warned, and in every case the failing bearing's sensor was the loudest on the shaft at that moment. On one machine the system reports the loudest point as the source.</li>
-      <li>Code and data: <a href="https://github.com/amayakavya/vigil">github.com/amayakavya/vigil</a>. The analysis reruns from the public datasets in about six minutes on a laptop.</li>
+    <h2>How it decides</h2>
+    <h3>Learn</h3>
+    <p>For its first day on a machine the node records one second of vibration every ten minutes. From those snapshots it takes the median and the spread of six readings: overall level, kurtosis, crest factor, and the strength of the outer race, inner race and rolling element lines. That is the machine's own normal. It needs no failure data from anywhere, which matters because a government workshop keeps almost none.</p>
+    <h3>Watch</h3>
+    <p>Every later snapshot is scored against that normal, as the worst robust z-score of the six readings. Each reading has a floor on its spread: 5% on level, 0.1 on kurtosis and crest factor, 1 dB on a line, the smallest change a sensor re-seated on its magnet can claim to see. An alarm needs a score of 6 or more on three readings in a row, so a single knock does not page anyone. Readings taken with the machine stopped are ignored.</p>
+    <h3>Name</h3>
+    <p>A spall on a bearing race is struck by each rolling element in turn, at a rate fixed by the bearing's geometry. For <span class="mono">n</span> elements of diameter <span class="mono">d</span> on a pitch diameter <span class="mono">D</span>, at contact angle <span class="mono">φ</span> and shaft frequency <span class="mono">f</span>:</p>
+    <div class="formula">outer race = (n/2) f (1 − (d/D) cos φ)<br>inner race = (n/2) f (1 + (d/D) cos φ)<br>rolling element = (D/2d) f (1 − ((d/D) cos φ)²)</div>
+    <p>The node flattens the spectrum so shaft and mains lines stop masking the bearing, finds the band where the impacts ring loudest, takes the squared envelope of that band, and measures how far each predicted line stands above its neighbourhood. The asset register holds each point's bearing number, so the board can say which bearing, which part of it, and which spare to draw.</p>
+
+    <h2>What failed first</h2>
+    <p>The first version did not work, twice. On the Case Western set it named only 26 of 52, because its band search kept choosing the band just under the sampling limit, where the anti-alias filter leaves impulsive noise. Keeping the search between 200 Hz and the sensor's 6 kHz limit, in bands at least 1 kHz wide, took it to 40. On NASA run 2 it then alarmed on all three healthy bearings, on rises in overall level of 7 to 14% against a first day so steady that changes that small scored as faults. The spread floors and the stopped-machine rule above fixed that. Runs 1 and 3 were scored once, after both fixes, with nothing changed since.</p>
+
+    <h2>What it is not, yet</h2>
+    <ul>
+      <li>The node is designed, not built. Its parts are an ESP32-S3 microcontroller and ST's IIS3DWB vibration accelerometer, whose response is within 3 dB up to 6 kHz, the band every result here was computed within. The bench build starts in November 2026.</li>
+      <li>Nothing here has run on a police or forces machine. Test rigs are cleaner than a generator room.</li>
+      <li>A machine that is already damaged on installation would teach the node a damaged normal. The plan is to check each new machine against identical machines in the fleet and against the absolute vibration zones of ISO 20816, which is not yet built.</li>
+      <li>The method needs the shaft speed. Generators, pumps and motors run at a fixed speed. Vehicles do not, so they wait until speed tracking from the signal itself is built and tested on a bench.</li>
+      <li>Bluetooth is a radio. Where a site allows no transmitters, the node keeps its results and they are read over a cable.</li>
     </ul>
-  </div>
-</section>
 
-<footer>
-  <div class="wrap">
-    Amaya Kavya, Electronics and Telecommunication Engineering, Ramrao Adik Institute of Technology, Navi Mumbai. Data: NASA Prognostics Data Repository, IMS bearing data (Center for Intelligent Maintenance Systems, University of Cincinnati). Case Western Reserve University Bearing Data Center.
-  </div>
-</footer>
-<div id="tip"></div>
+    <h2>The pilot it is built for</h2>
+    <p>Six months at one Maharashtra Police establishment, a district headquarters or a State Reserve Police Force group campus, with about 60 measuring points on its generators, pumps, motors and compressors, for ₹10 lakh. That is 0.73% of the ₹13.73 crore the state gave its police for modernisation in 2023-24, the latest year the Bureau of Police Research and Development reports, and a tentative figure.</p>
+    <div class="tablewrap">
+      <table class="plan">
+        <thead><tr><th>Months</th><th>Work</th><th>Measured by</th></tr></thead>
+        <tbody>
+          <tr><td>0 to 1</td><td>List the site's generators, pumps, motors and compressors with the officer in charge of maintenance, record each bearing number, build and bench test ten nodes</td><td>The asset list, and a bench test against a bearing with a seeded fault</td></tr>
+          <tr><td>1 to 6</td><td>Sixty points, one gateway on site, warnings on the maintenance board</td><td>Every warning checked against what is found when the machine is opened, false alarms per 100 machine-days, breakdowns against the site's previous year</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The force's 15,823 vehicles (Bureau of Police Research and Development, January 2024) come after that, through the Motor Transport sections, once speed tracking has been proven on a bench.</p>
+    <p>Data: NASA Prognostics Data Repository, IMS bearing data, from the Center for Intelligent Maintenance Systems, University of Cincinnati. Case Western Reserve University Bearing Data Center. The whole analysis reruns from those files in about six minutes, and the code is at <a href="https://github.com/amayakavya/vigil">github.com/amayakavya/vigil</a>.</p>
+  </article>
+</main>
+<footer>© 2026 Amaya Kavya</footer>
 
 <script>
 const PART = { BPFO: "outer race", BPFI: "inner race", BSF: "rolling element" };
-const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 const $ = id => document.getElementById(id);
-const fmt = n => n.toLocaleString("en-IN");
+const NS = "http://www.w3.org/2000/svg";
+function el(tag, attrs, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+const W80 = "rgba(242,243,245,0.95)", W30 = "rgba(255,255,255,0.3)", W15 = "rgba(255,255,255,0.12)";
 
-/* ---------- Live listening ---------- */
-const L = { ctx: null, stream: null, an: null, buf: null, bands: [], state: "idle", learn: [], med: null, mad: null, over: 0, raf: 0, t0: 0, hiSmooth: 0, lastFeat: null };
-const LEARN_S = 10, Z_ALARM = 6, PERSIST = 8, FLOOR_DB = 1.5;
+/* ---------- the diagnosis tool ---------- */
+let META = null, worker = null, pending = false, LAST_SES = null;
+function workerRun(x, fs, rpm, orders) {
+  return new Promise((resolve, reject) => {
+    if (!worker) worker = new Worker("worker.js");
+    worker.onmessage = e => (e.data.ok ? resolve(e.data) : reject(new Error(e.data.error)));
+    worker.onerror = e => reject(new Error(e.message || "The analysis could not start."));
+    worker.postMessage({ x, fs, rpm, orders }, [x.buffer]);
+  });
+}
+function geometryOrders(n, d, p, a) {
+  const r = d / p * Math.cos(a * Math.PI / 180);
+  return { BPFO: n / 2 * (1 - r), BPFI: n / 2 * (1 + r), BSF: p / (2 * d) * (1 - r * r), FTF: 0.5 * (1 - r) };
+}
+function setTab(rec) {
+  $("t-rec").setAttribute("aria-selected", rec); $("t-file").setAttribute("aria-selected", !rec);
+  $("p-rec").hidden = !rec; $("p-file").hidden = rec;
+}
+$("t-rec").onclick = () => setTab(true);
+$("t-file").onclick = () => setTab(false);
+$("brg").onchange = () => document.querySelectorAll("[data-custom]").forEach(f => f.hidden = $("brg").value !== "custom");
 
-function makeBands(sr, nfft) {
-  const fmax = Math.min(12000, sr / 2 * 0.9), fmin = 60, n = 36, out = [];
-  for (let i = 0; i < n; i++) {
-    const lo = fmin * Math.pow(fmax / fmin, i / n), hi = fmin * Math.pow(fmax / fmin, (i + 1) / n);
-    const a = Math.max(1, Math.floor(lo / (sr / nfft))), b = Math.max(a + 1, Math.ceil(hi / (sr / nfft)));
-    out.push({ lo, hi, a, b });
+function parseText(t) {
+  const out = [];
+  for (const line of t.split(/\r?\n/)) {
+    const cell = line.split(/[,;\t ]+/).find(c => c.length);
+    if (cell === undefined) continue;
+    const v = Number(cell);
+    if (Number.isFinite(v)) out.push(v);
   }
-  return out;
+  return Float64Array.from(out);
 }
-function features() {
-  L.an.getFloatFrequencyData(L.buf);
-  const f = new Float32Array(L.bands.length);
-  for (let i = 0; i < L.bands.length; i++) {
-    const { a, b } = L.bands[i]; let p = 0;
-    for (let k = a; k < b; k++) p += Math.pow(10, L.buf[k] / 10);
-    f[i] = 10 * Math.log10(p / (b - a) + 1e-14);
-  }
-  return f;
-}
-const median = a => { const s = Float32Array.from(a).sort(); const m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
-function learnDone() {
-  const n = L.bands.length; L.med = new Float32Array(n); L.mad = new Float32Array(n);
-  for (let i = 0; i < n; i++) {
-    const col = L.learn.map(v => v[i]); const m = median(col);
-    L.med[i] = m; L.mad[i] = Math.max(1.4826 * median(col.map(v => Math.abs(v - m))), FLOOR_DB);
-  }
-  L.state = "watch"; L.over = 0; L.hiSmooth = 0;
-  setPill("Normal", false);
-  $("msg").textContent = "Learned. Watching for change against this machine's own normal.";
-}
-function tick() {
-  L.raf = requestAnimationFrame(tick);
-  const now = performance.now();
-  if (now - L.lastT < 95) return;
-  L.lastT = now;
-  const f = features(); L.lastFeat = f;
-  if (L.state === "learn") {
-    L.learn.push(f);
-    const left = Math.max(0, LEARN_S - (now - L.t0) / 1000);
-    setPill("Learning " + Math.ceil(left) + " s", false);
-    $("hi").textContent = "--";
-    if (left <= 0) learnDone();
-  } else if (L.state === "watch") {
-    let hi = 0, at = 0, dir = 0;
-    for (let i = 0; i < f.length; i++) { const z = (f[i] - L.med[i]) / L.mad[i]; if (Math.abs(z) > hi) { hi = Math.abs(z); at = i; dir = f[i] - L.med[i]; } }
-    L.hiSmooth = 0.6 * L.hiSmooth + 0.4 * hi;
-    L.over = hi >= Z_ALARM ? L.over + 1 : 0;
-    const warn = L.over >= PERSIST;
-    $("hi").textContent = L.hiSmooth.toFixed(1);
-    $("hi").classList.toggle("warn", warn);
-    if (warn) {
-      const b = L.bands[at];
-      setPill("Changed", true);
-      $("msg").textContent = `Changed at ${hz(b.lo)} to ${hz(b.hi)}: ${dir > 0 ? "+" : ""}${dir.toFixed(1)} dB against normal, held for ${(L.over / 10).toFixed(1)} s. On a real node this band would be checked against the bearing's defect lines.`;
-    } else if (L.over === 0) {
-      setPill("Normal", false);
-      if (!/^Learned/.test($("msg").textContent)) $("msg").textContent = "Normal. Every band is inside this machine's learned range.";
+function parseWav(buf) {
+  const v = new DataView(buf);
+  const tag = (o) => String.fromCharCode(v.getUint8(o), v.getUint8(o + 1), v.getUint8(o + 2), v.getUint8(o + 3));
+  if (tag(0) !== "RIFF" || tag(8) !== "WAVE") throw new Error("This is not a WAV file.");
+  let o = 12, fmt = null;
+  while (o + 8 <= v.byteLength) {
+    const id = tag(o), size = v.getUint32(o + 4, true);
+    if (id === "fmt ") fmt = { code: v.getUint16(o + 8, true), ch: v.getUint16(o + 10, true), rate: v.getUint32(o + 12, true), bits: v.getUint16(o + 22, true) };
+    if (id === "data" && fmt) {
+      const n = Math.floor(size / (fmt.bits / 8) / fmt.ch), x = new Float64Array(n);
+      for (let i = 0; i < n; i++) {
+        const p = o + 8 + i * fmt.ch * (fmt.bits / 8);
+        if (fmt.code === 1 && fmt.bits === 16) x[i] = v.getInt16(p, true);
+        else if (fmt.code === 3 && fmt.bits === 32) x[i] = v.getFloat32(p, true);
+        else throw new Error("Only 16-bit PCM and 32-bit float WAV files are read.");
+      }
+      return { x, rate: fmt.rate };
     }
+    o += 8 + size + (size % 2);
   }
-  draw(f);
+  throw new Error("No audio data found in this WAV file.");
 }
-const hz = v => v >= 1000 ? (v / 1000).toFixed(v >= 10000 ? 0 : 1) + " kHz" : Math.round(v) + " Hz";
-function setPill(t, warn) { const p = $("pill"); p.textContent = t; p.classList.toggle("warn", warn); }
-function draw(f) {
-  const c = $("spec"), dpr = devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
-  if (c.width !== w * dpr) { c.width = w * dpr; c.height = h * dpr; }
-  const g = c.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
-  const n = f.length, pad = 28, bw = (w - pad) / n;
-  const all = [...f, ...(L.med ? L.med : [])]; const top = Math.max(...all) + 6, bot = Math.min(...all) - 6;
-  const y = v => 8 + (h - 30) * (1 - (v - bot) / (top - bot));
-  if (L.med) {
-    g.fillStyle = css("--navy-soft");
-    for (let i = 0; i < n; i++) { const a = y(L.med[i] + Z_ALARM * L.mad[i]), b = y(L.med[i] - Z_ALARM * L.mad[i]); g.fillRect(pad + i * bw, a, bw - 1, b - a); }
-  }
-  for (let i = 0; i < n; i++) {
-    const out = L.med && Math.abs(f[i] - L.med[i]) / L.mad[i] >= Z_ALARM;
-    g.fillStyle = out ? css("--saffron") : css("--navy");
-    const yy = y(f[i]); g.fillRect(pad + i * bw + bw * 0.25, yy - 2, bw * 0.5, 4);
-  }
-  g.fillStyle = css("--muted"); g.font = "11px IBM Plex Mono, monospace";
-  [0, Math.floor(n / 3), Math.floor(2 * n / 3), n - 1].forEach(i => g.fillText(hz(L.bands[i].lo), pad + i * bw, h - 8));
-  if (L.med) { g.fillText("shaded: learned normal", pad, 18); }
-}
-async function start() {
+
+async function run() {
+  if (pending) return;
+  const btn = $("run");
+  let x, fs, rpm, orders, truth = null, note = "";
   try {
-    L.stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
-  } catch (e) {
-    $("msg").textContent = "The microphone is blocked or missing, so the live demo cannot run here. The replay below works on recorded data.";
+    if (!$("p-rec").hidden) {
+      const s = META.samples.find(s => s.id === $("sample").value);
+      const buf = await (await fetch(`data/samples/${s.id}.i16`)).arrayBuffer();
+      const q = new Int16Array(buf);
+      x = Float64Array.from(q, v => v * s.scale); fs = s.fs; rpm = s.rpm; orders = META.bearings[s.bearing].orders; truth = s.truth;
+      note = `${s.source}. ${(s.n / s.fs).toFixed(1)} s at ${s.fs.toLocaleString("en-IN")} Hz, shaft ${s.rpm.toFixed(0)} rpm. The Python reference said: ${s.expect.verdict ? PART[s.expect.verdict] : "declined"}.`;
+    } else {
+      const f = $("file").files[0];
+      if (!f) throw new Error("Choose a file first.");
+      fs = Number($("fs").value); rpm = Number($("rpm").value);
+      if (/\.wav$/i.test(f.name)) { const w = parseWav(await f.arrayBuffer()); x = w.x; fs = w.rate; $("fs").value = fs; }
+      else x = parseText(await f.text());
+      if (!x.length) throw new Error("No numbers were found in that file.");
+      if (!(fs >= 2000)) throw new Error("The sample rate must be at least 2,000 Hz to see a bearing's impacts.");
+      if (!(rpm > 0)) throw new Error("Enter the shaft speed.");
+      if (x.length < fs) throw new Error(`That is ${(x.length / fs).toFixed(2)} s of data. At least one second is needed.`);
+      const cap = 1 << 18;
+      if (x.length > cap) { x = x.slice(0, cap); note = `Only the first ${(cap / fs).toFixed(1)} s were used. `; }
+      const b = $("brg").value;
+      orders = b === "custom" ? geometryOrders(+$("g-n").value, +$("g-d").value, +$("g-p").value, +$("g-a").value) : META.bearings[b].orders;
+      note += `${f.name}, ${(x.length / fs).toFixed(1)} s at ${fs.toLocaleString("en-IN")} Hz, shaft ${rpm} rpm.`;
+    }
+  } catch (e) { show({ error: e.message }); return; }
+  pending = true; btn.disabled = true; btn.textContent = "Working";
+  try { show({ r: await workerRun(x, fs, rpm, orders), truth, note }); }
+  catch (e) { show({ error: e.message }); }
+  finally { pending = false; btn.disabled = false; btn.textContent = "Diagnose"; }
+}
+function show({ r, truth, note, error }) {
+  $("out").hidden = false;
+  if (error) {
+    $("o-verdict").innerHTML = ""; $("o-verdict").textContent = error; $("o-verdict").className = "err";
+    ["BPFO", "BPFI", "BSF", "band", "truth"].forEach(k => $("o-" + k).textContent = ""); $("ses").innerHTML = ""; $("ses-cap").textContent = "";
     return;
   }
-  L.ctx = new (window.AudioContext || window.webkitAudioContext)();
-  await L.ctx.resume();
-  L.an = L.ctx.createAnalyser(); L.an.fftSize = 8192; L.an.smoothingTimeConstant = 0;
-  L.ctx.createMediaStreamSource(L.stream).connect(L.an);
-  L.buf = new Float32Array(L.an.frequencyBinCount);
-  L.bands = makeBands(L.ctx.sampleRate, L.an.fftSize);
-  relearn();
-  $("b-start").disabled = true; $("b-relearn").disabled = false; $("b-stop").disabled = false;
-  L.lastT = 0; tick();
+  $("o-verdict").className = "";
+  $("o-verdict").textContent = r.verdict ? `${PART[r.verdict][0].toUpperCase() + PART[r.verdict].slice(1)} defect` : "Declined, inspect";
+  for (const k of ["BPFO", "BPFI", "BSF"]) $("o-" + k).textContent = `${r.scores[k].toFixed(1)} dB at ${(k === "BSF" ? 2 * r.lines[k] : r.lines[k]).toFixed(1)} Hz`;
+  $("o-band").textContent = `${Math.round(r.band[0]).toLocaleString("en-IN")} to ${Math.round(r.band[1]).toLocaleString("en-IN")} Hz`;
+  $("o-truth-row").hidden = !truth;
+  $("o-truth").textContent = truth ? PART[truth] : "";
+  drawSES(r);
+  $("ses-cap").textContent = `Squared envelope spectrum of the chosen band. Dashed lines are where each defect would show, from the bearing's geometry. The rolling element is drawn at twice its spin rate, because it strikes both races. A part is named when its line stands at least 10 dB above its neighbourhood. ${note}`;
 }
-function relearn() { L.state = "learn"; L.learn = []; L.med = null; L.t0 = performance.now(); $("hi").classList.remove("warn"); $("msg").textContent = "Learning this machine's normal. Keep the phone still."; }
-function stop() {
-  cancelAnimationFrame(L.raf); L.stream && L.stream.getTracks().forEach(t => t.stop()); L.ctx && L.ctx.close();
-  L.state = "idle"; setPill("Idle", false); $("hi").textContent = "--"; $("hi").classList.remove("warn");
-  $("b-start").disabled = false; $("b-relearn").disabled = true; $("b-stop").disabled = true;
-  $("msg").textContent = "Stopped. The microphone is off.";
+function drawSES(r) {
+  const svg = $("ses"); svg.innerHTML = ""; LAST_SES = r;
+  const W = Math.max(320, Math.round(svg.parentNode.clientWidth || 820)), H = W < 600 ? 230 : 250, m = { l: 8, r: 8, t: 40, b: 28 };
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const x = f => m.l + (W - m.l - m.r) * f / r.top, y = v => m.t + (H - m.t - m.b) * (1 - Math.min(v, 1.1) / 1.1);
+  const marks = [[r.lines.BPFO, "outer"], [r.lines.BPFI, "inner"], [2 * r.lines.BSF, "rolling element"]].sort((a, b) => a[0] - b[0]);
+  marks.forEach(([f, lab], i) => {
+    for (let h = 1; h * f < r.top; h++) el("line", { x1: x(h * f), x2: x(h * f), y1: m.t - 4 + (h > 1 ? 10 : 0), y2: H - m.b, stroke: h > 1 ? W15 : W30, "stroke-dasharray": "3 4" }, svg);
+    const right = x(f) > W * 0.62;
+    el("text", { x: x(f) + (right ? -4 : 4), y: 12 + i * 12, "text-anchor": right ? "end" : "start" }, svg).textContent = `${lab} ${f.toFixed(1)} Hz`;
+  });
+  let p = "";
+  r.f.forEach((f, i) => { p += (i ? "L" : "M") + x(f).toFixed(1) + " " + y(r.s[i]).toFixed(1); });
+  el("path", { d: p, fill: "none", stroke: W80, "stroke-width": 1 }, svg);
+  el("line", { x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b, stroke: W15 }, svg);
+  let step = r.top > 1500 ? 500 : r.top > 600 ? 200 : 100;
+  if (W < 600) step *= 2;
+  for (let f = step; f < r.top; f += step) el("text", { x: x(f), y: H - 8, "text-anchor": "middle" }, svg).textContent = f.toLocaleString("en-IN");
+  el("text", { x: W - m.r, y: H - 8, "text-anchor": "end" }, svg).textContent = "Hz";
 }
-$("b-start").onclick = start; $("b-relearn").onclick = relearn; $("b-stop").onclick = stop;
+$("run").onclick = run;
 
-/* ---------- Replay ---------- */
-let R = null, run = "2";
-const W = 900, H = 270, M = { l: 44, r: 12, t: 14, b: 34 }, YMAX = 40;
-function svgEl(tag, attrs, parent) { const e = document.createElementNS("http://www.w3.org/2000/svg", tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent && parent.appendChild(e); return e; }
-function drawChart() {
-  const r = R[run], svg = $("chart"); svg.innerHTML = "";
-  const x = h => M.l + (W - M.l - M.r) * h / r.end_h, y = v => M.t + (H - M.t - M.b) * (1 - Math.min(v, YMAX) / YMAX);
-  svgEl("rect", { x: x(0), y: M.t, width: x(r.base_h) - x(0), height: H - M.t - M.b, fill: css("--navy-soft") }, svg);
-  svgEl("text", { x: x(0) + 6, y: M.t + 14 }, svg).textContent = "learning";
-  for (let v = 0; v <= YMAX; v += 10) { svgEl("line", { x1: M.l, x2: W - M.r, y1: y(v), y2: y(v), stroke: css("--line") }, svg); svgEl("text", { x: M.l - 8, y: y(v) + 4, "text-anchor": "end" }, svg).textContent = v === YMAX ? "40+" : v; }
-  const step = r.end_h > 400 ? 200 : 24;
-  for (let h = 0; h <= r.end_h; h += step) svgEl("text", { x: x(h), y: H - 12, "text-anchor": "middle" }, svg).textContent = h + " h";
-  svgEl("line", { x1: M.l, x2: W - M.r, y1: y(6), y2: y(6), stroke: css("--saffron"), "stroke-dasharray": "5 4" }, svg);
-  const order = Object.keys(r.bearings).sort((a, b) => (r.bearings[a].failed ? 1 : 0) - (r.bearings[b].failed ? 1 : 0));
-  for (const b of order) {
+/* ---------- replay ---------- */
+let R = null, cur = "2";
+function chart() {
+  const r = R[cur], svg = $("hi"); svg.innerHTML = "";
+  const W = Math.max(320, Math.round(svg.parentNode.clientWidth || 1000)), H = W < 600 ? 240 : 300, m = { l: 34, r: 8, t: W < 600 ? 40 : 26, b: 30 }, Y = 40;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const x = h => m.l + (W - m.l - m.r) * h / r.end_h, y = v => m.t + (H - m.t - m.b) * (1 - Math.min(v, Y) / Y);
+  el("rect", { x: x(0), y: m.t, width: x(r.base_h) - x(0), height: H - m.t - m.b, fill: "rgba(255,255,255,0.035)" }, svg);
+  el("text", { x: x(0) + 6, y: m.t + 14 }, svg).textContent = "learning";
+  for (let v = 0; v <= Y; v += 10) { el("line", { x1: m.l, x2: W - m.r, y1: y(v), y2: y(v), stroke: "rgba(255,255,255,0.06)" }, svg); el("text", { x: m.l - 8, y: y(v) + 4, "text-anchor": "end" }, svg).textContent = v === Y ? "40+" : v; }
+  el("line", { x1: m.l, x2: W - m.r, y1: y(6), y2: y(6), stroke: "rgba(255,255,255,0.45)", "stroke-dasharray": "5 5" }, svg);
+  el("text", { x: W - m.r, y: y(6) - 6, "text-anchor": "end" }, svg).textContent = "alarm at 6";
+  const step = (r.end_h > 400 ? 200 : 24) * (W < 600 ? 2 : 1);
+  for (let h = 0; h <= r.end_h; h += step) el("text", { x: x(h), y: H - 8, "text-anchor": "middle" }, svg).textContent = h + " h";
+  const keys = Object.keys(r.bearings).sort((a, b) => (r.bearings[a].failed ? 1 : 0) - (r.bearings[b].failed ? 1 : 0));
+  for (const b of keys) {
     const d = r.bearings[b]; let p = "";
     d.h.forEach((h, i) => p += (i ? "L" : "M") + x(h).toFixed(1) + " " + y(d.hi[i]).toFixed(1));
-    svgEl("path", { d: p, fill: "none", stroke: d.failed ? css("--navy") : css("--grey-line"), "stroke-width": d.failed ? 1.6 : 1 }, svg);
+    el("path", { d: p, fill: "none", stroke: d.failed ? W80 : "rgba(255,255,255,0.28)", "stroke-width": d.failed ? 1.4 : 0.9 }, svg);
   }
-  for (const b of order) {
-    const d = r.bearings[b]; if (!d.failed) continue;
-    const t = Math.min(...[d.alarm_h, d.named_h].filter(v => v != null));
-    svgEl("line", { x1: x(t), x2: x(t), y1: M.t, y2: H - M.b, stroke: css("--saffron"), "stroke-width": 1.5 }, svg);
-    svgEl("text", { x: x(t) - 4, y: M.t + 28 + (b === "4" ? 14 : 0), "text-anchor": "end" }, svg).textContent = `B${b} warned ${Math.round(r.end_h - t)} h ahead`;
+  let row = 0;
+  for (const b of keys) {
+    const d = r.bearings[b], sm = r.summary.failed[b];
+    if (!sm) continue;
+    const t = r.end_h - sm.sustained_lead_h;
+    el("line", { x1: x(t), x2: x(t), y1: m.t, y2: H - m.b, stroke: "#f2f3f5", "stroke-width": 1 }, svg);
+    const msg = W < 600 ? `bearing ${b}: ${sm.sustained_lead_h.toFixed(1)} h before the stop` : `bearing ${b} warning holds from here, ${sm.sustained_lead_h.toFixed(1)} h before the stop`;
+    el("text", { x: x(t) - 6, y: (W < 600 ? 12 : m.t + 14) + 14 * row++, "text-anchor": "end", fill: "#eef0f2" }, svg).textContent = msg;
   }
-  R._cursor = svgEl("line", { x1: 0, x2: 0, y1: M.t, y2: H - M.b, stroke: css("--ink"), "stroke-width": 1 }, svg);
-  R._x = x;
+  R._x = x; R._cursor = el("line", { x1: 0, x2: 0, y1: m.t, y2: H - m.b, stroke: "rgba(255,255,255,0.6)" }, svg);
 }
 function status(r, b, h) {
   const d = r.bearings[b];
+  if (h < r.base_h) return "Learning its normal";
   const named = d.named_h != null && h >= d.named_h, alarmed = d.alarm_h != null && h >= d.alarm_h;
-  const self = n => n == null || String(n) === b;
-  if (named && self(d.named_loudest)) return { cls: "warn", text: `Warning: ${PART[d.named_as]} defect. Replace at next stop.` };
-  if (alarmed && self(d.loudest_at_alarm)) return { cls: "warn", text: `Warning: changed (${d.alarm_driver}). Part not yet named, inspect.` };
-  if (named || alarmed) return { cls: "sym", text: `Vibration from bearing ${named ? d.named_loudest : d.loudest_at_alarm} reaching this point. No action here.` };
-  return { cls: "", text: "Normal" };
+  const mine = n => n == null || String(n) === b;
+  if (named && mine(d.named_loudest)) return `Warning: ${PART[d.named_as]} defect. Plan the replacement.`;
+  if (alarmed && mine(d.loudest_at_alarm)) return "Warning: vibration has changed. Part not named yet, inspect.";
+  if (named || alarmed) return `Hearing bearing ${named ? d.named_loudest : d.loudest_at_alarm}. No action here.`;
+  return "Normal";
 }
 function scrub() {
-  const r = R[run], h = r.end_h * $("scrub").value / 1000;
+  const r = R[cur], h = r.end_h * $("scrub").value / 1000;
   R._cursor.setAttribute("x1", R._x(h)); R._cursor.setAttribute("x2", R._x(h));
-  const left = r.end_h - h;
-  $("clock").textContent = `Hour ${h.toFixed(1)} of ${r.end_h.toFixed(1)}, day ${(h / 24 + 1).toFixed(0)}`;
-  $("runnote").textContent = left > 0.1 ? `${left.toFixed(1)} h before the rig was stopped` : "Rig stopped";
-  const el = $("console"); el.innerHTML = "";
+  $("clock").textContent = `Hour ${h.toFixed(1)} of ${r.end_h.toFixed(1)}`;
+  $("left").textContent = r.end_h - h > 0.05 ? `${(r.end_h - h).toFixed(1)} h before the rig was stopped` : "Rig stopped";
+  const board = $("board"); board.innerHTML = "";
   for (const b of ["1", "2", "3", "4"]) {
-    const s = h < r.base_h ? { cls: "", text: "Learning this bearing's normal" } : status(r, b, h);
-    const d = r.bearings[b];
-    const div = document.createElement("div"); div.className = "bearing " + s.cls;
-    div.innerHTML = `<b>BEARING ${b}${d.failed ? " &middot; failed at end (" + PART[d.failed] + ")" : ""}</b>${s.text}`;
-    el.appendChild(div);
+    const d = r.bearings[b], row = document.createElement("div"); row.className = "res-row";
+    const dt = document.createElement("dt"); dt.textContent = `Bearing ${b}${d.failed ? `, ${PART[d.failed]} failure at the end` : ""}`;
+    const dd = document.createElement("dd"); dd.textContent = status(r, b, h); dd.style.whiteSpace = "normal";
+    row.append(dt, dd); board.appendChild(row);
   }
 }
 function setRun(id) {
-  run = id;
-  document.querySelectorAll("#tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.run === id));
-  drawChart();
-  const r = R[run], fb = Object.values(r.bearings).filter(d => d.failed);
-  const first = Math.min(...fb.map(d => Math.min(...[d.alarm_h, d.named_h].filter(v => v != null))));
-  $("scrub").value = Math.round(1000 * Math.min(1, (first + 0.2 * (r.end_h - first)) / r.end_h));
+  cur = id;
+  document.querySelectorAll("#runtabs .tab").forEach(t => t.setAttribute("aria-selected", t.dataset.run === id));
+  chart();
+  const r = R[cur], leads = Object.values(r.summary.failed).map(s => s.sustained_lead_h);
+  const t = r.end_h - Math.max(...leads);
+  $("scrub").value = Math.round(1000 * Math.min(1, (t + 0.25 * (r.end_h - t)) / r.end_h));
   scrub();
 }
-function drawSES(tag) {
-  const s = R.spectra[tag], svg = $("ses"); svg.innerHTML = "";
-  const w = 440, h = 240, m = { l: 10, r: 10, t: 10, b: 30 }, f0 = 60, f1 = 800;
-  const x = f => m.l + (w - m.l - m.r) * (f - f0) / (f1 - f0), y = v => m.t + (h - m.t - m.b) * (1 - Math.min(v, 1));
-  const lines = [[R.lines_hz.BPFO, "outer race", css("--saffron"), 0, "end"], [2 * R.lines_hz.BPFO, "2x outer", css("--saffron"), 0, "start"], [2 * R.lines_hz.BSF, "ball", css("--grey-line"), 1, "end"], [R.lines_hz.BPFI, "inner", css("--grey-line"), 2, "start"]];
-  for (const [f, lab, c, row, anchor] of lines) {
-    const solid = lab.includes("outer");
-    svgEl("line", { x1: x(f), x2: x(f), y1: m.t + 6 + row * 13, y2: h - m.b, stroke: c, "stroke-dasharray": solid ? "" : "4 3" }, svg);
-    svgEl("text", { x: x(f) + (anchor === "end" ? -4 : 4), y: m.t + 10 + row * 13, "text-anchor": anchor }, svg).textContent = lab;
-  }
-  let p = ""; s.f.forEach((f, i) => { if (f >= f0 && f <= f1) p += (p ? "L" : "M") + x(f).toFixed(1) + " " + y(s.s[i]).toFixed(1); });
-  svgEl("path", { d: p, fill: "none", stroke: css("--navy"), "stroke-width": 1 }, svg);
-  for (const f of [100, 200, 300, 400, 500, 600, 700]) svgEl("text", { x: x(f), y: h - 10, "text-anchor": "middle" }, svg).textContent = f;
-  svgEl("text", { x: w - m.r, y: h - 10, "text-anchor": "end" }, svg).textContent = "Hz";
-  $("specnote").textContent = `Hour ${s.h}: ${s.verdict ? "named " + PART[s.verdict] : "no line clear of the noise, nothing named"}. Outer-race line ${s.scores.BPFO} dB above its neighbourhood (naming needs 10).`;
-  document.querySelectorAll("#spectabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.t === tag));
-}
 
-/* ---------- Naming grid ---------- */
-function drawGroups(C) {
-  const el = $("groups"), tip = $("tip");
+/* ---------- tables from the measured summary ---------- */
+function leadTable() {
+  const tb = document.querySelector("#leadtable tbody");
+  for (const run of ["1", "2", "3"]) for (const [b, s] of Object.entries(R[run].summary.failed)) {
+    const tr = document.createElement("tr");
+    const cells = [`Run ${run}, bearing ${b}, ${PART[s.part]}`, `${s.sustained_lead_h.toFixed(1)} h`, `${s.level_x2_lead_h.toFixed(1)} h`, `${s.level_35_lead_h.toFixed(1)} h`, `${s.final_72h_correct} of ${s.final_72h_named}`];
+    cells.forEach((c, i) => { const td = document.createElement("td"); td.textContent = c; if (i === 1) td.className = "lead"; tr.appendChild(td); });
+    tb.appendChild(tr);
+  }
+}
+function groups(C) {
+  const host = $("groups");
   for (const [lab, name] of [["BPFI", "Inner race"], ["BPFO", "Outer race"], ["BSF", "Rolling element"]]) {
     const rows = C.rows.filter(r => r.truth === lab), ok = rows.filter(r => r.verdict === lab).length, bad = rows.filter(r => r.verdict && r.verdict !== lab).length;
     const g = document.createElement("div"); g.className = "group";
-    g.innerHTML = `<h3>${name}<span>${ok} of ${rows.length} named${bad ? ", " + bad + " wrong" : ""}</span></h3><div class="cells"></div>`;
-    const cells = g.querySelector(".cells");
+    const b = document.createElement("b"); b.textContent = name;
+    const s = document.createElement("span"); s.textContent = `${ok} of ${rows.length} named${bad ? `, ${bad} wrong` : ""}`;
+    const cells = document.createElement("div"); cells.className = "cells";
     for (const r of rows) {
       const c = document.createElement("div");
       c.className = "cell " + (r.verdict === lab ? "ok" : r.verdict ? "bad" : "no");
-      const said = r.verdict ? PART[r.verdict] : "declined";
-      const info = `File ${r.file} &middot; ${(r.size_in * 25.4).toFixed(2)} mm ${PART[r.truth]}${r.position ? " " + r.position : ""} &middot; load ${r.load_hp} hp<br>Said: ${said}<br>Lines (dB): outer ${r.scores.BPFO}, inner ${r.scores.BPFI}, ball ${r.scores.BSF}`;
-      c.tabIndex = 0; c.setAttribute("aria-label", `File ${r.file}: ${said}`);
-      const show = e => { tip.innerHTML = info; tip.style.opacity = 1; const bx = c.getBoundingClientRect(); tip.style.left = Math.min(innerWidth - 290, bx.left) + "px"; tip.style.top = (bx.bottom + 6) + "px"; };
-      c.onmouseenter = show; c.onfocus = show; c.onclick = show; c.onmouseleave = c.onblur = () => tip.style.opacity = 0;
+      c.title = `File ${r.file}, ${(r.size_in * 25.4).toFixed(2)} mm ${PART[r.truth]}${r.position ? " at " + r.position.slice(1) + " o'clock" : ""}, ${r.load_hp} hp: ${r.verdict ? "named " + PART[r.verdict] : "declined"}`;
       cells.appendChild(c);
     }
-    el.appendChild(g);
+    g.append(b, s, cells); host.appendChild(g);
   }
 }
 
-Promise.all([fetch("data/replay.json").then(r => r.json()), fetch("data/cwru.json").then(r => r.json())]).then(([rep, cw]) => {
-  R = rep;
-  const tabs = $("tabs");
-  for (const [id, lab] of [["2", "Run 2 &middot; 7 days"], ["1", "Run 1 &middot; 35 days"], ["3", "Run 3 &middot; 45 days"]]) {
-    const b = document.createElement("button"); b.dataset.run = id; b.innerHTML = lab; b.setAttribute("role", "tab"); b.onclick = () => setRun(id); tabs.appendChild(b);
+Promise.all(["data/replay.json", "data/cwru.json", "data/samples.json"].map(u => fetch(u).then(r => r.json()))).then(([rep, cw, meta]) => {
+  R = rep; META = meta;
+  const tabs = $("runtabs");
+  for (const [id, lab] of [["2", "Run 2, 7 days"], ["1", "Run 1, 35 days"], ["3", "Run 3, 45 days"]]) {
+    const t = document.createElement("button"); t.className = "tab"; t.dataset.run = id; t.textContent = lab; t.setAttribute("role", "tab"); t.onclick = () => setRun(id); tabs.appendChild(t);
   }
   $("scrub").oninput = scrub;
   setRun("2");
-  const st = $("spectabs");
-  for (const [t, lab] of [["healthy", "Hour 30"], ["warning", "First warning"], ["late", "Hour 150"]]) {
-    const b = document.createElement("button"); b.dataset.t = t; b.textContent = lab; b.onclick = () => drawSES(t); st.appendChild(b);
-  }
-  drawSES("late");
-  drawGroups(cw);
-  addEventListener("resize", () => L.lastFeat && draw(L.lastFeat));
-}).catch(() => { $("runnote").textContent = "Replay data did not load."; });
+  leadTable(); groups(cw);
+  const sel = $("sample");
+  for (const s of meta.samples) { const o = document.createElement("option"); o.value = s.id; o.textContent = s.label; sel.appendChild(o); }
+  const note = () => { const s = meta.samples.find(s => s.id === sel.value); $("sample-note").textContent = s.source + "."; };
+  sel.onchange = note; note();
+  let rt = 0;
+  addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { chart(); scrub(); if (LAST_SES) drawSES(LAST_SES); }, 150); });
+}).catch(() => { $("clock").textContent = "The measured data did not load. Reload the page."; });
 </script>
 </body>
 </html>
