@@ -248,7 +248,7 @@ put(sh(s, "Text 9"), "B.E. Electronics and Telecommunication, second year, Ramra
 sh(s, "Text 9").width = Inches(3.75)
 sh(s, "Text 9").height = Inches(0.55)
 box(s, 0.5, 2.72, 4.8, 0.25, "Live demo, console and firmware, all open", size=10.5, color=ORANGE, bold=True)
-s.shapes.add_picture(os.path.join(FIG, "console-deck.png"), Inches(0.5), Inches(3.04), width=Inches(3.15))
+s.shapes.add_picture(os.path.join(FIG, "console-shot.png"), Inches(0.5), Inches(3.02), height=Inches(1.72))
 s.shapes.add_picture(os.path.join(FIG, "qr.png"), Inches(3.85), Inches(3.02), width=Inches(1.0))
 box(s, 3.85, 4.07, 1.5, 0.55, [DEMO.split("/")[0] + "/", DEMO.split("/")[1]], size=7.5, color=PALE, space=0)
 for shape_name in ("Shape 31", "Shape 33", "Shape 35", "Shape 39"):

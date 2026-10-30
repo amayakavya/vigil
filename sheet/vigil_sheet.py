@@ -121,5 +121,8 @@ notes = ["1. LEARNS EACH BEARING FROM ITS FIRST 24 H. NEVER SHOWN A FAILURE.",
 for i, n in enumerate(notes):
     D.text(nx, ny + 22 + 20 * i, n, 8, "start")
 
-D.titleblock("VIGIL, BEARING DEFECT LINES", "AS STATED")
+# VIGIL's own title block: the team, unsigned, so the drawing carries the
+# project and nothing personal
+D.table(1860, 1144, [110, 334], 34, [["TITLE", "VIGIL, BEARING DEFECT LINES"], ["DRAWN", "TEAM HEISENBUG"],
+                                    ["SCALE", "AS STATED"], ["SHEET", "1 OF 1   REV A"]], 9)
 D.write_sheet(os.path.join(HERE, "..", "docs", "sheet.svg"))

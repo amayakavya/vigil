@@ -1,18 +1,18 @@
-/* VIGIL's workshop console, run on a simulated site.
-   Three machines are NASA's three test shafts, each with its four bearings as
-   four measuring points. Every status, warning and name is the analysis's own
-   result for that bearing (data/replay.json); only the calendar is arranged,
-   so that three tests run side by side on one site. */
+/* VIGIL's maintenance board, run on NASA's three run-to-failure tests.
+   Each test is one shaft with four bearings, each bearing one measuring point.
+   Every status, warning and name is the analysis's own result for that bearing
+   (data/replay.json), and each card shows when its snapshot was recorded. The
+   only arrangement is that the three tests start together on the replay clock. */
 "use strict";
 const PART = { BPFO: "outer race", BPFI: "inner race", BSF: "rolling element" };
 const DRIVER = { "log RMS": "overall level", kurtosis: "spikiness (kurtosis)", "crest factor": "crest factor",
   "BPFO line": "outer race line", "BPFI line": "inner race line", "BSF line": "rolling element line" };
 const MACHINES = [
-  { id: "G1", name: "Generator 1, main", run: "3", start: 0 },
-  { id: "P1", name: "Water pump 1", run: "1", start: 0 },
-  { id: "P2", name: "Fire pump", run: "2", start: 37 * 24 },
+  { id: "T1", name: "NASA test 1", run: "1", start: 0 },
+  { id: "T2", name: "NASA test 2", run: "2", start: 0 },
+  { id: "T3", name: "NASA test 3", run: "3", start: 0 },
 ];
-const BEARING = "Rexnord ZA-2115, as on the NASA rig";
+const BEARING = "Rexnord ZA-2115";
 const $ = id => document.getElementById(id);
 const NS = "http://www.w3.org/2000/svg";
 function el(tag, attrs, parent, text) {
@@ -25,6 +25,11 @@ function el(tag, attrs, parent, text) {
 function h(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
 const stamp = t => { const d = Math.floor(t / 24), hh = Math.floor(t % 24), mm = Math.floor((t * 60) % 60); return `Day ${d + 1}, ${String(hh).padStart(2, "0")}:${String(mm).padStart(2, "0")}`; };
 const cap = s => s[0].toUpperCase() + s.slice(1);
+// when the snapshot at test time t was actually recorded, from the test's own start
+function recorded(m, t) {
+  const d = new Date(Date.parse(R[m.run].start + "Z") + t * 3600e3);
+  return d.toLocaleString("en-GB", { timeZone: "UTC", day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+}
 
 let R = null, END = 0, T = 0, speed = 24, playing = false, last = 0;
 let EVENTS = [], JOBS = [];
@@ -62,7 +67,7 @@ function latched(run, key, t) {
   const mine = n => n == null || String(n) === key;
   if (named && mine(d.named_loudest)) return { text: `Warning: ${PART[d.named_as]} defect. Replace the bearing.`, cls: "warn" };
   if (alarmed && mine(d.loudest_at_alarm)) return { text: "Warning: vibration has changed. Inspect, part not named yet.", cls: "warn" };
-  if (named || alarmed) return { text: `Hearing point ${named ? d.named_loudest : d.loudest_at_alarm}. No action here.`, cls: "quiet" };
+  if (named || alarmed) return { text: `Hearing bearing ${named ? d.named_loudest : d.loudest_at_alarm}. No action here.`, cls: "quiet" };
   return { text: "Normal", cls: "" };
 }
 
@@ -84,25 +89,25 @@ function buildEvents() {
   const jobOf = (m, key) => JOBS.find(j => j.m === m && j.key === key);
   for (const m of MACHINES) {
     const r = R[m.run];
-    EVENTS.push({ t: m.start, text: `${m.name}: four nodes fitted, learning its normal.` });
+    EVENTS.push({ t: m.start, text: `${m.name}: four sensors reading, learning its normal. Recorded ${recorded(m, 0)}.` });
     EVENTS.push({ t: m.start + 24, text: `${m.name}: learned its normal from its first 24 hours of readings.` });
     for (const [key, d] of Object.entries(r.bearings)) {
       const j = jobOf(m, key);
       if (d.alarm_h != null) {
         const t = m.start + d.alarm_h, why = DRIVER[d.alarm_driver] || d.alarm_driver;
-        if (!j || j.alarm == null) EVENTS.push({ t, text: `${m.name}, point ${key}: alarm traced to point ${d.loudest_at_alarm}, the loudest on the shaft. No job.` });
-        else if (j.named != null && j.named <= t) EVENTS.push({ t, text: `${m.name}, point ${key}: health index past the alarm too (${why}). Job ${j.id} already open.` });
-        else EVENTS.push({ t, key: true, text: `${m.name}, point ${key}: vibration has changed (${why}). Job ${j.id} raised to inspect.` });
+        if (!j || j.alarm == null) EVENTS.push({ t, text: `${m.name}, bearing ${key}: alarm traced to bearing ${d.loudest_at_alarm}, the loudest on the shaft. No job.` });
+        else if (j.named != null && j.named <= t) EVENTS.push({ t, text: `${m.name}, bearing ${key}: health index past the alarm too (${why}). Job ${j.id} already open.` });
+        else EVENTS.push({ t, key: true, text: `${m.name}, bearing ${key}: vibration has changed (${why}). Job ${j.id} raised to inspect.` });
       }
       if (d.named_h != null) {
         const t = m.start + d.named_h;
-        if (!j || j.named == null) EVENTS.push({ t, text: `${m.name}, point ${key}: hears the ${PART[d.named_as]} line of point ${d.named_loudest}. No job.` });
-        else if (j.alarm != null && j.alarm < t) EVENTS.push({ t, key: true, text: `${m.name}, point ${key}: ${PART[d.named_as]} defect named. Job ${j.id} is now a replacement.` });
-        else EVENTS.push({ t, key: true, text: `${m.name}, point ${key}: ${PART[d.named_as]} defect named. Job ${j.id} raised to replace the bearing.` });
+        if (!j || j.named == null) EVENTS.push({ t, text: `${m.name}, bearing ${key}: hears the ${PART[d.named_as]} line of bearing ${d.named_loudest}. No job.` });
+        else if (j.alarm != null && j.alarm < t) EVENTS.push({ t, key: true, text: `${m.name}, bearing ${key}: ${PART[d.named_as]} defect named. Job ${j.id} is now a replacement.` });
+        else EVENTS.push({ t, key: true, text: `${m.name}, bearing ${key}: ${PART[d.named_as]} defect named. Job ${j.id} raised to replace the bearing.` });
       }
     }
-    const failed = Object.entries(r.bearings).filter(([, d]) => d.failed).map(([k, d]) => `point ${k} (${PART[d.failed]})`).join(" and ");
-    EVENTS.push({ t: m.start + r.end_h, key: true, text: `${m.name}: stopped. NASA ended this test with ${failed} failed.` });
+    const failed = Object.entries(r.bearings).filter(([, d]) => d.failed).map(([k, d]) => `bearing ${k} (${PART[d.failed]})`).join(" and ");
+    EVENTS.push({ t: m.start + r.end_h, key: true, text: `${m.name}: stopped ${recorded(m, r.end_h)}. NASA ended the test with ${failed} failed.` });
   }
   EVENTS.sort((a, b) => a.t - b.t);
 }
@@ -134,7 +139,7 @@ function buildMachines() {
     head.append(name, sub); box.appendChild(head);
     const points = [];
     for (const key of ["1", "2", "3", "4"]) {
-      const row = h("div", "point"), pn = h("span", "pn", `Point ${key}`), st = h("span", "st"), hi = h("span", "hi");
+      const row = h("div", "point"), pn = h("span", "pn", `Bearing ${key}`), st = h("span", "st"), hi = h("span", "hi");
       const sp = el("svg", { class: "spark", viewBox: "0 0 150 28", preserveAspectRatio: "none", "aria-hidden": "true" });
       row.append(pn, st, sp, hi); box.appendChild(row);
       points.push({ row, st, hi, sp, key });
@@ -151,14 +156,14 @@ function render() {
   for (const u of ui.machines) {
     const r = R[u.m.run], t = T - u.m.start;
     let warn = false;
-    if (t < 0) u.sub.textContent = `Fitted on ${stamp(u.m.start)}`;
-    else if (t >= r.end_h) u.sub.textContent = `Stopped ${stamp(u.m.start + r.end_h)}, bearing failed`;
-    else u.sub.textContent = idleAt(r.bearings["1"], t) ? `Not running, ${(t / 24).toFixed(1)} days since fitting` : `Running, ${(t / 24).toFixed(1)} days since fitting`;
+    if (t < 0) u.sub.textContent = `Starts at ${stamp(u.m.start)}`;
+    else if (t >= r.end_h) u.sub.textContent = `Test ended ${recorded(u.m, r.end_h)}, bearing failed`;
+    else u.sub.textContent = idleAt(r.bearings["1"], t) ? `Rig stopped, no readings. ${recorded(u.m, t)}` : `Recording of ${recorded(u.m, t)}`;
     for (const p of u.points) {
       const b = r.bearings[p.key];
-      if (t < 0) { p.st.textContent = "Not fitted yet"; p.row.className = "point quiet"; p.hi.textContent = ""; p.sp.innerHTML = ""; continue; }
+      if (t < 0) { p.st.textContent = "Not started yet"; p.row.className = "point quiet"; p.hi.textContent = ""; p.sp.innerHTML = ""; continue; }
       const tt = Math.min(t, r.end_h), s = pointStatus(u.m.run, p.key, tt);
-      p.st.textContent = t >= r.end_h ? (b.failed ? `Bearing failed: ${PART[b.failed]}` : "Stopped with the machine") : s.text;
+      p.st.textContent = t >= r.end_h ? (b.failed ? `Failed: ${PART[b.failed]}` : "Stopped with the rig") : s.text;
       p.row.className = "point " + (t >= r.end_h ? (b.failed ? "warn" : "quiet") : s.cls);
       warn = warn || s.cls === "warn";
       const v = hiAt(b, tt);
@@ -179,8 +184,8 @@ function renderJobs() {
   for (const j of open.slice().reverse()) {
     const r = R[j.run], stop = j.m.start + r.end_h, named = j.named != null && T >= j.named, done = T >= stop;
     const card = h("div", "job" + (named ? " replace" : "") + (done ? " closed" : ""));
-    card.appendChild(h("div", "jmeta", `${j.id} · raised ${stamp(j.open)}`));
-    card.appendChild(h("h3", null, named ? `Replace the bearing at ${j.m.name}, point ${j.key}` : `Inspect ${j.m.name}, point ${j.key}`));
+    card.appendChild(h("div", "jmeta", `${j.id} · raised on the snapshot of ${recorded(j.m, j.open - j.m.start)}`));
+    card.appendChild(h("h3", null, named ? `Replace bearing ${j.key}, ${j.m.name}` : `Inspect bearing ${j.key}, ${j.m.name}`));
     const dl = h("dl", "res");
     const row = (k, v) => { const r2 = h("div", "res-row"); r2.append(h("dt", null, k), h("dd", null, v)); dl.appendChild(r2); };
     row("Bearing", BEARING);
@@ -221,7 +226,7 @@ function renderLives() {
   const host = $("lives");
   if (!livesBuilt) {
     for (const m of MACHINES) {
-      const r = R[m.run], box = h("div", "life"), svg = el("svg", { viewBox: "0 0 1000 34", preserveAspectRatio: "none", "aria-label": `${m.name} across the site calendar` });
+      const r = R[m.run], box = h("div", "life"), svg = el("svg", { viewBox: "0 0 1000 34", preserveAspectRatio: "none", "aria-label": `${m.name} across the replay` });
       box.append(h("b", null, m.name), svg); host.appendChild(box);
       const x = t => t / END * 1000;
       el("rect", { x: 0, y: 14, width: 1000, height: 6, fill: "rgba(255,255,255,0.05)" }, svg);
@@ -248,12 +253,12 @@ function printCard(j) {
   const r = R[j.run], named = j.named != null && T >= j.named, pc = $("printcard");
   pc.innerHTML = "";
   pc.appendChild(h("h1", null, `${j.id}: ${named ? "replace bearing" : "inspect"}`));
-  pc.appendChild(h("p", null, `VIGIL job card, printed ${stamp(T)} (simulated site, NASA IMS data)`));
+  pc.appendChild(h("p", null, `VIGIL job card, printed at ${stamp(T)} of the replay of NASA's IMS run-to-failure data`));
   const tb = h("table");
   const row = (k, v) => { const tr = h("tr"); tr.append(h("td", null, k), h("td", null, v)); tb.appendChild(tr); };
-  row("Machine and point", `${j.m.name}, point ${j.key}`);
+  row("Test and bearing", `${j.m.name}, bearing ${j.key}`);
   row("Bearing", BEARING);
-  row("Raised", stamp(j.open));
+  row("Raised", `On the snapshot recorded ${recorded(j.m, j.open - j.m.start)}`);
   row("Finding", named ? `${cap(PART[j.d.named_as])} defect` : `Vibration changed, ${DRIVER[j.d.alarm_driver] || j.d.alarm_driver}`);
   if (named && j.d.evidence) row("Evidence", `Outer race line ${j.d.evidence.outer_db} dB, inner race ${j.d.evidence.inner_db} dB, rolling element ${j.d.evidence.ball_db} dB, overall level ${j.d.evidence.level_x}× normal`);
   row("Action", named ? "Draw the spare and change the bearing at the next planned stop" : "Inspect at the next round");

@@ -46,7 +46,7 @@ python3 replay_ims.py      # all twelve NASA bearings through the firmware's own
 
 ## The console
 
-The landing page, `docs/index.html`, is the live demonstration: the maintenance console on a simulated site, NASA's three test shafts as three machines with four measuring points each, every warning raised as a job card with its evidence, the spares to draw, the log and each machine's life. followed by the diagnosis tool. It works offline once opened (`docs/sw.js`) and can read a built node over Web Bluetooth. The results, method and limits are in `docs/results.html`.
+The landing page, `docs/index.html`, is the live demonstration: the maintenance board run on NASA's three run-to-failure tests, three shafts with four bearings each, every card showing when its snapshot was recorded, every warning raised as a job card with its evidence, the spares to draw, the log and each machine's life. followed by the diagnosis tool. It works offline once opened (`docs/sw.js`) and can read a built node over Web Bluetooth. The results, method and limits are in `docs/results.html`.
 
 ## Rerun
 
