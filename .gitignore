@@ -4,3 +4,6 @@ APPLICATION.md
 deck/*.pptx
 deck/*.pdf
 figures/page-light.png
+.pio/
+firmware/test/check_double
+firmware/test/check_float
