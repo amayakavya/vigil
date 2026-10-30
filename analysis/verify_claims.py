@@ -48,8 +48,14 @@ class Text(HTMLParser):
         if not self.skip and d.strip(): self.out.append(d.strip())
 
 
-page = Text(); page.feed(open(os.path.join(ROOT, "docs", "index.html")).read())
-sources = {"page": " ".join(page.out)}
+pages = ""
+for name in ("index.html", "results.html"):
+    t = Text(); t.feed(open(os.path.join(ROOT, "docs", name)).read()); pages += " " + " ".join(t.out)
+sources = {"page": pages}
+# the demonstration stands on its own: nothing published may link to the author's personal site
+for name in os.listdir(os.path.join(ROOT, "docs")):
+    if name.endswith((".html", ".js", ".css", ".webmanifest")) and "amayakavya.com" in open(os.path.join(ROOT, "docs", name)).read():
+        print(f"LINK to amayakavya.com in docs/{name}"); sys.exit(1)
 deck_file = os.path.join(ROOT, "deck", "VIGIL-HEISENBUG-Seva2026.pptx")
 if os.path.exists(deck_file):          # the deck is built locally from the challenge's template, not published
     from pptx import Presentation
@@ -84,7 +90,7 @@ for where, keys in need.items():
         ctx = sources[where][max(0, m.start() - 50):m.end() + 20].replace("\n", " ")
         print(f"PUNCTUATION in {where}: ...{ctx}..."); bad += 1
 # stale figures from earlier drafts must be gone everywhere
-for stale in ("42 to 603", "5,366", "flat to about 6 kHz", "Motor Transport section, about 60", "named all 4"):
+for stale in ("42 to 603", "5,366", "flat to about 6 kHz", "Motor Transport section, about 60", "named all 4", "FW_REPLAY", "FW_DECK_LINE", "FW_FORM_LINE", "FW_QA_LINE"):
     for where, text in sources.items():
         if stale in text:
             print(f"STALE in {where}: {stale!r}"); bad += 1

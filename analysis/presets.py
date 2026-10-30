@@ -77,5 +77,29 @@ json.dump({"bearings": {"ZA-2115": {"name": "Rexnord ZA-2115 (NASA IMS rig)", "o
                                      "geometry": {"rollers": 16, "roller_in": 0.331, "pitch_in": 2.815, "contact_deg": 15.17}},
                         "6205": {"name": "SKF 6205-2RS JEM (Case Western drive end)", "orders": CWRU_6205}},
            "samples": items}, open(os.path.join(OUT, "..", "samples.json"), "w"), indent=1)
+# The node records a power-of-two snapshot, so the firmware is also checked on
+# the longest power-of-two head of each recording, which takes the radix-2 path
+# it will run on the board. One line per recording for the C test bench.
+CODE = {"BPFO": 0, "BPFI": 1, "BSF": 2, None: -1}
+lines = []
 for it in items:
-    print(it["id"], it["n"], "truth", it["truth"], "->", it["expect"]["verdict"], it["expect"]["scores"], it["expect"]["band"])
+    q = np.fromfile(os.path.join(OUT, it["id"] + ".i16"), "<i2")
+    x = q.astype(float) * it["scale"]
+    P = 1 << (len(x).bit_length() - 1)
+    o = IMS_ZA2115 if it["bearing"] == "ZA-2115" else CWRU_6205
+    dp = diagnose(x[:P], it["fs"], it["rpm"] / 60, o)
+    it["expect_pow2"] = {"n": P, "verdict": dp["verdict"], "band": [float(v) for v in dp["band"]],
+                         "scores": {k: round(v, 4) for k, v in dp["scores"].items()}}
+    e = it["expect"]
+    lines.append(" ".join(str(v) for v in [
+        it["id"], it["fs"], it["rpm"], it["n"], repr(it["scale"]), o["BPFO"], o["BPFI"], o["BSF"],
+        CODE[e["verdict"]], e["band"][0], e["band"][1], e["scores"]["BPFO"], e["scores"]["BPFI"], e["scores"]["BSF"],
+        P, CODE[dp["verdict"]], float(dp["band"][0]), float(dp["band"][1]),
+        round(dp["scores"]["BPFO"], 4), round(dp["scores"]["BPFI"], 4), round(dp["scores"]["BSF"], 4)]))
+json.dump({"bearings": {"ZA-2115": {"name": "Rexnord ZA-2115 (NASA IMS rig)", "orders": IMS_ZA2115,
+                                     "geometry": {"rollers": 16, "roller_in": 0.331, "pitch_in": 2.815, "contact_deg": 15.17}},
+                        "6205": {"name": "SKF 6205-2RS JEM (Case Western drive end)", "orders": CWRU_6205}},
+           "samples": items}, open(os.path.join(OUT, "..", "samples.json"), "w"), indent=1)
+open(os.path.join(HERE, "..", "firmware", "test", "samples.txt"), "w").write("\n".join(lines) + "\n")
+for it in items:
+    print(it["id"], it["n"], "truth", it["truth"], "->", it["expect"]["verdict"], "| head", it["expect_pow2"]["n"], "->", it["expect_pow2"]["verdict"])

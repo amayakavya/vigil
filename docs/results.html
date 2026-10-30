@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VIGIL results</title>
+<meta name="description" content="Vibration Intelligence Grid for Integrity and Lifecycle. A clip-on sensor that names the failing part of a generator, pump or motor days before it fails, with no internet connection. Tested on NASA and Case Western bearing data, and runnable here on raw recordings.">
+<meta name="author" content="Amaya Kavya">
+<meta name="theme-color" content="#08090d">
+<meta property="og:type" content="website">
+<meta property="og:title" content="VIGIL">
+<meta property="og:description" content="A clip-on sensor that names the failing part of a generator, pump or motor days before it fails, with no internet connection. Tested on NASA run-to-failure data and runnable in the browser.">
+<meta property="og:url" content="https://amayakavya.github.io/vigil/">
+<meta property="og:image" content="https://amayakavya.github.io/vigil/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preload" href="fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="sheet.svg" as="image" fetchpriority="low">
+<link rel="icon" href="icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="house.css">
+</head>
+<body>
+<div class="edge-trace" aria-hidden="true"><i class="et et-t"></i><i class="et et-b"></i><i class="et et-lt"></i><i class="et et-rt"></i><i class="et et-lb"></i><i class="et et-rb"></i></div>
+<header class="topbar">
+  <a class="brand" href="./">VIGIL</a>
+  <nav class="nav" aria-label="VIGIL">
+    <a href="./">Live</a>
+    <a href="results.html" class="active">Results</a>
+    <a href="https://github.com/amayakavya/vigil">Code</a>
+  </nav>
+</header>
+
+<main class="page">
+  <section class="page-header">
+    <h1>How it was tested</h1>
+    <p class="expand">VIGIL: the results, the method, the firmware and the limits</p>
+    <div class="meta"><span class="tag">Signal processing</span><span>October 2026</span><span>Seva First Innovation Challenge, Defence</span><a href="https://github.com/amayakavya/vigil">github.com/amayakavya/vigil</a></div>
+  </section>
+
+  <article class="content">
+    <p class="lede">Every figure behind the <a href="./">live demonstration</a>, measured on public test-rig data, with what is weak about each one stated beside it.</p>
+
+    <h2>What it found</h2>
+    <p>NASA's IMS rig ran four bearings on one shaft until one failed, three times over. VIGIL saw only the first 24 hours of each bearing before it started judging, and it was never shown a failure. Four bearings failed across the three runs.</p>
+    <dl class="res" id="headline">
+      <div class="res-row big"><dt>Failures warned</dt><dd>4 of 4</dd></div>
+      <div class="res-row"><dt>Sustained warning before the rig was stopped</dt><dd>40 to 256 h</dd></div>
+      <div class="res-row"><dt>Ahead of an alarm on overall vibration doubling, on every failure</dt><dd>by 15 to 244 h</dd></div>
+      <div class="res-row"><dt>Right part named, readings in each failure's last 72 hours</dt><dd>647 of 656</dd></div>
+      <div class="res-row"><dt>Alarms on healthy bearings before any fault, in 3,245 running hours</dt><dd>0</dd></div>
+    </dl>
+    <p>A warning counts as sustained once the alarm never goes quiet for more than 12 hours again. The comparison is with what a workshop could set up without VIGIL: an alarm when the overall vibration level doubles, or rises by 35%, on the same snapshots with the same three-readings-in-a-row rule. Those alarms never name a part.</p>
+    <div class="tablewrap">
+      <table id="leadtable">
+        <thead><tr><th>Failure</th><th>VIGIL warning, sustained</th><th>Level doubled</th><th>Level up 35%</th><th>Named, last 72 h</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p>Three things in that table are weaker than they look, and they are stated here so nobody has to find them. Bearing 4 in run 1 was first flagged 603 hours before the stop, but on and off: only from 159 hours out did the warning hold. After each fault began, eight healthy bearings on the same shafts also alarmed, every time later than the failing one, and in every case the failing bearing's sensor was the loudest on the shaft at that moment, so the system points to it. And in run 3 two healthy bearings crossed the alarm level on seven single readings before any fault. The three-in-a-row rule, fixed before run 3 was scored, is what kept them quiet.</p>
+
+    <h3>Naming, on a second dataset</h3>
+    <p>Case Western Reserve University cut faults of 0.18 to 0.53 mm into test bearings and recorded them at four loads: 52 recordings. VIGIL names a part only when one defect line stands at least 10 dB clear of its neighbourhood, and otherwise declines. This set was used while the method was built, so it shows what the method can do, not a blind test.</p>
+    <div class="legend"><span><i style="background:#e9ecf1"></i>Named right</span><span><i style="border:1px solid rgba(255,255,255,.32)"></i>Declined</span><span><i class="cell bad" style="width:12px;height:12px"></i>Named wrong</span></div>
+    <div id="groups"></div>
+    <p>Rolling-element faults are the weak spot, 3 of 12. Raising that is the first technical job of the pilot.</p>
+
+    <h2>Replay a run to failure</h2>
+    <p>Drag through a run and read the workshop board as a mechanic would have seen it at that hour. A warning stays on the board until a mechanic clears it, as it would in a workshop, so a bearing whose readings later dip below the alarm keeps its warning.</p>
+    <div class="tool" style="max-width:1000px">
+      <div class="tabs" role="tablist" id="runtabs"></div>
+      <figure style="margin-bottom:0">
+        <svg class="chart" id="hi" viewBox="0 0 1000 300" role="img" aria-label="Health index of the four bearings across the run"></svg>
+      </figure>
+      <input type="range" id="scrub" min="0" max="1000" value="0" aria-label="Hour of the run">
+      <div class="clock"><span id="clock"></span><span id="left"></span></div>
+      <dl class="res" id="board" style="max-width:none;margin-top:14px"></dl>
+    </div>
+
+    <h2>How it decides</h2>
+    <h3>Learn</h3>
+    <p>For its first day on a machine the node records one second of vibration every ten minutes. From those snapshots it takes the median and the spread of six readings: overall level, kurtosis, crest factor, and the strength of the outer race, inner race and rolling element lines. That is the machine's own normal. It needs no failure data from anywhere, which matters because a government workshop keeps almost none.</p>
+    <h3>Watch</h3>
+    <p>Every later snapshot is scored against that normal, as the worst robust z-score of the six readings. Each reading has a floor on its spread: 5% on level, 0.1 on kurtosis and crest factor, 1 dB on a line, the smallest change a sensor re-seated on its magnet can claim to see. An alarm needs a score of 6 or more on three readings in a row, so a single knock does not page anyone. Readings taken with the machine stopped are ignored.</p>
+    <h3>Name</h3>
+    <p>A spall on a bearing race is struck by each rolling element in turn, at a rate fixed by the bearing's geometry. For <span class="mono">n</span> elements of diameter <span class="mono">d</span> on a pitch diameter <span class="mono">D</span>, at contact angle <span class="mono">φ</span> and shaft frequency <span class="mono">f</span>:</p>
+    <div class="formula">outer race = (n/2) f (1 − (d/D) cos φ)<br>inner race = (n/2) f (1 + (d/D) cos φ)<br>rolling element = (D/2d) f (1 − ((d/D) cos φ)²)</div>
+    <p>The node flattens the spectrum so shaft and mains lines stop masking the bearing, finds the band where the impacts ring loudest, takes the squared envelope of that band, and measures how far each predicted line stands above its neighbourhood. The asset register holds each point's bearing number, so the board can say which bearing, which part of it, and which spare to draw.</p>
+
+    <h2>The node's firmware</h2>
+    <p>The method is written a third time, in C for the node's ESP32-S3, and checked against the Python analysis rather than trusted. On the nine reference recordings, whole and cut to the power-of-two length the node records, it gives the same verdict and band in all 18 runs, with line strengths within 0.0001 dB, in the single precision the chip computes in. Then the whole of NASA's data went through the firmware's own learning and alarm logic: all twelve bearings, 37,856 snapshots. It raised every alarm and named every part on the same snapshot as the analysis, on 12 of 12 bearings.</p>
+    <dl class="res">
+      <div class="res-row"><dt>Built for ESP32-S3, measured by the compiler</dt><dd>555,357 bytes of flash, 36,880 of RAM</dd></div>
+      <div class="res-row"><dt>Snapshot and working memory, from the code</dt><dd>1,179,728 bytes of the 8 MB PSRAM</dd></div>
+      <div class="res-row"><dt>Snapshot</dt><dd>32,768 samples, 1.23 s at 26,667 Hz</dd></div>
+      <div class="res-row"><dt>Links out</dt><dd>Bluetooth, encrypted and paired, or a USB cable</dd></div>
+    </dl>
+    <p>The node wakes every ten minutes, records, decides, reports for fifteen seconds and sleeps. It measures its own sample rate against the chip's clock on every snapshot, because every defect line is computed from it and the sensor's rate may differ from nominal by a percent or two. The Wi-Fi library is never linked. The firmware is at <a href="https://github.com/amayakavya/vigil/tree/main/firmware">firmware/</a>. It has not yet run on a board.</p>
+
+    <h2>What failed first</h2>
+    <p>The first version did not work, twice. On the Case Western set it named only 26 of 52, because its band search kept choosing the band just under the sampling limit, where the anti-alias filter leaves impulsive noise. Keeping the search between 200 Hz and the sensor's 6 kHz limit, in bands at least 1 kHz wide, took it to 40. On NASA run 2 it then alarmed on all three healthy bearings, on rises in overall level of 7 to 14% against a first day so steady that changes that small scored as faults. The spread floors and the stopped-machine rule above fixed that. Runs 1 and 3 were scored once, after both fixes, with nothing changed since.</p>
+
+    <h2>What it is not, yet</h2>
+    <ul>
+      <li>The node's firmware is written and checked, but the board is not built. Its parts are an ESP32-S3 microcontroller with 8 MB of PSRAM and ST's IIS3DWB vibration accelerometer, whose response is within 3 dB up to 6 kHz, the band every result here was computed within. The bench build starts in November 2026, and its power draw, timing and sample-rate drift are measured there.</li>
+      <li>Nothing here has run on a police or forces machine. Test rigs are cleaner than a generator room.</li>
+      <li>A machine that is already damaged on installation would teach the node a damaged normal. The plan is to check each new machine against identical machines in the fleet and against the absolute vibration zones of ISO 20816, which is not yet built.</li>
+      <li>The method needs the shaft speed. Generators, pumps and motors run at a fixed speed. Vehicles do not, so they wait until speed tracking from the signal itself is built and tested on a bench.</li>
+      <li>Bluetooth is a radio. Where a site allows no transmitters, the node keeps its results and they are read over a cable.</li>
+    </ul>
+
+    <h2>The pilot it is built for</h2>
+    <p>Six months at one Maharashtra Police establishment, a district headquarters or a State Reserve Police Force group campus, with about 60 measuring points on its generators, pumps, motors and compressors, for ₹10 lakh. That is 0.73% of the ₹13.73 crore the state gave its police for modernisation in 2023-24, the latest year the Bureau of Police Research and Development reports, and a tentative figure.</p>
+    <div class="tablewrap">
+      <table class="plan">
+        <thead><tr><th>Months</th><th>Work</th><th>Measured by</th></tr></thead>
+        <tbody>
+          <tr><td>0 to 1</td><td>List the site's generators, pumps, motors and compressors with the officer in charge of maintenance, record each bearing number, build and bench test ten nodes</td><td>The asset list, and a bench test against a bearing with a seeded fault</td></tr>
+          <tr><td>1 to 6</td><td>Sixty points, one gateway on site, warnings on the maintenance board</td><td>Every warning checked against what is found when the machine is opened, false alarms per 100 machine-days, breakdowns against the site's previous year</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The force's 15,823 vehicles (Bureau of Police Research and Development, January 2024) come after that, through the Motor Transport sections, once speed tracking has been proven on a bench.</p>
+    <p>Data: NASA Prognostics Data Repository, IMS bearing data, from the Center for Intelligent Maintenance Systems, University of Cincinnati. Case Western Reserve University Bearing Data Center. The whole analysis reruns from those files in about six minutes, and the code is at <a href="https://github.com/amayakavya/vigil">github.com/amayakavya/vigil</a>.</p>
+  </article>
+</main>
+<footer>© 2026 Amaya Kavya · Team HEISENBUG</footer>
+
+<script>
+const PART = { BPFO: "outer race", BPFI: "inner race", BSF: "rolling element" };
+const $ = id => document.getElementById(id);
+const NS = "http://www.w3.org/2000/svg";
+function el(tag, attrs, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+const W80 = "rgba(242,243,245,0.95)";
+
+/* ---------- replay ---------- */
+let R = null, cur = "2";
+function chart() {
+  const r = R[cur], svg = $("hi"); svg.innerHTML = "";
+  const W = Math.max(320, Math.round(svg.parentNode.clientWidth || 1000)), H = W < 600 ? 240 : 300, m = { l: 34, r: 8, t: W < 600 ? 40 : 26, b: 30 }, Y = 40;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const x = h => m.l + (W - m.l - m.r) * h / r.end_h, y = v => m.t + (H - m.t - m.b) * (1 - Math.min(v, Y) / Y);
+  el("rect", { x: x(0), y: m.t, width: x(r.base_h) - x(0), height: H - m.t - m.b, fill: "rgba(255,255,255,0.035)" }, svg);
+  el("text", { x: x(0) + 6, y: m.t + 14 }, svg).textContent = "learning";
+  for (let v = 0; v <= Y; v += 10) { el("line", { x1: m.l, x2: W - m.r, y1: y(v), y2: y(v), stroke: "rgba(255,255,255,0.06)" }, svg); el("text", { x: m.l - 8, y: y(v) + 4, "text-anchor": "end" }, svg).textContent = v === Y ? "40+" : v; }
+  el("line", { x1: m.l, x2: W - m.r, y1: y(6), y2: y(6), stroke: "rgba(255,255,255,0.45)", "stroke-dasharray": "5 5" }, svg);
+  el("text", { x: W - m.r, y: y(6) - 6, "text-anchor": "end" }, svg).textContent = "alarm at 6";
+  const step = (r.end_h > 400 ? 200 : 24) * (W < 600 ? 2 : 1);
+  for (let h = 0; h <= r.end_h; h += step) el("text", { x: x(h), y: H - 8, "text-anchor": "middle" }, svg).textContent = h + " h";
+  const keys = Object.keys(r.bearings).sort((a, b) => (r.bearings[a].failed ? 1 : 0) - (r.bearings[b].failed ? 1 : 0));
+  for (const b of keys) {
+    const d = r.bearings[b]; let p = "";
+    d.h.forEach((h, i) => p += (i ? "L" : "M") + x(h).toFixed(1) + " " + y(d.hi[i]).toFixed(1));
+    el("path", { d: p, fill: "none", stroke: d.failed ? W80 : "rgba(255,255,255,0.28)", "stroke-width": d.failed ? 1.4 : 0.9 }, svg);
+  }
+  let row = 0;
+  for (const b of keys) {
+    const d = r.bearings[b], sm = r.summary.failed[b];
+    if (!sm) continue;
+    const t = r.end_h - sm.sustained_lead_h;
+    el("line", { x1: x(t), x2: x(t), y1: m.t, y2: H - m.b, stroke: "#f2f3f5", "stroke-width": 1 }, svg);
+    const msg = W < 600 ? `bearing ${b}: ${sm.sustained_lead_h.toFixed(1)} h before the stop` : `bearing ${b} warning holds from here, ${sm.sustained_lead_h.toFixed(1)} h before the stop`;
+    el("text", { x: x(t) - 6, y: (W < 600 ? 12 : m.t + 14) + 14 * row++, "text-anchor": "end", fill: "#eef0f2" }, svg).textContent = msg;
+  }
+  R._x = x; R._cursor = el("line", { x1: 0, x2: 0, y1: m.t, y2: H - m.b, stroke: "rgba(255,255,255,0.6)" }, svg);
+}
+function status(r, b, h) {
+  const d = r.bearings[b];
+  if (h < r.base_h) return "Learning its normal";
+  const named = d.named_h != null && h >= d.named_h, alarmed = d.alarm_h != null && h >= d.alarm_h;
+  const mine = n => n == null || String(n) === b;
+  if (named && mine(d.named_loudest)) return `Warning: ${PART[d.named_as]} defect. Plan the replacement.`;
+  if (alarmed && mine(d.loudest_at_alarm)) return "Warning: vibration has changed. Part not named yet, inspect.";
+  if (named || alarmed) return `Hearing bearing ${named ? d.named_loudest : d.loudest_at_alarm}. No action here.`;
+  return "Normal";
+}
+function scrub() {
+  const r = R[cur], h = r.end_h * $("scrub").value / 1000;
+  R._cursor.setAttribute("x1", R._x(h)); R._cursor.setAttribute("x2", R._x(h));
+  $("clock").textContent = `Hour ${h.toFixed(1)} of ${r.end_h.toFixed(1)}`;
+  $("left").textContent = r.end_h - h > 0.05 ? `${(r.end_h - h).toFixed(1)} h before the rig was stopped` : "Rig stopped";
+  const board = $("board"); board.innerHTML = "";
+  for (const b of ["1", "2", "3", "4"]) {
+    const d = r.bearings[b], row = document.createElement("div"); row.className = "res-row";
+    const dt = document.createElement("dt"); dt.textContent = `Bearing ${b}${d.failed ? `, ${PART[d.failed]} failure at the end` : ""}`;
+    const dd = document.createElement("dd"); dd.textContent = status(r, b, h); dd.style.whiteSpace = "normal";
+    row.append(dt, dd); board.appendChild(row);
+  }
+}
+function setRun(id) {
+  cur = id;
+  document.querySelectorAll("#runtabs .tab").forEach(t => t.setAttribute("aria-selected", t.dataset.run === id));
+  chart();
+  const r = R[cur], leads = Object.values(r.summary.failed).map(s => s.sustained_lead_h);
+  const t = r.end_h - Math.max(...leads);
+  $("scrub").value = Math.round(1000 * Math.min(1, (t + 0.25 * (r.end_h - t)) / r.end_h));
+  scrub();
+}
+
+/* ---------- tables from the measured summary ---------- */
+function leadTable() {
+  const tb = document.querySelector("#leadtable tbody");
+  for (const run of ["1", "2", "3"]) for (const [b, s] of Object.entries(R[run].summary.failed)) {
+    const tr = document.createElement("tr");
+    const cells = [`Run ${run}, bearing ${b}, ${PART[s.part]}`, `${s.sustained_lead_h.toFixed(1)} h`, `${s.level_x2_lead_h.toFixed(1)} h`, `${s.level_35_lead_h.toFixed(1)} h`, `${s.final_72h_correct} of ${s.final_72h_named}`];
+    cells.forEach((c, i) => { const td = document.createElement("td"); td.textContent = c; if (i === 1) td.className = "lead"; tr.appendChild(td); });
+    tb.appendChild(tr);
+  }
+}
+function groups(C) {
+  const host = $("groups");
+  for (const [lab, name] of [["BPFI", "Inner race"], ["BPFO", "Outer race"], ["BSF", "Rolling element"]]) {
+    const rows = C.rows.filter(r => r.truth === lab), ok = rows.filter(r => r.verdict === lab).length, bad = rows.filter(r => r.verdict && r.verdict !== lab).length;
+    const g = document.createElement("div"); g.className = "group";
+    const b = document.createElement("b"); b.textContent = name;
+    const s = document.createElement("span"); s.textContent = `${ok} of ${rows.length} named${bad ? `, ${bad} wrong` : ""}`;
+    const cells = document.createElement("div"); cells.className = "cells";
+    for (const r of rows) {
+      const c = document.createElement("div");
+      c.className = "cell " + (r.verdict === lab ? "ok" : r.verdict ? "bad" : "no");
+      c.title = `File ${r.file}, ${(r.size_in * 25.4).toFixed(2)} mm ${PART[r.truth]}${r.position ? " at " + r.position.slice(1) + " o'clock" : ""}, ${r.load_hp} hp: ${r.verdict ? "named " + PART[r.verdict] : "declined"}`;
+      cells.appendChild(c);
+    }
+    g.append(b, s, cells); host.appendChild(g);
+  }
+}
+
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+Promise.all(["data/replay.json", "data/cwru.json"].map(u => fetch(u).then(r => r.json()))).then(([rep, cw]) => {
+  R = rep;
+  const tabs = $("runtabs");
+  for (const [id, lab] of [["2", "Run 2, 7 days"], ["1", "Run 1, 35 days"], ["3", "Run 3, 45 days"]]) {
+    const t = document.createElement("button"); t.className = "tab"; t.dataset.run = id; t.textContent = lab; t.setAttribute("role", "tab"); t.onclick = () => setRun(id); tabs.appendChild(t);
+  }
+  $("scrub").oninput = scrub;
+  setRun("2");
+  leadTable(); groups(cw);
+  let rt = 0;
+  addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { chart(); scrub(); }, 150); });
+}).catch(() => { $("clock").textContent = "The measured data did not load. Reload the page."; });
+</script>
+</body>
+</html>

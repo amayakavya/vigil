@@ -114,7 +114,7 @@ put(t17, [
     [("15 to 244 h ", True), ("earlier than an alarm on vibration doubling, on every failure", False)],
     [("647 of 656 ", True), ("readings in each failure's last 72 h named the right part", False)],
     [("0 ", True), ("alarms on healthy bearings before any fault, in 3,245 running hours", False)],
-    [("NASA IMS run-to-failure data. The method runs live on the demo page. Hardware node not yet built.", False)],
+    [("NASA IMS run-to-failure data. The method runs live on the demo page and in the node's firmware, built for the ESP32-S3. Board not yet built.", False)],
 ], size=9.5, color=WHITE, space=6)
 t17.text_frame.paragraphs[-1].runs[0].font.color.rgb = PALE
 t17.text_frame.paragraphs[-1].runs[0].font.size = Pt(8)
@@ -171,8 +171,8 @@ for i, (a, b) in enumerate(rows, start=1):
         cell = tbl.cell(i, j)
         put(cell, text, size=7.5, color=INK, bold=(j == 2))
 put(sh(s, "Text 27"), "It names the failing part from the bearing's own geometry, so it needs no failure history, and it "
-    "runs offline. On NASA data it warned 15 to 244 h earlier than an alarm on vibration doubling. The same code runs "
-    "live on the demo page.", size=8.5)
+    "runs offline. On NASA data it warned 15 to 244 h earlier than an alarm on vibration doubling. The same method runs "
+    "on the demo page and in the node's firmware, each checked against the analysis.", size=8.5)
 sh(s, "Text 27").height = Inches(0.8)
 sources(s, "Existing-approach cost: US DOE FEMP, O&M Best Practices Guide R3.0 (2010), sec. 5.4. Lead times: VIGIL on NASA IMS data. Demo and code: " + DEMO)
 
@@ -181,14 +181,14 @@ s = S[3]
 tick(sh(s, "Shape 7"))
 tick(sh(s, "Shape 9"))
 put(sh(s, "Text 10"), "Proof of Concept", size=9, color=ORANGE, bold=True, align=PP_ALIGN.CENTER)
-box(s, 1.2, 2.42, 7.6, 0.32, ["Method tested on public test-rig data. Hardware not yet built, bench build from November 2026.",
+box(s, 1.2, 2.42, 7.6, 0.32, ["Method tested on public test-rig data. Firmware written and checked, board not yet built, bench build from November 2026.",
                                "The first version failed twice (26 of 52 named, false alarms on NASA run 2). Fixed, then runs 1 and 3 were scored once."],
     size=7.2, color=GREY, italic=True, align=PP_ALIGN.CENTER, space=0)
 put(sh(s, "Text 19"), [
-    "Node: ESP32-S3 and ST IIS3DWB accelerometer (within 3 dB to 6 kHz), sealed housing, magnet or stud mount.",
-    "Gateway: small board with Bluetooth, or a cable.",
-    "Method: Python reference, and a browser port that matches it on 9 recordings.",
-    "Bench: seeded-fault rig, college EXTC lab."], size=7.3, space=2)
+    "Node: ESP32-S3, 8 MB PSRAM, ST IIS3DWB accelerometer (within 3 dB to 6 kHz), magnet or stud mount.",
+    "Firmware in C: matches the analysis on 18 of 18 recordings and all 37,856 NASA snapshots. Builds to 555 KB flash, 37 KB RAM.",
+    "Links: encrypted Bluetooth or USB cable. No Wi-Fi.",
+    "Bench: seeded-fault rig, college EXTC lab."], size=7.0, space=2)
 put(sh(s, "Text 22"), [
     "Node about ₹4,000, gateway about ₹15,000 (retail estimates).",
     "Pilot, 60 points, 6 months: ₹10 lakh, 0.73% of the state's 2023-24 police modernisation grant.",
@@ -247,8 +247,8 @@ put(sh(s, "Text 9"), "B.E. Electronics and Telecommunication, second year, Ramra
     "Signal processing and embedded systems. Intern, SBI Global IT Centre, 2026.", size=8, color=PALE)
 sh(s, "Text 9").width = Inches(3.75)
 sh(s, "Text 9").height = Inches(0.55)
-box(s, 0.5, 2.72, 4.8, 0.25, "Working demo, open code", size=10.5, color=ORANGE, bold=True)
-s.shapes.add_picture(os.path.join(FIG, "replay-shot.png"), Inches(0.5), Inches(3.04), width=Inches(3.15))
+box(s, 0.5, 2.72, 4.8, 0.25, "Live demo, console and firmware, all open", size=10.5, color=ORANGE, bold=True)
+s.shapes.add_picture(os.path.join(FIG, "console-deck.png"), Inches(0.5), Inches(3.04), width=Inches(3.15))
 s.shapes.add_picture(os.path.join(FIG, "qr.png"), Inches(3.85), Inches(3.02), width=Inches(1.0))
 box(s, 3.85, 4.07, 1.5, 0.55, [DEMO.split("/")[0] + "/", DEMO.split("/")[1]], size=7.5, color=PALE, space=0)
 for shape_name in ("Shape 31", "Shape 33", "Shape 35", "Shape 39"):

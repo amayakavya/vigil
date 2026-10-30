@@ -1,0 +1,67 @@
+/* The console's own parts, on top of house.css. Still monochrome: a warning
+   is told apart by weight and a hairline, not by colour, as on the house site. */
+.deck { position: sticky; top: 88px; z-index: 5; background: rgba(8,9,13,0.94); padding: 14px 0 12px; border-bottom: 1px solid var(--hair); margin: 8px 0 18px; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
+.controls .go { margin-top: 0; min-width: 104px; }
+.controls .tabs { border: 0; margin: 0; padding: 0; }
+.go.ghost { background: transparent; color: #f2f3f5; border-color: rgba(255,255,255,0.4); margin-top: 6px; }
+
+.machine { border: 1px solid var(--hair-soft); border-radius: 14px; background: linear-gradient(180deg, rgb(22,24,31) 0%, rgb(18,20,25) 100%);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.4), 0 12px 28px -22px rgba(0,0,0,0.9); padding: 18px 20px 8px; margin: 0 0 14px; max-width: 1000px; }
+.machine.warn { border-color: rgba(255,255,255,0.45); }
+.mhead { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
+.mhead b { font-size: 1.15rem; font-weight: 600; letter-spacing: -0.01em; color: #eef1f6; }
+.mhead span { font-size: 0.8rem; color: rgba(255,255,255,0.6); font-variant-numeric: tabular-nums; }
+.point { display: grid; grid-template-columns: 92px 1fr 150px 54px; gap: 14px; align-items: center; padding: 9px 0; border-top: 1px solid rgba(255,255,255,0.06); }
+.point .pn { font-size: 0.8rem; color: rgba(255,255,255,0.6); }
+.point .st { font-size: 0.92rem; color: #eef0f2; }
+.point.warn .st { font-weight: 600; color: #fff; }
+.point.quiet .st { color: rgba(255,255,255,0.55); }
+.point .hi { font-size: 0.92rem; text-align: right; font-variant-numeric: tabular-nums; color: #eef0f2; }
+.spark { width: 150px; height: 28px; display: block; }
+
+.cols { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 40px; max-width: 1000px; }
+.cols h2 { margin-top: 1.6em; }
+.job { border: 1px solid rgba(255,255,255,0.18); border-radius: 2px; padding: 14px 16px; margin: 0 0 12px; background: rgba(255,255,255,0.02); }
+.job.replace { border-color: rgba(255,255,255,0.6); }
+.job.closed { opacity: 0.62; }
+.job h3 { margin: 0 0 4px !important; font-size: 1rem !important; }
+.job .jmeta { font-size: 0.74rem; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(255,255,255,0.6); margin-bottom: 8px; }
+.job dl { margin: 0; }
+.job .res-row { padding: 0.45rem 0; }
+.job .res-row dd { white-space: normal; text-align: right; }
+.job button { appearance: none; font: inherit; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.75);
+  background: transparent; border: 1px solid rgba(255,255,255,0.25); border-radius: 2px; padding: 7px 12px; margin-top: 10px; cursor: pointer; }
+.job button:hover { color: #fff; border-color: rgba(255,255,255,0.6); }
+.log { list-style: none; padding: 0; margin: 0 0 20px; max-height: 420px; overflow-y: auto; border-top: 1px solid rgba(255,255,255,0.06); }
+.log li { font-size: 0.86rem; line-height: 1.5; color: rgba(238,241,246,0.82); padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.log li time { display: block; font-size: 0.72rem; letter-spacing: 0.04em; color: rgba(255,255,255,0.55); font-variant-numeric: tabular-nums; }
+.log li.key { color: #fff; }
+.life { max-width: 1000px; margin: 0 0 14px; }
+.life b { font-size: 0.86rem; font-weight: 560; color: #eef0f2; }
+.life svg { width: 100%; height: 34px; display: block; margin-top: 6px; }
+.life svg text { fill: rgba(255,255,255,0.6); font: 10.5px Inter, system-ui, sans-serif; }
+
+#printcard { display: none; }
+.content code { overflow-wrap: anywhere; }
+@media (max-width: 860px) { .cols { grid-template-columns: 1fr; gap: 0; } }
+@media (max-width: 768px) { .deck { top: 72px; } }
+@media (max-width: 560px) {
+  .deck { position: static; }
+  .point { grid-template-columns: 1fr 48px; grid-template-areas: "pn hi" "st st" "sp sp"; gap: 4px 10px; }
+  .point .pn { grid-area: pn; } .point .hi { grid-area: hi; } .point .st { grid-area: st; } .point .spark { grid-area: sp; width: 100%; }
+  .controls .tabs .tab { padding: 8px 10px; }
+}
+
+/* a job card prints alone, black on white, for the board in the workshop */
+@media print {
+  body > *:not(#printcard) { display: none !important; }
+  html, body { background: #fff !important; color: #000; }
+  #printcard h1, #printcard p { color: #000 !important; -webkit-text-fill-color: #000; background: none; }
+  #printcard { display: block !important; font: 12pt/1.5 Inter, Arial, sans-serif; color: #000; padding: 10mm; }
+  #printcard h1 { font-size: 20pt; margin: 0 0 2mm; }
+  #printcard table { width: 100%; border-collapse: collapse; margin: 6mm 0; }
+  #printcard td { border: 1px solid #000; padding: 3mm; vertical-align: top; text-align: left; white-space: normal; color: #000; font-size: 11pt; }
+  #printcard td:first-child { width: 34%; font-weight: 600; }
+  #printcard .sign td { height: 16mm; }
+}

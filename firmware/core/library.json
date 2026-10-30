@@ -1,0 +1,1 @@
+{ "name": "vigil_core", "version": "1.0.0", "description": "VIGIL signal core: prewhitening, band search, squared envelope spectrum, defect-line naming, health index", "build": { "flags": "-O2" } }

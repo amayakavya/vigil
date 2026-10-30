@@ -36,6 +36,14 @@ for rid, run in ims.items():
         r["bearings"][b] = {k: info.get(k) for k in ("failed", "alarm_h", "named_h", "named_as", "loudest_at_alarm",
                                                      "named_loudest", "alarm_driver")}
         r["bearings"][b]["h"], r["bearings"][b]["hi"] = h, v
+        # the evidence a job card quotes: the three line strengths on the
+        # reading that completed the naming (three in a row), from the analysis
+        if info.get("named_idx") is not None:
+            F = np.load(os.path.expanduser(f"~/vigil-data/ims_run{rid}_features.npy"))
+            i = info["named_idx"] + 2
+            r["bearings"][b]["evidence"] = {"h": round(run["hours"][i], 2), "outer_db": round(float(F[i, int(b) - 1, 3]), 1),
+                                            "inner_db": round(float(F[i, int(b) - 1, 4]), 1), "ball_db": round(float(F[i, int(b) - 1, 5]), 1),
+                                            "level_x": round(float(np.exp(F[i, int(b) - 1, 0] - np.median(F[:run["n_base"], int(b) - 1, 0]))), 2)}
     replay[rid] = r
 
 # Envelope spectra for run 2, bearing 1: a healthy day, the first named
