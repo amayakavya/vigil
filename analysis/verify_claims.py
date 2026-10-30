@@ -50,15 +50,17 @@ class Text(HTMLParser):
 
 page = Text(); page.feed(open(os.path.join(ROOT, "docs", "index.html")).read())
 sources = {"page": " ".join(page.out)}
-from pptx import Presentation
-deck = []
-for s in Presentation(os.path.join(ROOT, "deck", "VIGIL-HEISENBUG-Seva2026.pptx")).slides:
-    for sh in s.shapes:
-        if sh.has_text_frame:
-            deck.append(sh.text_frame.text)
-        if sh.has_table:
-            deck += [c.text for r in sh.table.rows for c in r.cells]
-sources["deck"] = " ".join(deck)
+deck_file = os.path.join(ROOT, "deck", "VIGIL-HEISENBUG-Seva2026.pptx")
+if os.path.exists(deck_file):          # the deck is built locally from the challenge's template, not published
+    from pptx import Presentation
+    deck = []
+    for s in Presentation(deck_file).slides:
+        for sh in s.shapes:
+            if sh.has_text_frame:
+                deck.append(sh.text_frame.text)
+            if sh.has_table:
+                deck += [c.text for r in sh.table.rows for c in r.cells]
+    sources["deck"] = " ".join(deck)
 readme = open(os.path.join(ROOT, "README.md")).read()
 sources["readme"] = re.sub(r"```.*?```", "", readme, flags=re.S)
 app = os.path.join(ROOT, "APPLICATION.md")
