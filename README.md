@@ -58,6 +58,8 @@ Bluetooth from a web page needs Chrome or Edge on Android or a computer. An iPho
 
 `docs/index.html` is the live demonstration, one full-screen console in plain HTML, CSS and JavaScript with three views.
 
+It opens on a guide: seven steps through one real failure (NASA test 2, bearing 1), one sentence and one lit instrument at a time, with Back and Next. The last step opens the live board.
+
 **Board.** NASA's three run-to-failure tests replayed, three shafts with four bearings each. The left pane lists every bearing with its state and health index. The centre shows the selected bearing: its health index on a log scale, and under it, on the same time axis, the envelope spectrum of every snapshot as a waterfall, so a defect is seen arriving as a line at the frequency the bearing's geometry predicts. The right pane holds the job cards, the spares to draw and the log. Nothing is drawn ahead of the replay clock. The waterfall is real data: `analysis/waterfall.py` computes each column from one NASA snapshot with the method's own steps, and leaves a column empty where the rig was stopped.
 
 **Handset.** The phone on the maintenance round, described below.

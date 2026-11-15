@@ -27,9 +27,9 @@
     <a class="brand" href="./">VIGIL</a>
     <span class="brand-sub">Vibration Intelligence Grid for Integrity and Lifecycle</span>
     <nav class="views" aria-label="Views">
-      <a href="#board" data-view="board" aria-current="page">Board</a>
-      <a href="#handset" data-view="handset">Handset</a>
-      <a href="#recording" data-view="recording">Recording</a>
+      <a href="#board" data-view="board" aria-current="page">Live board</a>
+      <a href="#handset" data-view="handset">Phone handset</a>
+      <a href="#recording" data-view="recording">Test a recording</a>
     </nav>
     <nav class="out-links" aria-label="More">
       <a href="results.html">Results</a>
@@ -39,37 +39,58 @@
 
   <!-- ================= the board: NASA's three tests, replayed ================= -->
   <main class="view" id="board">
-    <dl class="strip" aria-label="Results on NASA's run-to-failure tests">
-      <div><dt>Failures warned</dt><dd>4 of 4</dd></div>
-      <div><dt>Sustained warning ahead</dt><dd>40 to 256 h</dd></div>
-      <div><dt>Ahead of a level alarm</dt><dd>15 to 244 h</dd></div>
-      <div><dt>Right part named, last 72 h</dt><dd>647 of 656</dd></div>
-      <div><dt>Healthy alarms in 3,245 h</dt><dd>0</dd></div>
-    </dl>
+    <div class="guide" id="guide">
+      <div class="walk" id="walk" aria-live="polite">
+        <div>
+          <div class="count"><span id="g-count">Step 1 of 7</span><span class="pips" id="g-pips" aria-hidden="true"></span></div>
+          <h1 id="g-title">A sensor on the bearing</h1>
+          <p id="g-text"></p>
+        </div>
+        <div class="walk-nav">
+          <button class="go ghost" id="g-back" type="button">Back</button>
+          <button class="go" id="g-next" type="button">Next</button>
+          <button class="quiet-btn" id="g-skip" type="button">Skip the guide</button>
+        </div>
+      </div>
+      <div class="free" id="free" hidden>
+        <p class="story" id="story" aria-live="polite"></p>
+        <button class="quiet-btn" id="g-start" type="button">Step by step guide</button>
+      </div>
+      <dl class="strip" id="strip" aria-label="Results on NASA's run-to-failure tests" hidden>
+        <div><dt>Failures warned</dt><dd>4 of 4</dd></div>
+        <div><dt>Warned ahead by</dt><dd>40 to 256 h</dd></div>
+        <div><dt>Before a level alarm</dt><dd>15 to 244 h</dd></div>
+        <div><dt>Right part named</dt><dd>647 of 656</dd></div>
+        <div><dt>False alarms, 3,245 h</dt><dd>0</dd></div>
+      </dl>
+    </div>
 
     <div class="desk">
       <section class="pane" id="fleet-pane">
-        <h2 class="pt"><span>Machines</span><span>Health index</span></h2>
+        <h2 class="pt"><span>Machines</span><span>Score</span></h2>
         <div id="fleet"></div>
+        <p class="key"><span><i class="ok"></i>Healthy</span><span><i class="warn"></i>Warning</span><span><i></i>Learning or stopped</span></p>
       </section>
 
       <section class="pane" id="point-pane">
-        <h2 class="pt"><span id="pt-title">Point</span><button class="quiet-btn" id="pt-follow" type="button">Following</button></h2>
-        <p class="state" id="pt-state"></p>
-        <dl class="reads" id="pt-reads"></dl>
-        <div class="plot">
-          <h3 class="ph"><span>Health index</span><span id="rd-trend">Log scale, against this bearing's own first day</span></h3>
+        <h2 class="pt"><span id="pt-title">Point</span><button class="quiet-btn" id="pt-follow" type="button">Auto</button></h2>
+        <div id="pt-head">
+          <p class="state" id="pt-state"></p>
+          <dl class="reads" id="pt-reads"></dl>
+        </div>
+        <div class="plot" id="plot-trend">
+          <h3 class="ph"><span id="ph-trend">Health score</span><span id="rd-trend">How far the bearing is from its own normal. 6 raises the alarm.</span></h3>
           <canvas id="cv-trend"></canvas>
         </div>
-        <div class="plot tall">
-          <h3 class="ph"><span>Envelope spectrum over the test</span><span id="rd-fall">0 to 600 Hz, each column one snapshot</span></h3>
+        <div class="plot tall" id="plot-fall">
+          <h3 class="ph"><span>Vibration fingerprint</span><span id="rd-fall">A defect shows as a bright line at the pitch its part must ring at.</span></h3>
           <canvas id="cv-fall"></canvas>
         </div>
       </section>
 
       <section class="pane" id="work-pane">
         <h2 class="pt"><span>Job cards</span><span id="jobs-count"></span></h2>
-        <p class="none" id="jobs-empty">No open jobs.</p>
+        <p class="none" id="jobs-empty">No warnings yet. A job card for the mechanic appears here the moment VIGIL raises one.</p>
         <div id="jobs"></div>
         <h2 class="pt"><span>Spares to draw</span></h2>
         <dl class="res" id="spares"></dl>
@@ -80,12 +101,13 @@
 
     <div class="transport" id="deck">
       <button class="go" id="play" type="button">Play</button>
-      <div class="speed" role="group" aria-label="Speed">
-        <button class="btn" data-speed="2" type="button">2 h/s</button>
-        <button class="btn" data-speed="8" type="button">8 h/s</button>
-        <button class="btn" data-speed="24" type="button" aria-pressed="true">1 day/s</button>
+      <div class="speed" role="group" aria-label="Replay speed">
+        <button class="btn" data-speed="2" type="button" title="Two hours of the test each second">Slow</button>
+        <button class="btn" data-speed="8" type="button" title="Eight hours of the test each second">Medium</button>
+        <button class="btn" data-speed="24" type="button" title="One day of the test each second" aria-pressed="true">Fast</button>
       </div>
       <div class="track">
+        <div class="lane-names" aria-hidden="true"><span>Test 1</span><span>Test 2</span><span>Test 3</span></div>
         <input type="range" id="scrub" min="0" max="10000" value="0" aria-label="Replay time">
         <canvas id="cv-lanes" aria-hidden="true"></canvas>
       </div>
@@ -97,7 +119,7 @@
   <main class="view" id="handset" hidden>
     <div class="cols2">
       <section class="pane">
-        <h2 class="pt"><span>Link</span><span id="c-via"></span></h2>
+        <h2 class="pt"><span><b class="n">1</b>Connect to a node</span><span id="c-via"></span></h2>
         <div class="pad">
           <div class="links">
             <button class="go" id="c-bench" type="button">Bench node</button>
@@ -108,7 +130,7 @@
           <p class="hint" id="c-note">The bench node is the node's own firmware, built from the same C as the ESP32-S3 image, run in this page on NASA test 2, bearing 1. Bluetooth and the cable speak the same lines to a built node. No board is built yet, so those two have not met hardware.</p>
         </div>
         <div id="node" hidden>
-          <h2 class="pt"><span id="n-title">Node</span><span>Status</span></h2>
+          <h2 class="pt"><span><b class="n">2</b><span id="n-title">Node</span></span><span>What it says now</span></h2>
           <p class="state" id="s-state"></p>
           <dl class="res" id="n-status">
             <div class="res-row"><dt>Health index, alarm at 6</dt><dd id="s-hi"></dd></div>
@@ -126,7 +148,7 @@
             </div>
             <p class="hint" id="b-note"></p>
           </div>
-          <h2 class="pt"><span>Last 48 hours</span><span>Health index, from the node's own log</span></h2>
+          <h2 class="pt"><span><b class="n">3</b>Its last 48 hours</span><span>Health score, from the node's own log</span></h2>
           <figure class="fig">
             <svg class="chart" id="trend" viewBox="0 0 820 170" role="img" aria-label="Health index over the last 48 hours"></svg>
             <figcaption id="trend-cap"></figcaption>
@@ -140,7 +162,7 @@
 
       <section class="pane">
         <div id="node-tools" hidden>
-          <h2 class="pt"><span>At the machine</span><span>A spot reading never moves the alarm</span></h2>
+          <h2 class="pt"><span><b class="n">4</b>Check it at the machine</span><span>A spot reading never moves the alarm</span></h2>
           <div class="pad">
             <div class="links">
               <button class="go ghost" id="a-spot" type="button">Spot reading</button>
@@ -169,7 +191,7 @@
             <div class="pad"><button class="go ghost" id="e-save" type="button">Save the recording</button></div>
           </div>
 
-          <h2 class="pt"><span>Installation</span><span>A new bearing, speed or axis starts a new normal</span></h2>
+          <h2 class="pt"><span><b class="n">5</b>Set it up</span><span>A new bearing, speed or axis starts a new normal</span></h2>
           <div class="pad">
             <div class="grid">
               <label class="field wide"><span>Node id, as on the asset register</span><input id="i-id" maxlength="23" autocomplete="off" autocapitalize="characters" spellcheck="false"></label>
@@ -190,7 +212,7 @@
           </div>
         </div>
 
-        <h2 class="pt"><span>The round</span><span>Kept on this device only</span></h2>
+        <h2 class="pt"><span><b class="n">6</b>The round so far</span><span>Kept on this device only</span></h2>
         <div class="tablewrap"><table id="round"><thead><tr><th>Read</th><th>Node</th><th>State</th><th>Index</th><th>Part</th></tr></thead><tbody></tbody></table></div>
         <p class="none" id="round-empty">Nothing read yet.</p>
         <div class="pad">
@@ -207,7 +229,7 @@
   <main class="view" id="recording" hidden>
     <div class="cols2">
       <section class="pane">
-        <h2 class="pt"><span>Recording</span><span>The method, run in this browser</span></h2>
+        <h2 class="pt"><span><b class="n">1</b>Choose a recording</span><span>The method, run in this browser</span></h2>
         <div class="pad">
           <div class="tabs" role="tablist">
             <button class="btn" role="tab" id="t-rec" aria-selected="true" type="button">Reference recordings</button>
@@ -237,8 +259,8 @@
         </div>
       </section>
       <section class="pane">
-        <h2 class="pt"><span>Diagnosis</span><span>A part is named when its line stands 10 dB clear</span></h2>
-        <p class="none" id="out-empty">No recording diagnosed yet.</p>
+        <h2 class="pt"><span><b class="n">2</b>The diagnosis</span><span>A part is named when its line stands 10 dB clear</span></h2>
+        <p class="none" id="out-empty">Choose a recording on the left and press Diagnose.</p>
         <div class="out" id="out" hidden>
           <p class="state" id="o-verdict"></p>
           <dl class="res">

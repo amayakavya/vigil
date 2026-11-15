@@ -18,7 +18,7 @@ const MACHINES = [
 ];
 const BEARING = "Rexnord ZA-2115";
 const INK = "#e8ebee", MID = "#a9b0b9", DIM = "#77808b", FAINT = "#454d57", RULE = "#1b2129", AMBER = "#ffb000";
-const FONT = "10px Inter, system-ui, sans-serif";
+const FONT = "11.5px Inter, system-ui, sans-serif";
 const $ = id => document.getElementById(id);
 function h(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
 const put = (e, text) => { if (e.textContent !== text) e.textContent = text; };
@@ -53,22 +53,22 @@ function statusAt(m, key, now) {
   const r = R[m.run], b = r.bearings[key], t = now - m.start;
   if (t < 0) return { long: "Not started yet", short: "Not started", cls: "quiet" };
   if (t >= r.end_h) return b.failed
-    ? { long: `Failed: ${PART[b.failed]}. NASA stopped the test here.`, short: `Failed, ${PART[b.failed]}`, cls: "warn" }
-    : { long: "Stopped with the rig. This bearing did not fail.", short: "Stopped with rig", cls: "quiet" };
+    ? { long: `Failed: ${PART[b.failed]}. NASA stopped the test here.`, short: `Failed: ${PART[b.failed]}`, cls: "warn" }
+    : { long: "Stopped with the rig. This bearing did not fail.", short: "Stopped, did not fail", cls: "quiet" };
   const idle = idleAt(b, t);
-  if (t < r.base_h) return idle ? { long: "Not running. Learning resumes when it starts.", short: "Not running", cls: "quiet", idle }
-                                : { long: "Learning its normal", short: "Learning", cls: "quiet" };
+  if (t < r.base_h) return idle ? { long: "Not running. Learning resumes when it starts.", short: "Rig stopped", cls: "quiet", idle }
+                                : { long: "Learning what normal is", short: "Learning", cls: "quiet" };
   const named = b.named_h != null && t >= b.named_h, alarmed = b.alarm_h != null && t >= b.alarm_h;
   const mine = n => n == null || String(n) === key;
   let s;
-  if (named && mine(b.named_loudest)) s = { long: `Warning: ${PART[b.named_as]} defect. Replace the bearing.`, short: `Warning, ${PART[b.named_as]}`, cls: "warn" };
-  else if (alarmed && mine(b.loudest_at_alarm)) s = { long: "Warning: vibration has changed. Inspect, part not named yet.", short: "Warning, inspect", cls: "warn" };
-  else if (named || alarmed) { const n = named ? b.named_loudest : b.loudest_at_alarm; s = { long: `Hearing bearing ${n}. No action here.`, short: `Hears bearing ${n}`, cls: "quiet" }; }
-  else s = { long: "Normal", short: "Normal", cls: "ok" };
+  if (named && mine(b.named_loudest)) s = { long: `Warning: ${PART[b.named_as]} defect. Replace the bearing.`, short: `Warning: ${PART[b.named_as]}`, cls: "warn" };
+  else if (alarmed && mine(b.loudest_at_alarm)) s = { long: "Warning: vibration has changed. Inspect, part not named yet.", short: "Warning: inspect", cls: "warn" };
+  else if (named || alarmed) { const n = named ? b.named_loudest : b.loudest_at_alarm; s = { long: `Healthy. It hears bearing ${n}'s fault along the shaft. No action here.`, short: `Healthy, hears bearing ${n}`, cls: "ok" }; }
+  else s = { long: "Healthy", short: "Healthy", cls: "ok" };
   if (!idle) return s;
   // a warning stands until a mechanic clears it, running or not
   return s.cls === "warn" ? { long: "Not running. " + s.long.replace("Warning:", "Warning stands:"), short: s.short, cls: "warn", idle }
-                          : { long: "Not running, no readings", short: "Not running", cls: "quiet", idle };
+                          : { long: "Rig stopped, no readings", short: "Rig stopped", cls: "quiet", idle };
 }
 
 function buildEvents() {
@@ -124,7 +124,7 @@ function buildFleet() {
     for (const key of ["1", "2", "3", "4"]) {
       const row = h("button", "pnt"), st = h("span", "s"), v = h("span", "v");
       row.type = "button";
-      row.append(h("i"), h("span", "k", key), st, v);
+      row.append(h("i"), h("span", "k", `Bearing ${key}`), st, v);
       row.setAttribute("aria-label", `${m.name}, bearing ${key}`);
       row.onclick = () => { sel = { m, key }; pinned = true; render(); };
       box.appendChild(row);
@@ -154,15 +154,15 @@ function renderFleet() {
 function renderPoint() {
   const { m, key } = sel, r = R[m.run], b = r.bearings[key], t = T - m.start, tt = Math.min(t, r.end_h), s = statusAt(m, key, T);
   put($("pt-title"), `${m.name} / bearing ${key}`);
-  put($("pt-follow"), pinned ? "Pinned. Follow newest warning" : "Following newest warning");
+  put($("pt-follow"), step ? "Guide" : pinned ? "Your pick. Back to auto" : "Auto: newest warning");
   const st = $("pt-state"), cls = "state" + (s.cls === "warn" ? " warn" : s.cls === "quiet" ? " quiet" : "");
   put(st, s.long);
   if (st.className !== cls) st.className = cls;
   const v = hiAt(b, tt), j = jobOf(m, key), open = j && j.open <= T;
   const cells = [
-    ["Health index", tt < r.base_h ? "Learning" : s.idle || v == null ? "No reading" : v >= 99 ? "99+" : v.toFixed(2)],
+    ["Health score", tt < r.base_h ? "Learning" : s.idle || v == null ? "No reading" : v >= 99 ? "99+" : v.toFixed(2)],
     ["Recorded", recorded(m, tt)],
-    ["To NASA's stop", t >= r.end_h ? "Stopped" : span(r.end_h - t)],
+    [b.failed ? "Until it fails" : "Until the rig stops", t >= r.end_h ? (b.failed ? "Failed" : "Stopped") : span(r.end_h - t)],
     open ? (t >= r.end_h ? ["Warned ahead by", span(m.start + r.end_h - j.open)] : ["Warning raised", `${span(T - j.open)} ago`]) : ["Bearing", BEARING],
   ];
   const host = $("pt-reads");
@@ -181,7 +181,7 @@ function fit(cv) {
   return { c, w, h: hgt };
 }
 // the two plots share their left and right edges, so a moment in the trend sits above the same moment in the waterfall
-const edges = w => ({ L: 38, Rr: w - (w < 520 ? 78 : 96) });
+const edges = w => ({ L: 40, Rr: w - (w < 520 ? 78 : 156) });
 function rule(c, x1, y1, x2, y2, colour, dash) {
   c.beginPath(); c.setLineDash(dash || []); c.strokeStyle = colour; c.lineWidth = 1;
   c.moveTo(Math.round(x1) + 0.5, Math.round(y1) + 0.5); c.lineTo(Math.round(x2) + 0.5, Math.round(y2) + 0.5); c.stroke(); c.setLineDash([]);
@@ -198,6 +198,9 @@ function days(c, r, x, y) {
 function drawTrend() {
   const { c, w, h: H } = fit($("cv-trend")), { m, key } = sel, r = R[m.run], b = r.bearings[key], t = Math.max(0, Math.min(T - m.start, r.end_h));
   const { L, Rr } = edges(w), top = 6, bot = H - 18;
+  const waving = step && STEPS[step - 1].wave;
+  put($("ph-trend"), waving ? "One second of vibration" : "Health score");
+  if (waving) { drawWave(c, L, Rr, top, bot, H); return; }
   const x = v => L + (Rr - L) * v / r.end_h;
   const lo = Math.log10(0.5), y = v => bot - (bot - top) * (Math.log10(Math.min(Math.max(v, 0.5), 100)) - lo) / (2 - lo);
   // the first day, when the node is learning and nothing can alarm
@@ -205,8 +208,11 @@ function drawTrend() {
   c.textAlign = "right";
   for (const v of [1, 10, 100]) { rule(c, L, y(v), Rr, y(v), RULE); c.fillStyle = DIM; c.fillText(String(v), L - 6, y(v)); }
   rule(c, L, top, L, bot, RULE); rule(c, Rr, top, Rr, bot, RULE); rule(c, L, bot, Rr, bot, RULE);
+  c.fillStyle = "rgba(255,176,0,0.055)"; c.fillRect(L + 1, top, Rr - L - 1, y(6) - top);
   rule(c, L, y(6), Rr, y(6), AMBER, [4, 4]);
-  c.textAlign = "left"; c.fillStyle = AMBER; c.fillText("Alarm at 6", Rr + 8, y(6));
+  c.textAlign = "left"; c.fillStyle = AMBER; c.fillText("Alarm line, 6", Rr + 8, y(6));
+  c.fillStyle = "rgba(255,176,0,0.75)"; c.fillText("Warning zone", Rr + 8, (top + y(6)) / 2);
+  c.fillStyle = DIM; c.fillText("Healthy", Rr + 8, (y(6) + bot) / 2);
   days(c, r, x, H - 7);
   // the trace, white until this bearing's own warning and amber after it
   const j = jobOf(m, key), open = j ? j.open - m.start : Infinity;
@@ -263,9 +269,9 @@ function fallImage(run, key) {
     let lum = 0;
     if (v !== 255) {
       // decibels above the spectrum's own median: its noise sits under about 8 dB and stays a dark grain,
-      // and a line 18 dB clear is drawn at full white
-      const a = Math.min(1, Math.max(0, (v / 254 * WF.db_max - 3.5) / 14.5));
-      lum = 10 + 245 * a * a * (0.25 + 0.75 * a);
+      // a line 10 dB clear (the level at which a part is named) is plainly lit, and 16 dB is full white
+      const a = Math.min(1, Math.max(0, (v / 254 * WF.db_max - 5) / 11));
+      lum = 12 + 243 * Math.pow(a, 1.4);
     }
     img.data[p] = lum * 0.93; img.data[p + 1] = lum * 0.97; img.data[p + 2] = lum; img.data[p + 3] = v === 255 ? 0 : 255;
   }
@@ -291,21 +297,26 @@ function drawFall() {
   days(c, r, x, H - 7);
   // where each defect would ring, from the bearing's geometry: a ball strikes both races, so it shows at twice its spin
   const Lz = R.lines_hz, j = jobOf(m, key), named = j && j.named != null && j.named - m.start <= t ? b.named_as : null;
-  const lines = [["BPFO", Lz.BPFO, "Outer"], ["BSF", 2 * Lz.BSF, w < 520 ? "Roller" : "Rolling el."], ["BPFI", Lz.BPFI, "Inner"]];
+  const wide = w >= 520;
+  const lines = [["BPFO", Lz.BPFO, wide ? "Outer race" : "Outer"], ["BSF", 2 * Lz.BSF, wide ? "Rolling element" : "Roller"], ["BPFI", Lz.BPFI, wide ? "Inner race" : "Inner"]];
   const labels = [];
   for (const [code, f, name] of lines) {
-    labels.push({ f, text: `${name} ${f.toFixed(0)}`, hot: named === code, main: true });
-    if (2 * f < fmax) labels.push({ f: 2 * f, text: `2× ${name.toLowerCase()}`, hot: named === code });
+    labels.push({ f, text: `${name} ${f.toFixed(0)}${wide ? " Hz" : ""}`, hot: named === code, main: true });
+    if (2 * f < fmax) labels.push({ f: 2 * f, text: wide ? `${name}, 2nd` : `2× ${name.toLowerCase()}`, hot: named === code });
   }
   labels.sort((a, z) => a.f - z.f);
   let lastY = Infinity;
   for (const l of labels) {
-    const at = y(l.f), ty = Math.min(at, lastY - 11);       // labels keep their order and step clear of each other
+    const at = y(l.f), ty = Math.min(at, lastY - 13);       // labels keep their order and step clear of each other
     lastY = ty;
     const colour = l.hot ? AMBER : l.main ? MID : FAINT;
     c.beginPath(); c.strokeStyle = colour; c.lineWidth = 1;
     c.moveTo(Rr + 1, Math.round(at) + 0.5); c.lineTo(Rr + 5, Math.round(at) + 0.5); c.lineTo(Rr + 9, Math.round(ty) + 0.5); c.stroke();
     c.textAlign = "left"; c.fillStyle = colour; c.fillText(l.text, Rr + 12, ty);
+  }
+  // once a part is named, two amber marks at the plot's edges point along its line without covering it
+  if (named && img) for (const [code, f] of lines) if (code === named) {
+    c.fillStyle = AMBER; c.fillRect(L + 1, Math.round(y(f)) - 1, 9, 2); c.fillRect(x(t) + 3, Math.round(y(f)) - 1, 9, 2);
   }
   if (!img) { c.textAlign = "left"; c.fillStyle = DIM; c.fillText(WF === false ? "The spectra did not load." : "Loading spectra", L + 8, top + 12); }
   if (t > 0 && t < r.end_h) rule(c, x(t), top, x(t), bot, "rgba(255,255,255,0.5)");
@@ -396,28 +407,29 @@ function printCard(j) {
 function drawLanes() {
   const { c, w } = fit($("cv-lanes")), x = t => 5 + (w - 10) * t / END;     // the slider's thumb is 10 px wide
   MACHINES.forEach((m, i) => {
-    const r = R[m.run], y = 2 + i * 8, b1 = r.bearings["1"], seen = Math.min(T, m.start + r.end_h);
-    c.fillStyle = RULE; c.fillRect(x(m.start), y, x(m.start + r.end_h) - x(m.start), 4);
+    const r = R[m.run], y = 3 + i * 12, b1 = r.bearings["1"], seen = Math.min(T, m.start + r.end_h);
+    c.fillStyle = RULE; c.fillRect(x(m.start), y, x(m.start + r.end_h) - x(m.start), 6);
     if (seen > m.start) {
-      c.fillStyle = FAINT; c.fillRect(x(m.start), y, x(Math.min(seen, m.start + r.base_h)) - x(m.start), 4);
-      if (seen > m.start + r.base_h) { c.fillStyle = MID; c.fillRect(x(m.start + r.base_h), y, x(seen) - x(m.start + r.base_h), 4); }
+      c.fillStyle = FAINT; c.fillRect(x(m.start), y, x(Math.min(seen, m.start + r.base_h)) - x(m.start), 6);
+      if (seen > m.start + r.base_h) { c.fillStyle = MID; c.fillRect(x(m.start + r.base_h), y, x(seen) - x(m.start + r.base_h), 6);  }
       const warned = JOBS.filter(j => j.m === m && j.open <= T).map(j => j.open);
-      if (warned.length) { const w0 = Math.min(...warned); c.fillStyle = AMBER; c.fillRect(x(w0), y, x(seen) - x(w0), 4); }
+      if (warned.length) { const w0 = Math.min(...warned); c.fillStyle = AMBER; c.fillRect(x(w0), y, x(seen) - x(w0), 6); }
       // the stoppages, as gaps in the bar
       c.fillStyle = "#0a0d11";
       for (let k = 0; k + 1 < b1.h.length && b1.h[k] < seen - m.start; k++) if (b1.h[k + 1] - b1.h[k] > 3) {
         const a = m.start + b1.h[k], z = Math.min(seen, m.start + b1.h[k + 1]);
-        c.fillRect(x(a), y - 1, x(z) - x(a), 6);
+        c.fillRect(x(a), y - 1, x(z) - x(a), 8);
       }
     }
-    if (T >= m.start + r.end_h) { c.fillStyle = "#fff"; c.fillRect(Math.round(x(m.start + r.end_h)) - 1, y - 2, 2, 8); }
+    if (T >= m.start + r.end_h) { c.fillStyle = "#fff"; c.fillRect(Math.round(x(m.start + r.end_h)) - 1, y - 2, 2, 10); }
   });
 }
 
 /* ---------- the clock ---------- */
 function render() {
   if (!R || $("board").hidden) return;
-  if (!pinned) {                                    // the centre of the desk follows the newest warning
+  if (step) sel = { m: G, key: GK };
+  else if (!pinned) {                               // the centre of the desk follows the newest warning
     const open = JOBS.filter(j => j.open <= T), j = open[open.length - 1];
     sel = j ? { m: j.m, key: j.key } : { m: MACHINES[1], key: "1" };
   }
@@ -425,12 +437,13 @@ function render() {
   put($("sitenote"), T >= END - 0.01 ? "Every test has ended" : `${(END - T) / 24 > 1 ? Math.round((END - T) / 24) + " days" : Math.round(END - T) + " h"} of data left`);
   $("scrub").value = Math.round(10000 * T / END);
   renderFleet(); renderPoint(); drawTrend(); drawFall(); renderJobs(); renderLog(); drawLanes();
+  if (!step) { const s = story(); put($("story"), s.text); $("story").classList.toggle("warn", s.warn); }
 }
 function frame(now) {
   if (playing && !$("board").hidden) {
     const dt = last ? Math.min((now - last) / 1000, 0.1) : 0;
-    T = Math.min(END, T + dt * speed);
-    if (T >= END) { playing = false; $("play").textContent = "Replay"; }
+    if (step) { T = Math.min(goal, T + dt * pace); if (T >= goal) playing = false; }
+    else { T = Math.min(END, T + dt * speed); if (T >= END) { playing = false; $("play").textContent = "Replay"; } }
     render();
   }
   last = now;
@@ -456,11 +469,104 @@ for (const id of ["cv-trend", "cv-fall"]) {
   cv.addEventListener("pointerleave", () => { hover = null; if (!playing) render(); });
 }
 addEventListener("keydown", e => {
-  if (e.code !== "Space" || $("board").hidden || /^(INPUT|SELECT|TEXTAREA|BUTTON|A)$/.test(e.target.tagName)) return;
+  if ($("board").hidden || /^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) return;
+  if (step && (e.code === "ArrowRight" || e.code === "ArrowLeft")) { e.preventDefault(); go(e.code === "ArrowRight" ? (step < STEPS.length ? step + 1 : 0) : Math.max(1, step - 1)); return; }
+  if (step || e.code !== "Space" || /^(BUTTON|A)$/.test(e.target.tagName)) return;
   e.preventDefault(); toggle();
 });
 new ResizeObserver(() => render()).observe($("point-pane"));
 addEventListener("resize", () => render());
+
+/* ---------- the guide: one real failure, a step at a time ---------- */
+const G = MACHINES[1], GK = "1", DIMMABLE = ["fleet-pane", "work-pane", "pt-head", "plot-trend", "plot-fall", "strip"];
+let STEPS = [], step = 0, goal = 0, pace = 1, wave = null;
+function buildSteps() {
+  const r = R[G.run], b = r.bearings[GK], named = b.named_h, seen = named + 16, part = PART[b.named_as];
+  STEPS = [
+    { title: "A sensor on the bearing", from: 0, to: 0, lit: ["plot-trend"], wave: true,
+      text: "A VIGIL node clips to a bearing housing and records one second of vibration every ten minutes. NASA's test rig stands in for it here. This is one second from bearing 1 of its second test." },
+    { title: "It learns what normal is", from: 0, to: r.base_h, lit: ["plot-trend"],
+      text: "For its first day the node only listens. It is never shown a fault. It learns this one bearing's own normal, so it needs no failure records from the unit it is fitted in." },
+    { title: "It checks every ten minutes", from: r.base_h, to: named - 6, lit: ["plot-trend", "pt-head"],
+      text: "Each reading is scored against that normal. Near 1 is healthy. Three readings in a row at 6 or more and the alarm goes, so a single knock pages nobody." },
+    { title: "It names the failing part", from: named - 6, to: seen, lit: ["plot-fall", "pt-head"],
+      text: `On ${stamp(named).toLowerCase().replace(",", " at")} a bright line appears at ${R.lines_hz[b.named_as].toFixed(0)} Hz, the pitch this bearing's ${part} must ring at. It holds for three readings and VIGIL names it: ${part} defect.` },
+    { title: "The mechanic gets a job card", from: seen, to: seen, lit: ["work-pane"],
+      text: "Which bearing, which part, which spare and what to do, in plain words. It prints for the workshop, and the phone handset reads the same warning from the node." },
+    { title: "The bearing fails, as named", from: seen, to: r.end_h, lit: ["plot-trend", "pt-head", "work-pane"],
+      text: `NASA let the rig run on. Bearing ${GK} failed at its ${PART[b.failed]} ${Math.round(r.end_h - named)} hours after the warning. On a site, those are the hours in which it is changed.` },
+    { title: "Four failures, four warnings", from: r.end_h, to: r.end_h, lit: ["strip"], last: true,
+      text: "Across NASA's three tests VIGIL warned of every bearing that failed, 40 to 256 hours ahead, and raised no alarm on a healthy bearing before a fault. The live board plays all three." },
+  ];
+  for (const id of DIMMABLE) $(id).classList.add("dimmable");
+  const pips = $("g-pips");
+  for (let i = 0; i < STEPS.length; i++) pips.appendChild(h("i"));
+}
+function go(n) {
+  step = n;
+  ui.logCount = -1; $("jobs").dataset.sig = "";
+  if (!n) { pinned = false; T = 0; playing = true; $("play").textContent = "Pause"; }
+  else { const s = STEPS[n - 1]; pinned = true; T = s.from; goal = s.to; pace = (s.to - s.from) / 3.2; playing = s.to > s.from; }
+  const s = n ? STEPS[n - 1] : null;
+  $("board").classList.toggle("guided", !!n);
+  $("walk").hidden = !n; $("free").hidden = !!n; $("strip").hidden = !!n && !s.last;
+  for (const id of DIMMABLE) $(id).classList.toggle("dim", !!n && !s.lit.includes(id));
+  if (n) {
+    put($("g-count"), `Step ${n} of ${STEPS.length}`);
+    [...$("g-pips").children].forEach((p, i) => p.classList.toggle("on", i < n));
+    put($("g-title"), s.title); put($("g-text"), s.text);
+    $("g-back").disabled = n === 1;
+    put($("g-next"), s.last ? "Open the live board" : "Next");
+  }
+  last = 0;
+  render();
+  // on a phone the panes are stacked, so the one this step is about is brought up under the guide
+  if (matchMedia("(max-width: 860px)").matches) {
+    const el = n && !s.last ? $(s.lit[0]) : null;
+    scrollTo({ top: el ? el.getBoundingClientRect().top + scrollY - $("guide").offsetHeight - 54 : 0, behavior: "smooth" });
+  }
+}
+$("g-next").onclick = () => go(step < STEPS.length ? step + 1 : 0);
+$("g-back").onclick = () => go(Math.max(1, step - 1));
+$("g-skip").onclick = () => go(0);
+$("g-start").onclick = () => go(1);
+
+function drawWave(c, L, Rr, top, bot, H) {
+  rule(c, L, top, L, bot, RULE); rule(c, Rr, top, Rr, bot, RULE); rule(c, L, bot, Rr, bot, RULE);
+  if (!wave) { put($("rd-trend"), "Loading the recording"); return; }
+  put($("rd-trend"), `${wave.source}. Acceleration in g.`);
+  const q = wave.q, n = q.length, mid = (top + bot) / 2;
+  let peak = 1;
+  for (let i = 0; i < n; i++) peak = Math.max(peak, Math.abs(q[i]));
+  const y = v => mid - (bot - top) * 0.46 * v / peak, cols = Math.max(1, Math.round(Rr - L));
+  rule(c, L, mid, Rr, mid, RULE);
+  c.beginPath(); c.strokeStyle = INK; c.lineWidth = 1;
+  for (let px = 0; px < cols; px++) {               // each pixel column drawn from its lowest to its highest sample
+    let lo = Infinity, hi = -Infinity;
+    for (let i = Math.floor(px * n / cols), e = Math.floor((px + 1) * n / cols); i < e; i++) { if (q[i] < lo) lo = q[i]; if (q[i] > hi) hi = q[i]; }
+    c.moveTo(L + px + 0.5, y(hi)); c.lineTo(L + px + 0.5, y(lo) + 1);
+  }
+  c.stroke();
+  const g = peak * wave.scale;
+  c.fillStyle = DIM; c.textAlign = "right";
+  c.fillText(`+${g.toFixed(2)}`, L - 6, y(peak)); c.fillText("0", L - 6, mid); c.fillText(`-${g.toFixed(2)}`, L - 6, y(-peak));
+  c.textAlign = "left"; c.fillText("0 s", L, H - 7);
+  c.textAlign = "right"; c.fillText(`${(n / wave.fs).toFixed(0)} s`, Rr, H - 7);
+}
+
+// the live board says in one sentence what is happening on it now
+function story() {
+  if (T >= END - 0.01) return { text: "All three tests have ended. VIGIL warned of every one of the four bearings that failed." };
+  const standing = JOBS.filter(j => j.open <= T && T < j.m.start + R[j.run].end_h).pop();
+  if (standing) {
+    const named = standing.named != null && T >= standing.named, left = standing.m.start + R[standing.run].end_h - T;
+    return { warn: true, text: `${standing.m.name}, bearing ${standing.key}: ${named ? `${PART[standing.d.named_as]} defect found. Replace the bearing.` : "its vibration has changed. Inspect it."} This rig runs another ${span(left)} before the bearing fails.` };
+  }
+  const ended = MACHINES.filter(m => T >= m.start + R[m.run].end_h).sort((a, z) => R[z.run].end_h - R[a.run].end_h)[0];
+  if (ended) return { text: `${ended.name} has ended with a failed bearing, warned of in advance. The other rigs run on, every bearing healthy.` };
+  if (T < 24) return { text: "Three NASA test rigs, four bearings each, run until a bearing fails. For the first day VIGIL only learns each bearing's normal." };
+  return { text: "Every bearing is healthy. VIGIL scores each new reading against that bearing's own normal." };
+}
 
 /* ---------- the three views ---------- */
 const VIEWS = ["board", "handset", "recording"];
@@ -485,10 +591,14 @@ addEventListener("DOMContentLoaded", show);
 fetch("data/replay.json").then(r => r.json()).then(rep => {
   R = rep;
   END = Math.max(...MACHINES.map(m => m.start + R[m.run].end_h));
-  buildEvents(); buildFleet();
-  playing = true; $("play").textContent = "Pause";       // an active demonstration: it is running when it is first seen
-  render();
+  buildEvents(); buildFleet(); buildSteps();
+  go(1);                                                 // a first visit is walked through one failure, a step at a time
   requestAnimationFrame(frame);
+  // one real second from the bearing the guide follows, for its first step
+  fetch("data/samples.json").then(r => r.json()).then(meta => {
+    const s = meta.samples.find(s => s.id === "ims2-b1-30h");
+    return fetch(`data/samples/${s.id}.i16`).then(r => r.arrayBuffer()).then(buf => { wave = { q: new Int16Array(buf), scale: s.scale, fs: s.fs, source: s.source }; render(); });
+  }).catch(() => {});
   // the spectra are the heavy part and the board is useful without them, so they follow
   return fetch("data/waterfall.json").then(r => r.json()).then(meta => {
     WF = meta;
