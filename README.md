@@ -79,7 +79,7 @@ python3 export.py
 python3 presets.py
 python3 waterfall.py
 node check_js.mjs
-node check_node.mjs --nasa   # the node application and the handset link, about 15 minutes
+node check_node.mjs --nasa   # the node application and the handset link, about 40 minutes
 python3 verify_claims.py
 ```
 

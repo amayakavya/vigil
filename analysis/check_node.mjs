@@ -3,7 +3,7 @@
 //
 //   node analysis/check_node.mjs           the link, on the bench recordings the page ships
 //   node analysis/check_node.mjs --nasa    and all twelve NASA bearings through the node's own
-//                                          learning, alarm and trend (needs ~/vigil-data, about 15 minutes)
+//                                          learning, alarm and trend (needs ~/vigil-data, about 40 minutes)
 //   node analysis/check_node.mjs --bench   rebuild docs/data/bench from ~/vigil-data
 //
 // Pass, on the bench: the handset reads back exactly what the node holds (status,
