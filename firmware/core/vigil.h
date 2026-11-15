@@ -48,6 +48,11 @@ void vigil_diagnose(vigil_ws *ws, const vreal *x, double fs, double shaft_hz, co
 void vigil_features(vigil_ws *ws, const vreal *x, double fs, double shaft_hz, const vigil_orders *o,
                     double features[VIGIL_NFEAT]);
 
+/* The same readings, and the band the lines were measured in (out->verdict is
+   always VIGIL_NONE here: naming is the alarm logic's decision, not one snapshot's). */
+void vigil_features_r(vigil_ws *ws, const vreal *x, double fs, double shaft_hz, const vigil_orders *o,
+                      double features[VIGIL_NFEAT], vigil_result *out);
+
 /* ---- the machine's own normal, and the alarm ---- */
 typedef struct {
     double med[VIGIL_NFEAT], mad[VIGIL_NFEAT];  /* learned from the first day */

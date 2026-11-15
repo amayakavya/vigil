@@ -274,8 +274,8 @@ vigil_orders vigil_bearing_orders(double rollers, double roller_dia, double pitc
     return o;
 }
 
-void vigil_features(vigil_ws *ws, const vreal *x, double fs, double shaft_hz, const vigil_orders *o,
-                    double f[VIGIL_NFEAT]) {
+void vigil_features_r(vigil_ws *ws, const vreal *x, double fs, double shaft_hz, const vigil_orders *o,
+                      double f[VIGIL_NFEAT], vigil_result *out) {
     size_t n = ws->n;
     double s = 0, s2 = 0, s4 = 0, pk = 0;
     for (size_t k = 0; k < n; k++) s += x[k];
@@ -289,9 +289,14 @@ void vigil_features(vigil_ws *ws, const vreal *x, double fs, double shaft_hz, co
     f[0] = log(rms);
     f[1] = (s4 / n) / (rms * rms * rms * rms);
     f[2] = pk / rms;
+    vigil_diagnose(ws, x, fs, shaft_hz, o, INFINITY, out);   /* prewhitening removes the mean itself */
+    f[3] = out->scores[VIGIL_BPFO]; f[4] = out->scores[VIGIL_BPFI]; f[5] = out->scores[VIGIL_BSF];
+}
+
+void vigil_features(vigil_ws *ws, const vreal *x, double fs, double shaft_hz, const vigil_orders *o,
+                    double f[VIGIL_NFEAT]) {
     vigil_result r;
-    vigil_diagnose(ws, x, fs, shaft_hz, o, INFINITY, &r);   /* prewhitening removes the mean itself */
-    f[3] = r.scores[VIGIL_BPFO]; f[4] = r.scores[VIGIL_BPFI]; f[5] = r.scores[VIGIL_BSF];
+    vigil_features_r(ws, x, fs, shaft_hz, o, f, &r);
 }
 
 /* ---- the machine's own normal, and the alarm ---- */
