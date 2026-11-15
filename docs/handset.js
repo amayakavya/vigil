@@ -20,7 +20,7 @@ const W80 = "rgba(242,243,245,0.95)", W30 = "rgba(255,255,255,0.3)", W15 = "rgba
 
 const SVC = "7b1e0001-5c3a-4f6e-9a77-56494749c001", STATUS = "7b1e0002-5c3a-4f6e-9a77-56494749c001",
   RX = "7b1e0003-5c3a-4f6e-9a77-56494749c001", TX = "7b1e0004-5c3a-4f6e-9a77-56494749c001";
-const VIA = { bench: "bench", ble: "Bluetooth", usb: "cable" }, OVER = { bench: "the bench", ble: "Bluetooth", usb: "the cable" };
+const VIA = { bench: "demo", ble: "Bluetooth", usb: "cable" }, OVER = { bench: "the demo node", ble: "Bluetooth", usb: "the cable" };
 const CODE = { "outer race": "BPFO", "inner race": "BPFI", "rolling element": "BSF" };
 const PART = { BPFO: "outer race", BPFI: "inner race", BSF: "rolling element" };
 const BEARINGS = { "16/0.331/2.815/15.17": "Rexnord ZA-2115", "9/7.94/39.04/0": "SKF 6205-2RS JEM" };
@@ -44,11 +44,11 @@ function stateText(s) {
   if (s.error) return s.error === "psram" ? "Fault: the node has no memory for a snapshot" : `Fault: ${s.error}`;
   if (s.phase === "learning") return `Learning its normal, ${s.learned} of ${s.base}`;
   if (s.phase === "warning") return s.part !== "none" ? `Warning: ${s.part} defect. Replace the bearing.` : "Warning: vibration has changed. Inspect.";
-  return cap(s.phase);
+  return s.phase === "normal" ? "Healthy" : cap(s.phase);
 }
 
 /* ---------- three ways to reach a node ---------- */
-function lost(why) { if (link) disconnect().then(() => note(why, true)); }
+function lost(why) { if (link) disconnect("#/connect").then(() => note(why, true)); }
 
 function openBench() {
   return new Promise((resolve, reject) => {
@@ -104,32 +104,35 @@ async function connect(kind) {
 }
 async function connectTo(kind) {
   await disconnect();
-  note(kind === "bench" ? "Starting the bench node." : kind === "ble" ? "Choose the node. The phone will ask for the passkey on its label." : "Choose the node's serial port.");
+  const say = (t, bad) => { if (kind === "bench") { $("t-note").textContent = t; $("t-note").classList.toggle("err", !!bad); } else note(t, bad); };
+  say(kind === "bench" ? "Starting the demo node." : kind === "ble" ? "Choose the node. The phone will ask for the passkey on its label." : "Choose the node's serial port.");
   try {
     link = new VigilLink.Link(() => { throw new Error("Not connected."); });
     link.onstatus = showStatus;
     await { bench: openBench, ble: openBle, usb: openUsb }[kind]();
     via = kind; visit = Date.now();
     // shown before it is filled, so the charts are drawn at the width they will have
-    $("node").hidden = false; $("node-tools").hidden = false; $("c-off").hidden = false; $("bench").hidden = kind !== "bench";
-    $("c-via").textContent = kind === "bench" ? "Bench node" : kind === "ble" ? "Bluetooth" : "USB cable";
+    $("node").hidden = false; $("node-tools").hidden = false; $("bench").hidden = kind !== "bench";
+    $("c-via").textContent = kind === "bench" ? "Demo node, in this app" : kind === "ble" ? "Over Bluetooth" : "Over the USB cable";
     await refresh();
-    for (const k of ["bench", "ble", "usb"]) $("c-" + k).classList.toggle("ghost", k !== kind);
-    note(kind === "bench" ? `Reading the bench node: the firmware, on ${benchInfo.source}.` : `Reading ${now.id} over ${kind === "ble" ? "Bluetooth" : "the cable"}.`);
+    say("");
+    location.hash = "#/node";                   // the menu moves on to the node itself
+    if (window.VigilApp) window.VigilApp.show();
   } catch (e) {
     await disconnect();
-    note(e.name === "NotFoundError" ? "No node chosen." : e.name === "SecurityError" || e.name === "NotAllowedError" ? "The browser did not allow it. Tap the button again." : e.message, true);
+    say(e.name === "NotFoundError" ? "No node chosen." : e.name === "SecurityError" || e.name === "NotAllowedError" ? "The browser did not allow it. Tap the row again." : e.message, true);
   }
 }
 
-async function disconnect() {
+async function disconnect(to) {
   const s = shut;
   shut = null; link = null; via = null; now = null; formFilled = false; lastRaw = null; running = false;
   if (s) await s();
-  $("node").hidden = true; $("node-tools").hidden = true; $("c-off").hidden = true; $("c-via").textContent = "";
-  for (const k of ["bench", "ble", "usb"]) $("c-" + k).classList.toggle("ghost", k !== "bench");
+  $("node").hidden = true; $("node-tools").hidden = true; $("c-via").textContent = "";
   hideResults();
   note(INTRO);
+  if (window.VigilApp) window.VigilApp.panel("", false);
+  if (location.hash === "#/node") { location.hash = to || "#/home"; }
 }
 function hideResults() { $("spot").hidden = true; $("ev").hidden = true; $("a-err").hidden = true; $("i-note").textContent = ""; }
 
@@ -195,8 +198,8 @@ function drawTrend(tr) {
 function benchNote(end) {
   const f = benchInfo.files;
   $("b-note").textContent = benchStep < 0
-    ? `The node has run from the start of the test to NASA's snapshot of ${fileTime(f[0], -10)}. Each press gives it the next recording, as its ten-minute wake would.`
-    : `Recording ${benchStep + 1} of ${f.length}: NASA's snapshot of ${fileTime(f[benchStep])}.${end ? " The bench recordings end here." : ""}`;
+    ? `The demo node has run from the start of the test to the snapshot of ${fileTime(f[0], -10)}. Each press gives it the next recording, as its ten-minute wake would.`
+    : `Recording ${benchStep + 1} of ${f.length}: the snapshot of ${fileTime(f[benchStep])}.${end ? " The demo recordings end here." : ""}`;
   $("b-next").disabled = !!end; $("b-run").disabled = !!end && !running;
 }
 function advance() { return new Promise(res => { bench.next = res; bench.postMessage({ advance: true }); }); }
@@ -341,7 +344,7 @@ async function showJob(s) {
   const named = s.part !== "none", host = $("job"), card = h("div", "job" + (named ? " replace" : ""));
   const read = new Date().toLocaleString("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
   host.innerHTML = "";
-  card.appendChild(h("div", "jmeta", `Read ${read} over ${OVER[via]}`));
+  card.appendChild(h("div", "jmeta", `Read ${read} from ${OVER[via]}`));
   card.appendChild(h("h3", null, named ? `Replace the bearing, ${s.id}` : `Inspect, ${s.id}`));
   const dl = h("dl", "res"), rows = jobRows(s, why);
   for (const [k, v] of rows.slice(1)) { const r = h("div", "res-row"); r.append(h("dt", null, k), h("dd", null, v)); dl.appendChild(r); }
@@ -439,7 +442,7 @@ function drawRound() {
   $("round").parentNode.hidden = !round.length;
   for (const r of round.slice(0, 40)) {
     const tr = h("tr"), when = new Date(r.t).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
-    tr.append(h("td", null, when), h("td", null, r.via === "bench" ? `${r.id}, bench` : r.id),
+    tr.append(h("td", null, when), h("td", null, r.via === "demo" || r.via === "bench" ? `${r.id}, demo` : r.id),
       h("td", r.phase === "warning" ? "lead" : null, r.phase === "learning" ? `Learning ${r.learned}` : cap(r.phase)),
       h("td", null, r.hi != null && r.hi >= 0 ? r.hi.toFixed(2) : ""), h("td", null, r.part === "none" ? "" : cap(r.part)));
     body.appendChild(tr);
@@ -465,7 +468,9 @@ $("c-off").onclick = () => disconnect();
 drawRound();
 let rt = 0;
 addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { if (lastTrend && link) drawTrend(lastTrend); if (lastSes && !$("ev").hidden) drawSES(lastSes); }, 150); });
-// the console opens the bench node the first time the handset is shown, so the view is never an empty form
-let opened = false;
-window.VigilHandset = { open() { if (!opened && !link) { opened = true; connect("bench"); } } };
+// what the menus need to know: whether a node is on the line, and what it calls itself
+window.VigilHandset = { connected: () => !!(link && via && now), name: () => (now ? now.id : "") };
+// say at once what this browser cannot do, in the row itself, before anyone taps it
+if (!navigator.bluetooth) { $("c-ble").classList.add("off"); $("c-ble").querySelector(".d").textContent = "This browser cannot use Bluetooth. Chrome or Edge on Android or a computer can. An iPhone's own browser does not allow it."; }
+if (!navigator.serial) { $("c-usb").classList.add("off"); $("c-usb").querySelector(".d").textContent = "This browser cannot open a serial port. Chrome or Edge on a computer can."; }
 })();

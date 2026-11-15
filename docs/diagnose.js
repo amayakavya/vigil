@@ -11,6 +11,8 @@ const W80 = "rgba(242,243,245,0.95)", W30 = "rgba(255,255,255,0.3)", W15 = "rgba
 
 /* ---------- the diagnosis tool ---------- */
 let META = null, worker = null, pending = false, LAST_SES = null;
+// the rigs are numbered here as they are on the board, with the data set still named
+const cite = source => source.replace(/^NASA IMS test (\d)/, "IMS bearing data, rig $1");
 function workerRun(x, fs, rpm, orders) {
   return new Promise((resolve, reject) => {
     if (!worker) worker = new Worker("worker.js");
@@ -82,7 +84,7 @@ async function run() {
       if (buf.byteLength !== 2 * s.n) throw new Error("That recording arrived incomplete. Try again.");
       const q = new Int16Array(buf);
       x = Float64Array.from(q, v => v * s.scale); fs = s.fs; rpm = s.rpm; orders = META.bearings[s.bearing].orders; truth = s.truth;
-      note = `${s.source}. ${(s.n / s.fs).toFixed(1)} s at ${s.fs.toLocaleString("en-IN")} Hz, shaft ${s.rpm.toFixed(0)} rpm. The Python reference said: ${s.expect.verdict ? PART[s.expect.verdict] : "declined"}.`;
+      note = `${cite(s.source)}. ${(s.n / s.fs).toFixed(1)} s at ${s.fs.toLocaleString("en-IN")} Hz, shaft ${s.rpm.toFixed(0)} rpm. The Python reference said: ${s.expect.verdict ? PART[s.expect.verdict] : "declined"}.`;
     } else {
       const f = $("file").files[0];
       if (!f) throw new Error("Choose a file first.");
@@ -146,8 +148,8 @@ $("run").onclick = run;
 fetch("data/samples.json").then(r => r.json()).then(meta => {
   META = meta;
   const sel = $("sample");
-  for (const s of meta.samples) { const o = document.createElement("option"); o.value = s.id; o.textContent = s.label; sel.appendChild(o); }
-  const note = () => { const s = meta.samples.find(s => s.id === sel.value); $("sample-note").textContent = s.source + "."; };
+  for (const s of meta.samples) { const o = document.createElement("option"); o.value = s.id; o.textContent = s.label.replace(/^Run (\d)/, "Rig $1"); sel.appendChild(o); }
+  const note = () => { const s = meta.samples.find(s => s.id === sel.value); $("sample-note").textContent = cite(s.source) + "."; };
   sel.onchange = () => { note(); $("out").hidden = true; $("out-empty").hidden = false; };
   note();
 }).catch(() => { $("sample-note").textContent = "The reference recordings did not load. Reload the page."; });

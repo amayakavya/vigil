@@ -5,7 +5,7 @@
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "shortcuts": [{ "name": "Handset", "url": "./#handset" }],
+  "shortcuts": [{ "name": "Connect a node", "url": "./#/connect" }, { "name": "Watch it catch a failure", "url": "./#/demo" }],
   "background_color": "#080a0d",
   "theme_color": "#080a0d",
   "icons": [

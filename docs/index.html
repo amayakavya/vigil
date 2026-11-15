@@ -24,21 +24,176 @@
 <body>
 <div class="app">
   <header class="bar">
-    <a class="brand" href="./">VIGIL</a>
-    <span class="brand-sub">Vibration Intelligence Grid for Integrity and Lifecycle</span>
-    <nav class="views" aria-label="Views">
-      <a href="#board" data-view="board" aria-current="page">Live board</a>
-      <a href="#handset" data-view="handset">Phone handset</a>
-      <a href="#recording" data-view="recording">Test a recording</a>
-    </nav>
+    <a class="brand" href="#/home">VIGIL</a>
+    <a class="back" id="back" href="#/home" hidden>‹ Menu</a>
+    <span class="brand-sub" id="where">Vibration Intelligence Grid for Integrity and Lifecycle</span>
     <nav class="out-links" aria-label="More">
       <a href="results.html">Results</a>
       <a href="https://github.com/amayakavya/vigil">Code</a>
     </nav>
   </header>
 
-  <!-- ================= the board: NASA's three tests, replayed ================= -->
-  <main class="view" id="board">
+  <!-- ================= the first question ================= -->
+  <main class="view" id="home">
+    <div class="col">
+      <h1 class="q">Do you have a VIGIL node with you?</h1>
+      <p class="q-sub">The node is the sensor clipped to the machine. This app reads it, sets it up, and shows what it has found.</p>
+      <nav class="menu" aria-label="Start">
+        <a class="menu-row bare" href="#/connect" id="m-yes"><span><b>Yes, connect it</b><span class="d">Over Bluetooth or the USB cable</span></span><em aria-hidden="true">›</em></a>
+        <a class="menu-row bare" href="#/try"><span><b>No, not yet</b><span class="d">See it work on recorded data, with no hardware</span></span><em aria-hidden="true">›</em></a>
+      </nav>
+      <nav class="menu minor" aria-label="More">
+        <a class="menu-row bare" href="#/round"><span><b>The round</b><span class="d">Every node read on this phone</span></span><em aria-hidden="true">›</em></a>
+        <a class="menu-row bare" href="results.html"><span><b>How it was tested</b><span class="d">The results, the method and the limits</span></span><em aria-hidden="true">›</em></a>
+      </nav>
+    </div>
+  </main>
+
+  <!-- ================= with a node: how is it connected ================= -->
+  <main class="view" id="connect" hidden>
+    <div class="col">
+      <h1 class="q">How is the node connected?</h1>
+      <p class="q-sub">Press the button on the node first. It wakes and listens for two minutes.</p>
+      <div class="menu">
+        <button class="menu-row" id="c-ble" type="button"><i class="n">1</i><span><b>Bluetooth</b><span class="d">An Android phone or a computer, in Chrome or Edge. It asks once for the passkey on the node's label.</span></span><em aria-hidden="true">›</em></button>
+        <button class="menu-row" id="c-usb" type="button"><i class="n">2</i><span><b>USB cable</b><span class="d">A computer, in Chrome or Edge.</span></span><em aria-hidden="true">›</em></button>
+      </div>
+      <p class="hint" id="c-note"></p>
+      <p class="hint">No node has been built yet, so these two paths have not met hardware. The <a href="#/try">demo node</a> runs the same firmware inside this app.</p>
+    </div>
+  </main>
+
+  <!-- ================= without a node ================= -->
+  <main class="view" id="try" hidden>
+    <div class="col">
+      <h1 class="q">What would you like to see?</h1>
+      <p class="q-sub">All of it runs on vibration recorded from real bearings, run until they failed.</p>
+      <div class="menu">
+        <a class="menu-row" href="#/demo"><i class="n">1</i><span><b>Watch it catch a failure</b><span class="d">Seven steps through one real bearing failure</span></span><em aria-hidden="true">›</em></a>
+        <button class="menu-row" id="c-bench" type="button"><i class="n">2</i><span><b>Try the demo node</b><span class="d">The node's own firmware, running in this app, read exactly as a fitted node is</span></span><em aria-hidden="true">›</em></button>
+        <a class="menu-row" href="#/recording"><i class="n">3</i><span><b>Test a recording</b><span class="d">Run the method on a vibration file, yours or a reference one</span></span><em aria-hidden="true">›</em></a>
+      </div>
+      <p class="hint" id="t-note"></p>
+    </div>
+  </main>
+
+  <!-- ================= a connected node ================= -->
+  <main class="view" id="node-view" hidden>
+    <div class="col flush">
+      <div id="node" hidden>
+        <h2 class="pt"><span id="n-title">Node</span><span id="c-via"></span></h2>
+        <p class="state" id="s-state"></p>
+        
+          <div class="pad" id="bench" hidden>
+            <div class="links">
+              <button class="go" id="b-next" type="button">Next ten minutes</button>
+              <button class="go ghost" id="b-run" type="button">Run on</button>
+              <button class="go ghost" id="b-reset" type="button">Start again</button>
+            </div>
+            <p class="hint" id="b-note"></p>
+          </div>
+          <div id="node-tools" hidden>
+          <h2 class="ask">What do you want to do?</h2>
+          <p class="hint err pad" id="a-err" hidden></p>
+          <div class="menu inset">
+            <button class="menu-row" data-panel="p-now" aria-expanded="false" type="button"><i class="n">1</i><span><b>See its readings</b><span class="d">The health score, the three line strengths, the level and what it is fitted to</span></span><em aria-hidden="true">›</em></button>
+            <div class="panel" id="p-now" hidden>
+              <dl class="res" id="n-status">
+            <div class="res-row"><dt>Health score, alarm at 6</dt><dd id="s-hi"></dd></div>
+            <div class="res-row"><dt>Named part</dt><dd id="s-part"></dd></div>
+            <div class="res-row"><dt>Line strengths</dt><dd id="s-lines"></dd></div>
+            <div class="res-row"><dt>Vibration level</dt><dd id="s-level"></dd></div>
+            <div class="res-row"><dt>Last snapshot</dt><dd id="s-last"></dd></div>
+            <div class="res-row"><dt>Fitted to</dt><dd id="s-fit"></dd></div>
+          </dl>
+            </div>
+            <button class="menu-row" data-panel="p-spot" aria-expanded="false" type="button"><i class="n">2</i><span><b>Take a spot reading</b><span class="d">Measured now and scored against the machine's normal. It never moves the alarm.</span></span><em aria-hidden="true">›</em></button>
+            <div class="panel" id="p-spot" hidden>
+              <div class="pad"><button class="go" id="a-spot" type="button">Spot reading</button></div>
+              <dl class="res" id="spot" hidden>
+                <div class="res-row"><dt>Spot reading, health score</dt><dd id="p-hi"></dd></div>
+                <div class="res-row"><dt>This reading alone points at</dt><dd id="p-points"></dd></div>
+                <div class="res-row"><dt>Line strengths</dt><dd id="p-lines"></dd></div>
+              </dl>
+            </div>
+            <button class="menu-row" data-panel="p-raw" aria-expanded="false" type="button"><i class="n">3</i><span><b>Check its recording on this phone</b><span class="d">Pulls the node's raw samples and repeats the analysis here, beside the node's own answer</span></span><em aria-hidden="true">›</em></button>
+            <div class="panel" id="p-raw" hidden>
+              <div class="pad"><button class="go" id="a-raw" type="button">Pull the recording</button></div>
+              <div id="ev" hidden>
+            <h3 class="ph"><span>Node and phone, same samples</span><span id="e-agree"></span></h3>
+            <dl class="res">
+              <div class="res-row"><dt>Recording</dt><dd id="e-rec"></dd></div>
+              <div class="res-row"><dt>The node's line strengths</dt><dd id="e-node"></dd></div>
+              <div class="res-row"><dt>This device's</dt><dd id="e-phone"></dd></div>
+              <div class="res-row"><dt>Band the impacts ring in</dt><dd id="e-band"></dd></div>
+              <div class="res-row"><dt>This recording alone points at</dt><dd id="e-verdict"></dd></div>
+            </dl>
+            <figure class="fig">
+              <svg class="chart" id="n-ses" viewBox="0 0 820 250" role="img" aria-label="Envelope spectrum of the node's recording with the predicted defect lines"></svg>
+              <figcaption id="n-ses-cap"></figcaption>
+            </figure>
+            <div class="pad"><button class="go ghost" id="e-save" type="button">Save the recording</button></div>
+          </div>
+
+          
+            </div>
+            <button class="menu-row" data-panel="p-trend" aria-expanded="false" type="button"><i class="n">4</i><span><b>See its last 48 hours</b><span class="d">The health score, from the node's own log</span></span><em aria-hidden="true">›</em></button>
+            <div class="panel" id="p-trend" hidden>
+              <figure class="fig">
+            <svg class="chart" id="trend" viewBox="0 0 820 170" role="img" aria-label="Health index over the last 48 hours"></svg>
+            <figcaption id="trend-cap"></figcaption>
+          </figure>
+          
+            </div>
+            <div id="jobwrap" hidden>
+              <button class="menu-row warn" data-panel="p-job" aria-expanded="false" type="button"><i class="n">5</i><span><b>Open the job card</b><span class="d">What to replace, the evidence and what to do. Print it or share it.</span></span><em aria-hidden="true">›</em></button>
+              <div class="panel" id="p-job" hidden><div class="pad" id="job"></div></div>
+            </div>
+            <button class="menu-row" data-panel="p-setup" aria-expanded="false" type="button"><i class="n">6</i><span><b>Set it up</b><span class="d">Its name, the bearing it sits on, the shaft speed. A change starts a new day of learning.</span></span><em aria-hidden="true">›</em></button>
+            <div class="panel" id="p-setup" hidden>
+              <div class="pad">
+                <div class="grid">
+              <label class="field wide"><span>Node id, as on the asset register</span><input id="i-id" maxlength="23" autocomplete="off" autocapitalize="characters" spellcheck="false"></label>
+              <label class="field"><span>Bearing</span><select id="i-brg"><option value="16/0.331/2.815/15.17">Rexnord ZA-2115</option><option value="9/7.94/39.04/0">SKF 6205-2RS JEM</option><option value="custom">Other: enter its geometry</option></select></label>
+              <label class="field"><span>Shaft speed (rpm)</span><input type="number" id="i-rpm" min="60" max="30000" step="0.1" inputmode="decimal"></label>
+              <label class="field" data-custom hidden><span>Rolling elements (per row)</span><input type="number" id="i-n" min="3" max="60" step="1" inputmode="numeric"></label>
+              <label class="field" data-custom hidden><span>Element diameter</span><input type="number" id="i-d" min="0" step="any" inputmode="decimal"></label>
+              <label class="field" data-custom hidden><span>Pitch diameter, same unit</span><input type="number" id="i-p" min="0" step="any" inputmode="decimal"></label>
+              <label class="field" data-custom hidden><span>Contact angle (degrees)</span><input type="number" id="i-a" min="0" max="45" step="any" inputmode="decimal"></label>
+              <label class="field"><span>Sensor axis facing the machine</span><select id="i-axis"><option value="0">X</option><option value="1">Y</option><option value="2">Z</option></select></label>
+              <label class="field"><span>New passkey, six digits (optional)</span><input id="i-key" maxlength="6" inputmode="numeric" autocomplete="off"></label>
+            </div>
+            <div class="links">
+              <button class="go" id="i-write" type="button">Write to the node</button>
+              <button class="go ghost" id="i-relearn" type="button">Learn again</button>
+            </div>
+            <p class="hint" id="i-note"></p>
+              </div>
+            </div>
+            <button class="menu-row" id="c-off" type="button"><i class="n">7</i><span><b>Disconnect</b><span class="d">Leave this node and go back to the start</span></span><em aria-hidden="true">›</em></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ================= the round ================= -->
+  <main class="view" id="round-view" hidden>
+    <div class="col flush">
+      <h2 class="pt"><span>The round</span><span>Kept on this device only</span></h2>
+      <div class="tablewrap"><table id="round"><thead><tr><th>Read</th><th>Node</th><th>State</th><th>Score</th><th>Part</th></tr></thead><tbody></tbody></table></div>
+      <p class="none" id="round-empty">Nothing read yet. Each node you read is listed here with its state.</p>
+      <div class="pad">
+        <div class="links">
+          <button class="go ghost" id="r-csv" type="button">Save as CSV</button>
+          <button class="go ghost" id="r-clear" type="button">Forget the round</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ================= the demonstration: three rigs, replayed ================= -->
+  <main class="view" id="board" hidden>
     <div class="guide" id="guide">
       <div class="walk" id="walk" aria-live="polite">
         <div>
@@ -56,7 +211,7 @@
         <p class="story" id="story" aria-live="polite"></p>
         <button class="quiet-btn" id="g-start" type="button">Step by step guide</button>
       </div>
-      <dl class="strip" id="strip" aria-label="Results on NASA's run-to-failure tests" hidden>
+      <dl class="strip" id="strip" aria-label="Results on the three test rigs" hidden>
         <div><dt>Failures warned</dt><dd>4 of 4</dd></div>
         <div><dt>Warned ahead by</dt><dd>40 to 256 h</dd></div>
         <div><dt>Before a level alarm</dt><dd>15 to 244 h</dd></div>
@@ -107,121 +262,11 @@
         <button class="btn" data-speed="24" type="button" title="One day of the test each second" aria-pressed="true">Fast</button>
       </div>
       <div class="track">
-        <div class="lane-names" aria-hidden="true"><span>Test 1</span><span>Test 2</span><span>Test 3</span></div>
+        <div class="lane-names" aria-hidden="true"><span>Rig 1</span><span>Rig 2</span><span>Rig 3</span></div>
         <input type="range" id="scrub" min="0" max="10000" value="0" aria-label="Replay time">
         <canvas id="cv-lanes" aria-hidden="true"></canvas>
       </div>
       <div class="clock"><b id="clock">Day 1, 00:00</b><span id="sitenote"></span></div>
-    </div>
-  </main>
-
-  <!-- ================= the handset: one node, read from a phone ================= -->
-  <main class="view" id="handset" hidden>
-    <div class="cols2">
-      <section class="pane">
-        <h2 class="pt"><span><b class="n">1</b>Connect to a node</span><span id="c-via"></span></h2>
-        <div class="pad">
-          <div class="links">
-            <button class="go" id="c-bench" type="button">Bench node</button>
-            <button class="go ghost" id="c-ble" type="button">Bluetooth</button>
-            <button class="go ghost" id="c-usb" type="button">USB cable</button>
-            <button class="go ghost" id="c-off" type="button" hidden>Disconnect</button>
-          </div>
-          <p class="hint" id="c-note">The bench node is the node's own firmware, built from the same C as the ESP32-S3 image, run in this page on NASA test 2, bearing 1. Bluetooth and the cable speak the same lines to a built node. No board is built yet, so those two have not met hardware.</p>
-        </div>
-        <div id="node" hidden>
-          <h2 class="pt"><span><b class="n">2</b><span id="n-title">Node</span></span><span>What it says now</span></h2>
-          <p class="state" id="s-state"></p>
-          <dl class="res" id="n-status">
-            <div class="res-row"><dt>Health index, alarm at 6</dt><dd id="s-hi"></dd></div>
-            <div class="res-row"><dt>Named part</dt><dd id="s-part"></dd></div>
-            <div class="res-row"><dt>Line strengths</dt><dd id="s-lines"></dd></div>
-            <div class="res-row"><dt>Vibration level</dt><dd id="s-level"></dd></div>
-            <div class="res-row"><dt>Last snapshot</dt><dd id="s-last"></dd></div>
-            <div class="res-row"><dt>Fitted to</dt><dd id="s-fit"></dd></div>
-          </dl>
-          <div class="pad" id="bench" hidden>
-            <div class="links">
-              <button class="go" id="b-next" type="button">Next ten minutes</button>
-              <button class="go ghost" id="b-run" type="button">Run on</button>
-              <button class="go ghost" id="b-reset" type="button">Start again</button>
-            </div>
-            <p class="hint" id="b-note"></p>
-          </div>
-          <h2 class="pt"><span><b class="n">3</b>Its last 48 hours</span><span>Health score, from the node's own log</span></h2>
-          <figure class="fig">
-            <svg class="chart" id="trend" viewBox="0 0 820 170" role="img" aria-label="Health index over the last 48 hours"></svg>
-            <figcaption id="trend-cap"></figcaption>
-          </figure>
-          <div id="jobwrap" hidden>
-            <h2 class="pt"><span>Job card</span></h2>
-            <div class="pad" id="job"></div>
-          </div>
-        </div>
-      </section>
-
-      <section class="pane">
-        <div id="node-tools" hidden>
-          <h2 class="pt"><span><b class="n">4</b>Check it at the machine</span><span>A spot reading never moves the alarm</span></h2>
-          <div class="pad">
-            <div class="links">
-              <button class="go ghost" id="a-spot" type="button">Spot reading</button>
-              <button class="go ghost" id="a-raw" type="button">Pull the recording</button>
-            </div>
-            <p class="hint err" id="a-err" hidden></p>
-          </div>
-          <dl class="res" id="spot" hidden>
-            <div class="res-row"><dt>Spot reading, health index</dt><dd id="p-hi"></dd></div>
-            <div class="res-row"><dt>This reading alone points at</dt><dd id="p-points"></dd></div>
-            <div class="res-row"><dt>Line strengths</dt><dd id="p-lines"></dd></div>
-          </dl>
-          <div id="ev" hidden>
-            <h2 class="pt"><span>Node and phone, same samples</span><span id="e-agree"></span></h2>
-            <dl class="res">
-              <div class="res-row"><dt>Recording</dt><dd id="e-rec"></dd></div>
-              <div class="res-row"><dt>The node's line strengths</dt><dd id="e-node"></dd></div>
-              <div class="res-row"><dt>This device's</dt><dd id="e-phone"></dd></div>
-              <div class="res-row"><dt>Band the impacts ring in</dt><dd id="e-band"></dd></div>
-              <div class="res-row"><dt>This recording alone points at</dt><dd id="e-verdict"></dd></div>
-            </dl>
-            <figure class="fig">
-              <svg class="chart" id="n-ses" viewBox="0 0 820 250" role="img" aria-label="Envelope spectrum of the node's recording with the predicted defect lines"></svg>
-              <figcaption id="n-ses-cap"></figcaption>
-            </figure>
-            <div class="pad"><button class="go ghost" id="e-save" type="button">Save the recording</button></div>
-          </div>
-
-          <h2 class="pt"><span><b class="n">5</b>Set it up</span><span>A new bearing, speed or axis starts a new normal</span></h2>
-          <div class="pad">
-            <div class="grid">
-              <label class="field wide"><span>Node id, as on the asset register</span><input id="i-id" maxlength="23" autocomplete="off" autocapitalize="characters" spellcheck="false"></label>
-              <label class="field"><span>Bearing</span><select id="i-brg"><option value="16/0.331/2.815/15.17">Rexnord ZA-2115</option><option value="9/7.94/39.04/0">SKF 6205-2RS JEM</option><option value="custom">Other: enter its geometry</option></select></label>
-              <label class="field"><span>Shaft speed (rpm)</span><input type="number" id="i-rpm" min="60" max="30000" step="0.1" inputmode="decimal"></label>
-              <label class="field" data-custom hidden><span>Rolling elements (per row)</span><input type="number" id="i-n" min="3" max="60" step="1" inputmode="numeric"></label>
-              <label class="field" data-custom hidden><span>Element diameter</span><input type="number" id="i-d" min="0" step="any" inputmode="decimal"></label>
-              <label class="field" data-custom hidden><span>Pitch diameter, same unit</span><input type="number" id="i-p" min="0" step="any" inputmode="decimal"></label>
-              <label class="field" data-custom hidden><span>Contact angle (degrees)</span><input type="number" id="i-a" min="0" max="45" step="any" inputmode="decimal"></label>
-              <label class="field"><span>Sensor axis facing the machine</span><select id="i-axis"><option value="0">X</option><option value="1">Y</option><option value="2">Z</option></select></label>
-              <label class="field"><span>New passkey, six digits (optional)</span><input id="i-key" maxlength="6" inputmode="numeric" autocomplete="off"></label>
-            </div>
-            <div class="links">
-              <button class="go" id="i-write" type="button">Write to the node</button>
-              <button class="go ghost" id="i-relearn" type="button">Learn again</button>
-            </div>
-            <p class="hint" id="i-note"></p>
-          </div>
-        </div>
-
-        <h2 class="pt"><span><b class="n">6</b>The round so far</span><span>Kept on this device only</span></h2>
-        <div class="tablewrap"><table id="round"><thead><tr><th>Read</th><th>Node</th><th>State</th><th>Index</th><th>Part</th></tr></thead><tbody></tbody></table></div>
-        <p class="none" id="round-empty">Nothing read yet.</p>
-        <div class="pad">
-          <div class="links">
-            <button class="go ghost" id="r-csv" type="button">Save as CSV</button>
-            <button class="go ghost" id="r-clear" type="button">Forget the round</button>
-          </div>
-        </div>
-      </section>
     </div>
   </main>
 
@@ -255,7 +300,7 @@
             </div>
           </div>
           <div class="links"><button class="go" id="run" type="button">Diagnose</button></div>
-          <p class="hint">On the nine reference recordings this page gives the Python analysis's answer to within 0.0001 dB. The NASA snapshots were picked by rule, not by result, which is why two of them come back declined.</p>
+          <p class="hint">On the nine reference recordings this page gives the Python analysis's answer to within 0.0001 dB. The rig snapshots were picked by rule, not by result, which is why two of them come back declined.</p>
         </div>
       </section>
       <section class="pane">
@@ -280,7 +325,7 @@
   </main>
 
   <footer class="status">
-    <span id="status-left">Replay of NASA's IMS run-to-failure recordings. Every reading, warning and named part is the analysis's own result for that snapshot.</span>
+    <span id="status-left"></span>
     <span>Seva First Innovation Challenge 2026, Defence · Team HEISENBUG · © 2026 Amaya Kavya</span>
   </footer>
 </div>

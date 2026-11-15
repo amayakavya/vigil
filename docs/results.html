@@ -24,12 +24,8 @@
 <body>
 <header class="bar">
   <a class="brand" href="./">VIGIL</a>
-  <span class="brand-sub">Vibration Intelligence Grid for Integrity and Lifecycle</span>
-  <nav class="views" aria-label="Views">
-    <a href="./#board">Board</a>
-    <a href="./#handset">Handset</a>
-    <a href="./#recording">Recording</a>
-  </nav>
+  <a class="back" href="./">‹ Menu</a>
+  <span class="brand-sub">How it was tested</span>
   <nav class="out-links" aria-label="More">
     <a href="results.html" aria-current="page">Results</a>
     <a href="https://github.com/amayakavya/vigil">Code</a>
@@ -103,7 +99,7 @@
     <p>The node wakes every ten minutes, records, decides, listens for fifteen seconds and sleeps. A press of its button wakes it for a mechanic's handset, and it then stays up for two minutes after the handset's last word. It measures its own sample rate against the chip's clock on every snapshot, because every defect line is computed from it and the sensor's rate may differ from nominal by a percent or two. The Wi-Fi library is never linked. The firmware is at <a href="https://github.com/amayakavya/vigil/tree/main/firmware">firmware/</a>. It has not yet run on a board.</p>
 
     <h2>The node's application, and the handset</h2>
-    <p>The signal core is half of a node. The other half is what it learns from, when it warns, what it keeps through sleep and a power cut, and what it says to a phone. That is one portable C file, <span class="mono">firmware/core/node.c</span>, with nothing of the board in it, so the same source is built for the ESP32-S3 and, as WebAssembly, for the bench node in <a href="./#handset">the handset</a>. The WebAssembly build then went through NASA's data as a node would live it, one snapshot every ten minutes with its own learning, alarm and 48 hour log: all twelve bearings, 37,856 snapshots. It raised every alarm and named every part on the analysis's snapshot, on 12 of 12 bearings.</p>
+    <p>The signal core is half of a node. The other half is what it learns from, when it warns, what it keeps through sleep and a power cut, and what it says to a phone. That is one portable C file, <span class="mono">firmware/core/node.c</span>, with nothing of the board in it, so the same source is built for the ESP32-S3 and, as WebAssembly, for the bench node in <a href="./#/try">the handset</a>. The WebAssembly build then went through NASA's data as a node would live it, one snapshot every ten minutes with its own learning, alarm and 48 hour log: all twelve bearings, 37,856 snapshots. It raised every alarm and named every part on the analysis's snapshot, on 12 of 12 bearings.</p>
     <p>The handset is the other end of the link, and it is checked against that firmware and not against a description of it. On twelve consecutive NASA recordings that span the first warning of test 2, it read back the node's status and its trend, received every sample of every recording with the checksum good, and its own analysis of those samples gave the node's line strengths to within 0.0001 dB, in the same band. A spot reading left the node's memory byte for byte as it was. Bad settings were refused. The warning survived a power cut, and came down when the mechanic cleared it.</p>
     <dl class="res">
       <div class="res-row"><dt>Node application on NASA, decisions on the analysis's snapshot</dt><dd>12 of 12 bearings</dd></div>

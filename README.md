@@ -48,7 +48,7 @@ What the node learns, decides, keeps and says is `firmware/core/node.c`, portabl
 
 ## The handset
 
-The handset view of the console (`docs/handset.js`) is the phone on the maintenance round. It reads a node over Bluetooth or the USB cable with one set of lines (`docs/link.js`): its state, its last 48 hours of health index, a spot reading that never moves the alarm, and its raw recording with a CRC, which the phone analyses again with `docs/vigil.js` and sets beside the node's own answer. It writes the installation, clears a warning after the repair, prints or shares a job card, and keeps the round on the phone with no connection.
+The node menu (`docs/handset.js`) is the phone on the maintenance round. It reads a node over Bluetooth or the USB cable with one set of lines (`docs/link.js`): its state, its last 48 hours of health index, a spot reading that never moves the alarm, and its raw recording with a CRC, which the phone analyses again with `docs/vigil.js` and sets beside the node's own answer. It writes the installation, clears a warning after the repair, prints or shares a job card, and keeps the round on the phone with no connection.
 
 No board exists yet, so the handset carries a bench node: `docs/node.wasm`, started from the memory the firmware held after NASA test 2, bearing 1's first 570 snapshots, then given the next twelve recordings one at a time. `node analysis/check_node.mjs` drives the handset's own link code against it. The status, the trend and every sample arrive as the node holds them, the phone's line strengths are within 0.0001 dB of the node's in the same band, a spot reading leaves the node's memory byte for byte as it was, bad settings are refused, and a warning survives a power cut.
 
@@ -56,13 +56,13 @@ Bluetooth from a web page needs Chrome or Edge on Android or a computer. An iPho
 
 ## The console
 
-`docs/index.html` is the live demonstration, one full-screen console in plain HTML, CSS and JavaScript with three views.
+`docs/index.html` is one app in plain HTML, CSS and JavaScript, built for a phone first and driven by menus. It opens on a single question, whether a VIGIL node is with you. Yes leads to connecting it over Bluetooth or the USB cable, then to that node's own menu: its readings, a spot reading, its recording checked on the phone, its last 48 hours, the job card, its set-up. No leads to what can be seen with no hardware: the demonstration, the demo node, and a recording test.
 
-It opens on a guide: seven steps through one real failure (NASA test 2, bearing 1), one sentence and one lit instrument at a time, with Back and Next. The last step opens the live board.
+The demonstration opens on a guide: seven steps through one real bearing failure, one sentence and one lit instrument at a time, with Back and Next. The last step opens the live board. The three test rigs on it are the three IMS run-to-failure tests from NASA's data repository, shown as rigs 1 to 3.
 
-**Board.** NASA's three run-to-failure tests replayed, three shafts with four bearings each. The left pane lists every bearing with its state and health index. The centre shows the selected bearing: its health index on a log scale, and under it, on the same time axis, the envelope spectrum of every snapshot as a waterfall, so a defect is seen arriving as a line at the frequency the bearing's geometry predicts. The right pane holds the job cards, the spares to draw and the log. Nothing is drawn ahead of the replay clock. The waterfall is real data: `analysis/waterfall.py` computes each column from one NASA snapshot with the method's own steps, and leaves a column empty where the rig was stopped.
+**Board.** The three run-to-failure tests replayed, three shafts with four bearings each. The left pane lists every bearing with its state and health index. The centre shows the selected bearing: its health index on a log scale, and under it, on the same time axis, the envelope spectrum of every snapshot as a waterfall, so a defect is seen arriving as a line at the frequency the bearing's geometry predicts. The right pane holds the job cards, the spares to draw and the log. Nothing is drawn ahead of the replay clock. The waterfall is real data: `analysis/waterfall.py` computes each column from one NASA snapshot with the method's own steps, and leaves a column empty where the rig was stopped.
 
-**Handset.** The phone on the maintenance round, described below.
+**Node menu.** The phone on the maintenance round, described below under the handset.
 
 **Recording.** The method run in the browser on nine reference recordings or on a file you choose.
 

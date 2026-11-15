@@ -1,4 +1,5 @@
-/* VIGIL's board, run on NASA's three run-to-failure tests. Each test is one
+/* VIGIL's board, run on the three IMS run-to-failure tests (NASA's data
+   repository), shown as rigs 1 to 3. Each test is one
    shaft with four bearings, each bearing one measuring point. Every status,
    warning and name is the analysis's own result for that bearing
    (data/replay.json), every waterfall column is one real snapshot's envelope
@@ -12,9 +13,9 @@ const PART = { BPFO: "outer race", BPFI: "inner race", BSF: "rolling element" };
 const DRIVER = { "log RMS": "overall level", kurtosis: "spikiness (kurtosis)", "crest factor": "crest factor",
   "BPFO line": "outer race line", "BPFI line": "inner race line", "BSF line": "rolling element line" };
 const MACHINES = [
-  { id: "T1", name: "NASA test 1", run: "1", start: 0 },
-  { id: "T2", name: "NASA test 2", run: "2", start: 0 },
-  { id: "T3", name: "NASA test 3", run: "3", start: 0 },
+  { id: "T1", name: "Rig 1", run: "1", start: 0 },
+  { id: "T2", name: "Rig 2", run: "2", start: 0 },
+  { id: "T3", name: "Rig 3", run: "3", start: 0 },
 ];
 const BEARING = "Rexnord ZA-2115";
 const INK = "#e8ebee", MID = "#a9b0b9", DIM = "#77808b", FAINT = "#454d57", RULE = "#1b2129", AMBER = "#ffb000";
@@ -45,7 +46,7 @@ function at(b, t) {                       // index of the reading at or just bef
   return lo;
 }
 const hiAt = (b, t) => { const i = at(b, t); return i < 0 ? null : b.hi[i]; };
-// NASA's tests stopped overnight and over weekends; a stretch of more than
+// the rigs stopped overnight and over weekends; a stretch of more than
 // three hours with no reading is the machine not running
 function idleAt(b, t) { const i = at(b, t); return i >= 0 && i + 1 < b.h.length && b.h[i + 1] - b.h[i] > 3 && t - b.h[i] > 0.5; }
 
@@ -53,7 +54,7 @@ function statusAt(m, key, now) {
   const r = R[m.run], b = r.bearings[key], t = now - m.start;
   if (t < 0) return { long: "Not started yet", short: "Not started", cls: "quiet" };
   if (t >= r.end_h) return b.failed
-    ? { long: `Failed: ${PART[b.failed]}. NASA stopped the test here.`, short: `Failed: ${PART[b.failed]}`, cls: "warn" }
+    ? { long: `Failed: ${PART[b.failed]}. The test was stopped here.`, short: `Failed: ${PART[b.failed]}`, cls: "warn" }
     : { long: "Stopped with the rig. This bearing did not fail.", short: "Stopped, did not fail", cls: "quiet" };
   const idle = idleAt(b, t);
   if (t < r.base_h) return idle ? { long: "Not running. Learning resumes when it starts.", short: "Rig stopped", cls: "quiet", idle }
@@ -107,7 +108,7 @@ function buildEvents() {
       }
     }
     const failed = Object.entries(r.bearings).filter(([, d]) => d.failed).map(([k, d]) => `bearing ${k} (${PART[d.failed]})`).join(" and ");
-    EVENTS.push({ t: m.start + r.end_h, key: true, text: `${m.name}: stopped ${recorded(m, r.end_h)}. NASA ended the test with ${failed} failed.` });
+    EVENTS.push({ t: m.start + r.end_h, key: true, text: `${m.name}: stopped ${recorded(m, r.end_h)}. The test ended with ${failed} failed.` });
   }
   EVENTS.sort((a, b) => a.t - b.t);
 }
@@ -357,7 +358,7 @@ function renderJobs() {
       const sm = r.summary.failed[j.key], lead = stop - j.open;
       // say when a warning came and went before it held, as the results page does
       const held = sm && sm.sustained_lead_h < lead - 24 ? ` Its readings came and went until ${Math.round(sm.sustained_lead_h)} h before, and held from then.` : "";
-      row("Outcome", `Raised ${Math.round(lead)} h before the bearing failed.${held} The NASA test ran on to failure, so it was never acted on. On a site the bearing is changed here.`);
+      row("Outcome", `Raised ${Math.round(lead)} h before the bearing failed.${held} The test ran on to failure, so the warning was never acted on. On a site the bearing is changed here.`);
     }
     card.appendChild(dl);
     const pr = h("button", null, "Print job card");
@@ -387,7 +388,7 @@ function printCard(j) {
   const named = j.named != null && T >= j.named, pc = $("printcard");
   pc.innerHTML = "";
   pc.appendChild(h("h1", null, `${j.id}: ${named ? "replace bearing" : "inspect"}`));
-  pc.appendChild(h("p", null, `VIGIL job card, printed at ${stamp(T)} of the replay of NASA's IMS run-to-failure data`));
+  pc.appendChild(h("p", null, `VIGIL job card, printed at ${stamp(T)} of the replay of recorded bearing tests`));
   const tb = h("table");
   const row = (k, v) => { const tr = h("tr"); tr.append(h("td", null, k), h("td", null, v)); tb.appendChild(tr); };
   row("Test and bearing", `${j.m.name}, bearing ${j.key}`);
@@ -484,7 +485,7 @@ function buildSteps() {
   const r = R[G.run], b = r.bearings[GK], named = b.named_h, seen = named + 16, part = PART[b.named_as];
   STEPS = [
     { title: "A sensor on the bearing", from: 0, to: 0, lit: ["plot-trend"], wave: true,
-      text: "A VIGIL node clips to a bearing housing and records one second of vibration every ten minutes. NASA's test rig stands in for it here. This is one second from bearing 1 of its second test." },
+      text: "A VIGIL node clips to a bearing housing and records one second of vibration every ten minutes. A laboratory test rig stands in for it here. This is one second from bearing 1 of rig 2." },
     { title: "It learns what normal is", from: 0, to: r.base_h, lit: ["plot-trend"],
       text: "For its first day the node only listens. It is never shown a fault. It learns this one bearing's own normal, so it needs no failure records from the unit it is fitted in." },
     { title: "It checks every ten minutes", from: r.base_h, to: named - 6, lit: ["plot-trend", "pt-head"],
@@ -494,9 +495,9 @@ function buildSteps() {
     { title: "The mechanic gets a job card", from: seen, to: seen, lit: ["work-pane"],
       text: "Which bearing, which part, which spare and what to do, in plain words. It prints for the workshop, and the phone handset reads the same warning from the node." },
     { title: "The bearing fails, as named", from: seen, to: r.end_h, lit: ["plot-trend", "pt-head", "work-pane"],
-      text: `NASA let the rig run on. Bearing ${GK} failed at its ${PART[b.failed]} ${Math.round(r.end_h - named)} hours after the warning. On a site, those are the hours in which it is changed.` },
+      text: `The rig was run on. Bearing ${GK} failed at its ${PART[b.failed]} ${Math.round(r.end_h - named)} hours after the warning. On a site, those are the hours in which it is changed.` },
     { title: "Four failures, four warnings", from: r.end_h, to: r.end_h, lit: ["strip"], last: true,
-      text: "Across NASA's three tests VIGIL warned of every bearing that failed, 40 to 256 hours ahead, and raised no alarm on a healthy bearing before a fault. The live board plays all three." },
+      text: "Across the three rigs VIGIL warned of every bearing that failed, 40 to 256 hours ahead, and raised no alarm on a healthy bearing before a fault. The live board plays all three." },
   ];
   for (const id of DIMMABLE) $(id).classList.add("dimmable");
   const pips = $("g-pips");
@@ -534,7 +535,7 @@ $("g-start").onclick = () => go(1);
 function drawWave(c, L, Rr, top, bot, H) {
   rule(c, L, top, L, bot, RULE); rule(c, Rr, top, Rr, bot, RULE); rule(c, L, bot, Rr, bot, RULE);
   if (!wave) { put($("rd-trend"), "Loading the recording"); return; }
-  put($("rd-trend"), `${wave.source}. Acceleration in g.`);
+  put($("rd-trend"), "Rig 2, bearing 1, on its second day. Acceleration in g.");
   const q = wave.q, n = q.length, mid = (top + bot) / 2;
   let peak = 1;
   for (let i = 0; i < n; i++) peak = Math.max(peak, Math.abs(q[i]));
@@ -564,26 +565,57 @@ function story() {
   }
   const ended = MACHINES.filter(m => T >= m.start + R[m.run].end_h).sort((a, z) => R[z.run].end_h - R[a.run].end_h)[0];
   if (ended) return { text: `${ended.name} has ended with a failed bearing, warned of in advance. The other rigs run on, every bearing healthy.` };
-  if (T < 24) return { text: "Three NASA test rigs, four bearings each, run until a bearing fails. For the first day VIGIL only learns each bearing's normal." };
+  if (T < 24) return { text: "Three test rigs, four bearings each, run until a bearing fails. For the first day VIGIL only learns each bearing's normal." };
   return { text: "Every bearing is healthy. VIGIL scores each new reading against that bearing's own normal." };
 }
 
 /* ---------- the three views ---------- */
-const VIEWS = ["board", "handset", "recording"];
+const VIEWS = { home: "home", connect: "connect", try: "try", node: "node-view", round: "round-view", board: "board", recording: "recording" };
+const WHERE = { home: "Vibration Intelligence Grid for Integrity and Lifecycle", connect: "Connect a node", try: "Without a node", node: "A connected node",
+  round: "The round", board: "Watch it catch a failure", recording: "Test a recording" };
+const UP = { board: "#/try", recording: "#/try" };              // where Back leads, when it is not the first question
+const DATA = "With no node built yet, the app runs on public recordings of bearings run to failure: the IMS set from NASA's data repository, and Case Western's.";
 const FOOT = {
-  board: "Replay of NASA's IMS run-to-failure recordings. Every reading, warning and named part is the analysis's own result for that snapshot.",
-  handset: "One node, read over Bluetooth, the USB cable or the bench. No board is built yet: the bench node is the firmware itself, on NASA's recordings.",
+  home: DATA, connect: DATA, try: DATA,
+  node: "One node, read over Bluetooth, the USB cable or as the demo. The demo node is the node's own firmware, run in this app on recorded data.",
+  round: "The round is kept on this device and sent nowhere.",
+  board: "A replay of recorded bearing tests (IMS data, NASA repository). Every reading, warning and named part is the analysis's own result for that snapshot.",
   recording: "The node's method, run in this browser on raw vibration. A file you choose is read in this tab and never leaves it.",
 };
 function show() {
-  const v = VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : "board";
-  for (const id of VIEWS) $(id).hidden = id !== v;
-  document.querySelectorAll(".views a").forEach(a => { if (a.dataset.view === v) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
+  let v = location.hash.replace(/^#\/?/, "");
+  if (v === "demo") v = "board";
+  const hs = window.VigilHandset, linked = hs && hs.connected();
+  if (!VIEWS[v] || (v === "node" && !linked)) { v = "home"; history.replaceState(null, "", "#/home"); }
+  for (const k in VIEWS) $(VIEWS[k]).hidden = k !== v;
+  $("back").hidden = v === "home";
+  $("back").href = UP[v] || "#/home";
+  put($("back"), UP[v] ? "‹ Back" : "‹ Menu");
+  put($("where"), WHERE[v]);
   $("status-left").textContent = FOOT[v];
+  // a node left connected is one tap away from the first question
+  const yes = $("m-yes");
+  yes.href = linked ? "#/node" : "#/connect";
+  put(yes.querySelector("b"), linked ? `Yes, go back to ${hs.name()}` : "Yes, connect it");
+  put(yes.querySelector(".d"), linked ? "It is still connected" : "Over Bluetooth or the USB cable");
   scrollTo(0, 0);
-  if (v === "handset" && window.VigilHandset) window.VigilHandset.open();
   if (v === "board") { last = 0; render(); }
+  dispatchEvent(new Event("resize"));                          // charts in a view that was hidden are drawn at its real width
 }
+// a menu row that opens the panel under it, one at a time
+function panel(id, open) {
+  document.querySelectorAll(".menu-row[data-panel]").forEach(r => {
+    const on = open && r.dataset.panel === id;
+    r.setAttribute("aria-expanded", String(on));
+    $(r.dataset.panel).hidden = !on;
+  });
+  if (!open) return;
+  dispatchEvent(new Event("resize"));
+  const row = document.querySelector(`.menu-row[data-panel="${id}"]`);
+  requestAnimationFrame(() => row.scrollIntoView({ block: "nearest", behavior: "smooth" }));
+}
+document.querySelectorAll(".menu-row[data-panel]").forEach(r => { r.onclick = () => panel(r.dataset.panel, r.getAttribute("aria-expanded") !== "true"); });
+window.VigilApp = { panel, show };
 addEventListener("hashchange", show);
 addEventListener("DOMContentLoaded", show);
 

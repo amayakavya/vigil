@@ -21,11 +21,10 @@ a { color: inherit; }
 .bar { flex: none; height: 46px; display: flex; align-items: stretch; background: var(--bar); border-bottom: 1px solid var(--rule-2); }
 .brand { display: flex; align-items: center; padding: 0 18px 0 16px; font-size: 15px; font-weight: 650; letter-spacing: 0.34em; color: #fff; text-decoration: none; }
 .brand-sub { display: flex; align-items: center; font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim); white-space: nowrap; overflow: hidden; }
-.views { margin-left: auto; display: flex; }
-.views a, .out-links a { display: flex; align-items: center; padding: 0 18px; font-size: 11.5px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: var(--dim); text-decoration: none; border-left: 1px solid var(--rule); }
-.views a:hover, .out-links a:hover { color: var(--ink); }
-.views a[aria-current="page"] { color: #fff; background: var(--lift); box-shadow: inset 0 2px 0 #fff; }
-.out-links { display: flex; }
+.back, .out-links a { display: flex; align-items: center; padding: 0 18px; font-size: 11.5px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: var(--dim); text-decoration: none; border-left: 1px solid var(--rule); }
+.back:hover, .out-links a:hover { color: var(--ink); }
+.back { color: var(--ink); border-right: 1px solid var(--rule); margin-right: 16px; }
+.out-links { margin-left: auto; display: flex; }
 .view { flex: 1; min-height: 0; display: flex; flex-direction: column; }
 .status { flex: none; height: 26px; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 0 16px; border-top: 1px solid var(--rule); font-size: 11.5px; color: var(--dim); white-space: nowrap; overflow: hidden; }
 
@@ -181,6 +180,36 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 10p
 input[type="range"]::-moz-range-track { height: 2px; background: var(--rule-2); }
 input[type="range"]::-moz-range-thumb { width: 10px; height: 14px; background: #fff; border: 0; border-radius: 0; }
 
+/* ---- the menus: one question to a screen, each answer a full-width row ---- */
+#home, #connect, #try, #node-view, #round-view { display: block; overflow-y: auto; }
+.col { width: 100%; max-width: 760px; margin: 0 auto; padding: 56px 24px 56px; }
+.col.flush { padding: 0 0 48px; min-height: 100%; border-left: 1px solid var(--rule); border-right: 1px solid var(--rule); }
+.q { margin: 0 0 10px; font-size: 34px; font-weight: 600; letter-spacing: -0.022em; line-height: 1.12; color: #fff; }
+.q-sub { margin: 0 0 30px; font-size: 17px; line-height: 1.5; color: var(--mid); max-width: 60ch; }
+.ask { margin: 0; padding: 26px 14px 12px; font-size: 22px; font-weight: 600; letter-spacing: -0.015em; color: #fff; border-top: 1px solid var(--rule-2); }
+.menu { border-top: 1px solid var(--rule-2); }
+.menu.minor { margin-top: 44px; }
+.menu-row { display: grid; grid-template-columns: 30px minmax(0, 1fr) 20px; align-items: center; gap: 16px; width: 100%; min-height: 76px; padding: 14px 8px 15px; border: 0; border-bottom: 1px solid var(--rule-2); border-radius: 0; background: none; color: inherit; font: inherit; text-align: left; text-decoration: none; cursor: pointer; touch-action: manipulation; }
+.menu.inset .menu-row { padding-left: 14px; padding-right: 14px; }
+.menu-row:hover, .menu-row[aria-expanded="true"] { background: var(--lift); }
+.menu-row > i { font-style: normal; }
+.menu-row > i.n { padding: 3px 0; text-align: center; font-size: 13px; font-weight: 650; color: var(--bg); background: var(--mid); }
+.menu-row.bare { grid-template-columns: minmax(0, 1fr) 20px; }
+.menu-row b { display: block; font-size: 19px; font-weight: 580; letter-spacing: -0.008em; color: #fff; }
+.menu-row .d { display: block; margin-top: 3px; font-size: 14px; line-height: 1.4; color: var(--dim); }
+.menu-row em { font-style: normal; font-size: 24px; line-height: 1; color: var(--dim); text-align: right; transition: transform 0.2s; }
+.menu-row[aria-expanded="true"] em { transform: rotate(90deg); color: #fff; }
+.menu-row.off b { color: var(--dim); }
+.menu-row.warn { box-shadow: inset 2px 0 0 var(--amber); }
+.menu-row.warn b { color: var(--amber); }
+.menu.minor .menu-row { min-height: 60px; }
+.menu.minor .menu-row b { font-size: 16px; font-weight: 520; }
+.panel { border-bottom: 1px solid var(--rule-2); background: #0a0d11; }
+.panel .fig { border-bottom: 0; }
+.col .hint { margin-top: 18px; font-size: 14px; }
+.col .hint:empty { display: none; }
+.hint.pad { margin: 0; padding: 0 14px 12px; }
+
 /* ---- the handset and the recording: two panes ---- */
 .cols2 { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 #printcard { display: none; }
@@ -199,14 +228,19 @@ input[type="range"]::-moz-range-thumb { width: 10px; height: 14px; background: #
 
 /* ---- a phone: one column, the views along the bottom edge ---- */
 @media (max-width: 860px) {
-  .app { height: auto; min-height: 100dvh; padding-bottom: calc(50px + env(safe-area-inset-bottom)); }
+  .app { height: auto; min-height: 100dvh; padding-bottom: env(safe-area-inset-bottom); }
   .bar { position: sticky; top: 0; z-index: 20; }
-  .out-links { margin-left: auto; }
-  .out-links a { padding: 0 13px; }
-  .views { position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; margin: 0; height: calc(50px + env(safe-area-inset-bottom)); padding-bottom: env(safe-area-inset-bottom); background: var(--bar); border-top: 1px solid var(--rule-2); }
-  .views a { flex: 1; justify-content: center; padding: 0; border-left: 0; border-right: 1px solid var(--rule); font-size: 10px; letter-spacing: 0.07em; white-space: nowrap; }
-  .views a[aria-current="page"] { box-shadow: inset 0 2px 0 #fff; }
+  .out-links a, .back { padding: 0 13px; }
+  .back { margin-right: 0; }
+  .brand-sub { display: none; }
   .view { display: flex; }
+  #home, #connect, #try, #node-view, #round-view { overflow: visible; }
+  .col { padding: 30px 16px 40px; }
+  .col.flush { border: 0; padding-bottom: 24px; }
+  .q { font-size: 28px; }
+  .q-sub { font-size: 16px; margin-bottom: 22px; }
+  .menu-row { gap: 12px; padding: 14px 2px 15px; }
+  .menu-row b { font-size: 18px; }
   .guide { order: 0; display: block; }
   .guided .guide { position: sticky; top: 46px; z-index: 15; }
   .walk { grid-template-columns: 1fr; gap: 12px; padding: 12px 14px 14px; }
