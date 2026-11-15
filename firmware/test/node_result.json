@@ -1,0 +1,116 @@
+{
+ "bearings": 12,
+ "passed": 12,
+ "snapshots": 37856,
+ "worst_health_index_difference": 0.005,
+ "rows": [
+  {
+   "run": 1,
+   "bearing": 1,
+   "snapshots": 2156,
+   "pass": true,
+   "alarm_idx": 2145,
+   "named_idx": -1,
+   "named_as": null
+  },
+  {
+   "run": 1,
+   "bearing": 2,
+   "snapshots": 2156,
+   "pass": true,
+   "alarm_idx": 2127,
+   "named_idx": -1,
+   "named_as": null
+  },
+  {
+   "run": 1,
+   "bearing": 3,
+   "snapshots": 2156,
+   "pass": true,
+   "alarm_idx": 1013,
+   "named_idx": 2129,
+   "named_as": "BPFI"
+  },
+  {
+   "run": 1,
+   "bearing": 4,
+   "snapshots": 2156,
+   "pass": true,
+   "alarm_idx": 349,
+   "named_idx": 455,
+   "named_as": "BSF"
+  },
+  {
+   "run": 2,
+   "bearing": 1,
+   "snapshots": 984,
+   "pass": true,
+   "alarm_idx": 640,
+   "named_idx": 577,
+   "named_as": "BPFO"
+  },
+  {
+   "run": 2,
+   "bearing": 2,
+   "snapshots": 984,
+   "pass": true,
+   "alarm_idx": 924,
+   "named_idx": -1,
+   "named_as": null
+  },
+  {
+   "run": 2,
+   "bearing": 3,
+   "snapshots": 984,
+   "pass": true,
+   "alarm_idx": 932,
+   "named_idx": -1,
+   "named_as": null
+  },
+  {
+   "run": 2,
+   "bearing": 4,
+   "snapshots": 984,
+   "pass": true,
+   "alarm_idx": 917,
+   "named_idx": 728,
+   "named_as": "BPFO"
+  },
+  {
+   "run": 3,
+   "bearing": 1,
+   "snapshots": 6324,
+   "pass": true,
+   "alarm_idx": 6260,
+   "named_idx": 6305,
+   "named_as": "BPFO"
+  },
+  {
+   "run": 3,
+   "bearing": 2,
+   "snapshots": 6324,
+   "pass": true,
+   "alarm_idx": 6236,
+   "named_idx": 6304,
+   "named_as": "BPFO"
+  },
+  {
+   "run": 3,
+   "bearing": 3,
+   "snapshots": 6324,
+   "pass": true,
+   "alarm_idx": 6159,
+   "named_idx": 6071,
+   "named_as": "BPFO"
+  },
+  {
+   "run": 3,
+   "bearing": 4,
+   "snapshots": 6324,
+   "pass": true,
+   "alarm_idx": 6161,
+   "named_idx": 6163,
+   "named_as": "BPFO"
+  }
+ ]
+}
