@@ -6,7 +6,7 @@
 <title>VIGIL results</title>
 <meta name="description" content="Vibration Intelligence Grid for Integrity and Lifecycle. A clip-on sensor that names the failing part of a generator, pump or motor days before it fails, with no internet connection. Tested on NASA and Case Western bearing data, and runnable here on raw recordings.">
 <meta name="author" content="Amaya Kavya">
-<meta name="theme-color" content="#08090d">
+<meta name="theme-color" content="#080a0d">
 <meta property="og:type" content="website">
 <meta property="og:title" content="VIGIL">
 <meta property="og:description" content="A clip-on sensor that names the failing part of a generator, pump or motor days before it fails, with no internet connection. Tested on NASA run-to-failure data and runnable in the browser.">
@@ -16,18 +16,22 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="sheet.svg" as="image" fetchpriority="low">
 <link rel="icon" href="icon-192.png">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="stylesheet" href="house.css">
+<link rel="stylesheet" href="doc.css">
 </head>
 <body>
-<div class="edge-trace" aria-hidden="true"><i class="et et-t"></i><i class="et et-b"></i><i class="et et-lt"></i><i class="et et-rt"></i><i class="et et-lb"></i><i class="et et-rb"></i></div>
-<header class="topbar">
+<header class="bar">
   <a class="brand" href="./">VIGIL</a>
-  <nav class="nav" aria-label="VIGIL">
-    <a href="./">Live</a>
-    <a href="results.html" class="active">Results</a>
+  <span class="brand-sub">Vibration Intelligence Grid for Integrity and Lifecycle</span>
+  <nav class="views" aria-label="Views">
+    <a href="./#board">Board</a>
+    <a href="./#handset">Handset</a>
+    <a href="./#recording">Recording</a>
+  </nav>
+  <nav class="out-links" aria-label="More">
+    <a href="results.html" aria-current="page">Results</a>
     <a href="https://github.com/amayakavya/vigil">Code</a>
   </nav>
 </header>
@@ -91,12 +95,24 @@
     <h2>The node's firmware</h2>
     <p>The method is written a third time, in C for the node's ESP32-S3, and checked against the Python analysis rather than trusted. On the nine reference recordings, whole and cut to the power-of-two length the node records, it gives the same verdict and band in all 18 runs, with line strengths within 0.0001 dB, in the single precision the chip computes in. Then the whole of NASA's data went through the firmware's own learning and alarm logic: all twelve bearings, 37,856 snapshots. It raised every alarm and named every part on the same snapshot as the analysis, on 12 of 12 bearings.</p>
     <dl class="res">
-      <div class="res-row"><dt>Built for ESP32-S3, measured by the compiler</dt><dd>555,357 bytes of flash, 36,880 of RAM</dd></div>
+      <div class="res-row"><dt>Built for ESP32-S3, measured by the compiler</dt><dd>562,257 bytes of flash, 30,784 of RAM</dd></div>
       <div class="res-row"><dt>Snapshot and working memory, from the code</dt><dd>1,179,728 bytes of the 8 MB PSRAM</dd></div>
       <div class="res-row"><dt>Snapshot</dt><dd>32,768 samples, 1.23 s at 26,667 Hz</dd></div>
       <div class="res-row"><dt>Links out</dt><dd>Bluetooth, encrypted and paired, or a USB cable</dd></div>
     </dl>
-    <p>The node wakes every ten minutes, records, decides, reports for fifteen seconds and sleeps. It measures its own sample rate against the chip's clock on every snapshot, because every defect line is computed from it and the sensor's rate may differ from nominal by a percent or two. The Wi-Fi library is never linked. The firmware is at <a href="https://github.com/amayakavya/vigil/tree/main/firmware">firmware/</a>. It has not yet run on a board.</p>
+    <p>The node wakes every ten minutes, records, decides, listens for fifteen seconds and sleeps. A press of its button wakes it for a mechanic's handset, and it then stays up for two minutes after the handset's last word. It measures its own sample rate against the chip's clock on every snapshot, because every defect line is computed from it and the sensor's rate may differ from nominal by a percent or two. The Wi-Fi library is never linked. The firmware is at <a href="https://github.com/amayakavya/vigil/tree/main/firmware">firmware/</a>. It has not yet run on a board.</p>
+
+    <h2>The node's application, and the handset</h2>
+    <p>The signal core is half of a node. The other half is what it learns from, when it warns, what it keeps through sleep and a power cut, and what it says to a phone. That is one portable C file, <span class="mono">firmware/core/node.c</span>, with nothing of the board in it, so the same source is built for the ESP32-S3 and, as WebAssembly, for the bench node in <a href="./#handset">the handset</a>. The WebAssembly build then went through NASA's data as a node would live it, one snapshot every ten minutes with its own learning, alarm and 48 hour log: all twelve bearings, 37,856 snapshots. It raised every alarm and named every part on the analysis's snapshot, on 12 of 12 bearings.</p>
+    <p>The handset is the other end of the link, and it is checked against that firmware and not against a description of it. On twelve consecutive NASA recordings that span the first warning of test 2, it read back the node's status and its trend, received every sample of every recording with the checksum good, and its own analysis of those samples gave the node's line strengths to within 0.0001 dB, in the same band. A spot reading left the node's memory byte for byte as it was. Bad settings were refused. The warning survived a power cut, and came down when the mechanic cleared it.</p>
+    <dl class="res">
+      <div class="res-row"><dt>Node application on NASA, decisions on the analysis's snapshot</dt><dd>12 of 12 bearings</dd></div>
+      <div class="res-row"><dt>Recordings the handset received whole, sample for sample</dt><dd>12 of 12</dd></div>
+      <div class="res-row"><dt>The phone's analysis against the node's, same samples</dt><dd>within 0.0001 dB</dd></div>
+      <div class="res-row"><dt>Reaches a node by</dt><dd>Bluetooth, USB cable, or the bench node</dd></div>
+      <div class="res-row"><dt>Run against a built board</dt><dd>Not yet</dd></div>
+    </dl>
+    <p>A phone cannot be the sensor. Its accelerometer is read by a web page some sixty times a second, and a bearing's impacts ring at thousands of hertz, so the phone is the handset and the node is the sensor.</p>
 
     <h2>What failed first</h2>
     <p>The first version did not work, twice. On the Case Western set it named only 26 of 52, because its band search kept choosing the band just under the sampling limit, where the anti-alias filter leaves impulsive noise. Keeping the search between 200 Hz and the sensor's 6 kHz limit, in bands at least 1 kHz wide, took it to 40. On NASA run 2 it then alarmed on all three healthy bearings, on rises in overall level of 7 to 14% against a first day so steady that changes that small scored as faults. The spread floors and the stopped-machine rule above fixed that. Runs 1 and 3 were scored once, after both fixes, with nothing changed since.</p>
@@ -111,6 +127,7 @@
       <li>A machine that is already damaged on installation would teach the node a damaged normal. The plan is to check each new machine against identical machines in the fleet and against the absolute vibration zones of ISO 20816, which is not yet built.</li>
       <li>The method needs the shaft speed. Generators, pumps and motors run at a fixed speed. Vehicles do not, so they wait until speed tracking from the signal itself is built and tested on a bench.</li>
       <li>Bluetooth is a radio. Where a site allows no transmitters, the node keeps its results and they are read over a cable.</li>
+      <li>The handset's Bluetooth and cable paths compile against the chip's libraries and have met no board. A web page can use Bluetooth in Chrome or Edge on Android or a computer, and not in an iPhone's own browser, where the handset reads the bench node and keeps the round.</li>
     </ul>
 
     <h2>The pilot it is built for</h2>

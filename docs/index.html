@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>VIGIL</title>
 <meta name="description" content="Vibration Intelligence Grid for Integrity and Lifecycle. A clip-on sensor that names the failing part of a generator, pump or motor days before it fails, with no internet connection. Tested on NASA and Case Western bearing data, and runnable here on raw recordings.">
 <meta name="author" content="Amaya Kavya">
-<meta name="theme-color" content="#08090d">
+<meta name="theme-color" content="#090b0e">
 <meta property="og:type" content="website">
 <meta property="og:title" content="VIGIL">
 <meta property="og:description" content="A clip-on sensor that names the failing part of a generator, pump or motor days before it fails, with no internet connection. Tested on NASA run-to-failure data and runnable in the browser.">
@@ -16,133 +16,257 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="sheet.svg" as="image" fetchpriority="low">
 <link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="house.css">
-<link rel="stylesheet" href="console.css">
+<link rel="stylesheet" href="app.css">
 </head>
 <body>
-<div class="edge-trace" aria-hidden="true"><i class="et et-t"></i><i class="et et-b"></i><i class="et et-lt"></i><i class="et et-rt"></i><i class="et et-lb"></i><i class="et et-rb"></i></div>
-<header class="topbar">
-  <a class="brand" href="./">VIGIL</a>
-  <nav class="nav" aria-label="VIGIL">
-    <a href="./" class="active">Live</a>
-    <a href="results.html">Results</a>
-    <a href="https://github.com/amayakavya/vigil">Code</a>
-  </nav>
-</header>
+<div class="app">
+  <header class="bar">
+    <a class="brand" href="./">VIGIL</a>
+    <span class="brand-sub">Vibration Intelligence Grid for Integrity and Lifecycle</span>
+    <nav class="views" aria-label="Views">
+      <a href="#board" data-view="board" aria-current="page">Board</a>
+      <a href="#handset" data-view="handset">Handset</a>
+      <a href="#recording" data-view="recording">Recording</a>
+    </nav>
+    <nav class="out-links" aria-label="More">
+      <a href="results.html">Results</a>
+      <a href="https://github.com/amayakavya/vigil">Code</a>
+    </nav>
+  </header>
 
-<main class="page">
-  <section class="page-header">
-    <h1>VIGIL</h1>
-    <p class="expand">Vibration Intelligence Grid for Integrity and Lifecycle</p>
-    <div class="meta"><span class="tag">Live demonstration</span><span>Seva First Innovation Challenge 2026, Defence</span><span>Team HEISENBUG</span></div>
-  </section>
-
-  <article class="content">
-    <p class="lede">A clip-on sensor that names the failing part of a generator, pump or motor days before it fails, with no internet connection. It is running below, on NASA's run-to-failure tests replayed snapshot by snapshot, and on any recording you give it.</p>
-    <dl class="res" id="headline">
-      <div class="res-row big"><dt>Failures warned, NASA run-to-failure tests</dt><dd>4 of 4</dd></div>
-      <div class="res-row"><dt>Sustained warning before the rig was stopped</dt><dd>40 to 256 h</dd></div>
-      <div class="res-row"><dt>Ahead of an alarm on vibration doubling, on every failure</dt><dd>by 15 to 244 h</dd></div>
-      <div class="res-row"><dt>Alarms on healthy bearings before any fault, in 3,245 running hours</dt><dd>0</dd></div>
+  <!-- ================= the board: NASA's three tests, replayed ================= -->
+  <main class="view" id="board">
+    <dl class="strip" aria-label="Results on NASA's run-to-failure tests">
+      <div><dt>Failures warned</dt><dd>4 of 4</dd></div>
+      <div><dt>Sustained warning ahead</dt><dd>40 to 256 h</dd></div>
+      <div><dt>Ahead of a level alarm</dt><dd>15 to 244 h</dd></div>
+      <div><dt>Right part named, last 72 h</dt><dd>647 of 656</dd></div>
+      <div><dt>Healthy alarms in 3,245 h</dt><dd>0</dd></div>
     </dl>
 
-    <h2>Three test rigs under watch</h2>
-    <p>NASA's three run-to-failure tests, as the maintenance board would have shown them: three shafts, four bearings each, and every reading, warning and named part the real one from the recordings. The three start together here, and each card shows when its snapshot was actually recorded. It plays a day a second. Watch the warnings arrive, the job cards open and the spares list fill.</p>
-    <div class="deck" id="deck">
-      <div class="controls">
-        <button class="go" id="play">Play</button>
-        <div class="tabs speed" role="tablist" aria-label="Speed">
-          <button class="tab" data-speed="2">2 h a second</button>
-          <button class="tab" data-speed="8">8 h a second</button>
-          <button class="tab" data-speed="24" aria-selected="true">1 day a second</button>
-        </div>
-      </div>
-      <input type="range" id="scrub" min="0" max="10000" value="0" aria-label="Site time">
-      <div class="clock"><span id="clock">Day 1, 00:00</span><span id="sitenote"></span></div>
-    </div>
-
-    <h2>Machines</h2>
-    <div id="machines"></div>
-
-    <div class="cols">
-      <section>
-        <h2>Job cards</h2>
-        <p class="hint" id="jobs-empty">No open jobs.</p>
-        <div id="jobs"></div>
+    <div class="desk">
+      <section class="pane" id="fleet-pane">
+        <h2 class="pt"><span>Machines</span><span>Health index</span></h2>
+        <div id="fleet"></div>
       </section>
-      <section>
-        <h2>Spares to draw</h2>
+
+      <section class="pane" id="point-pane">
+        <h2 class="pt"><span id="pt-title">Point</span><button class="quiet-btn" id="pt-follow" type="button">Following</button></h2>
+        <p class="state" id="pt-state"></p>
+        <dl class="reads" id="pt-reads"></dl>
+        <div class="plot">
+          <h3 class="ph"><span>Health index</span><span id="rd-trend">Log scale, against this bearing's own first day</span></h3>
+          <canvas id="cv-trend"></canvas>
+        </div>
+        <div class="plot tall">
+          <h3 class="ph"><span>Envelope spectrum over the test</span><span id="rd-fall">0 to 600 Hz, each column one snapshot</span></h3>
+          <canvas id="cv-fall"></canvas>
+        </div>
+      </section>
+
+      <section class="pane" id="work-pane">
+        <h2 class="pt"><span>Job cards</span><span id="jobs-count"></span></h2>
+        <p class="none" id="jobs-empty">No open jobs.</p>
+        <div id="jobs"></div>
+        <h2 class="pt"><span>Spares to draw</span></h2>
         <dl class="res" id="spares"></dl>
-        <h2>Log</h2>
+        <h2 class="pt"><span>Log</span></h2>
         <ol class="log" id="log"></ol>
       </section>
     </div>
 
-    <h2>Each machine's life</h2>
-    <p class="hint">Learning, normal running, the warning, and the stop, on the site's calendar. The bar ends where NASA stopped each test with a bearing failed.</p>
-    <div id="lives"></div>
-
-
-    <h2>Diagnose a recording</h2>
-    <p>The same method, running in your browser on raw vibration. On the nine reference recordings it gives the Python analysis's answer to within 0.0001 dB. The NASA snapshots were picked by rule, not by result, which is why two of them come back declined.</p>
-    <div class="tool">
-      <div class="tabs" role="tablist">
-        <button class="tab" role="tab" id="t-rec" aria-selected="true">Reference recordings</button>
-        <button class="tab" role="tab" id="t-file" aria-selected="false">Your own recording</button>
+    <div class="transport" id="deck">
+      <button class="go" id="play" type="button">Play</button>
+      <div class="speed" role="group" aria-label="Speed">
+        <button class="btn" data-speed="2" type="button">2 h/s</button>
+        <button class="btn" data-speed="8" type="button">8 h/s</button>
+        <button class="btn" data-speed="24" type="button" aria-pressed="true">1 day/s</button>
       </div>
-      <div id="p-rec">
-        <div class="grid">
-          <label class="field wide"><span>Recording</span><select id="sample"></select></label>
-        </div>
-        <p class="hint" id="sample-note"></p>
+      <div class="track">
+        <input type="range" id="scrub" min="0" max="10000" value="0" aria-label="Replay time">
+        <canvas id="cv-lanes" aria-hidden="true"></canvas>
       </div>
-      <div id="p-file" hidden>
-        <p class="hint">A vibration recording from an accelerometer fixed to the bearing housing, at least one second long, with the machine at a steady speed. CSV or text with one number per line (the first column is used if there are more), or a 16-bit or 32-bit float WAV. The file is read in this tab and never leaves it.</p>
-        <div class="grid">
-          <label class="field wide"><span>File</span><input type="file" id="file" accept=".csv,.txt,.wav,.dat"></label>
-          <label class="field"><span>Sample rate (Hz)</span><input type="number" id="fs" min="2000" step="1" value="20480"></label>
-          <label class="field"><span>Shaft speed (rpm)</span><input type="number" id="rpm" min="60" step="0.1" value="2000"></label>
-          <label class="field"><span>Bearing</span><select id="brg"><option value="ZA-2115">Rexnord ZA-2115</option><option value="6205">SKF 6205-2RS JEM</option><option value="custom">Other: enter its geometry</option></select></label>
-          <label class="field" data-custom hidden><span>Rolling elements (per row)</span><input type="number" id="g-n" min="3" step="1" value="9"></label>
-          <label class="field" data-custom hidden><span>Element diameter (mm)</span><input type="number" id="g-d" min="0.1" step="0.001" value="7.94"></label>
-          <label class="field" data-custom hidden><span>Pitch diameter (mm)</span><input type="number" id="g-p" min="1" step="0.01" value="39.04"></label>
-          <label class="field" data-custom hidden><span>Contact angle (degrees)</span><input type="number" id="g-a" min="0" max="45" step="0.01" value="0"></label>
-        </div>
-      </div>
-      <button class="go" id="run">Diagnose</button>
-      <div class="out" id="out" hidden>
-        <dl class="res">
-          <div class="res-row big"><dt>Verdict</dt><dd id="o-verdict"></dd></div>
-          <div class="res-row"><dt>Outer race line</dt><dd id="o-BPFO"></dd></div>
-          <div class="res-row"><dt>Inner race line</dt><dd id="o-BPFI"></dd></div>
-          <div class="res-row"><dt>Rolling element line</dt><dd id="o-BSF"></dd></div>
-          <div class="res-row"><dt>Band the impacts ring in</dt><dd id="o-band"></dd></div>
-          <div class="res-row" id="o-truth-row"><dt>What the bearing actually had</dt><dd id="o-truth"></dd></div>
-        </dl>
-        <figure>
-          <svg class="chart" id="ses" viewBox="0 0 820 250" role="img" aria-label="Envelope spectrum with the predicted defect lines"></svg>
-          <figcaption id="ses-cap"></figcaption>
-        </figure>
-      </div>
+      <div class="clock"><b id="clock">Day 1, 00:00</b><span id="sitenote"></span></div>
     </div>
+  </main>
 
-    <h2>A built node</h2>
-    <p>The console reads a real node over Bluetooth with the same panel. A node sends one line, for example <code>VIGIL1|id=VIGIL-0001|phase=normal|learned=144/144|hi=2.31|part=none|outer=7.6|inner=6.0|ball=7.6</code>. None has been built yet, so this has not been run against hardware. It needs Chrome with Bluetooth, and the passkey on the node's label.</p>
-    <button class="go ghost" id="ble">Connect a node</button>
-    <dl class="res" id="node" hidden></dl>
-    <p class="hint">Once opened, the console keeps working with no connection, which is how a workshop computer would run it.</p>
+  <!-- ================= the handset: one node, read from a phone ================= -->
+  <main class="view" id="handset" hidden>
+    <div class="cols2">
+      <section class="pane">
+        <h2 class="pt"><span>Link</span><span id="c-via"></span></h2>
+        <div class="pad">
+          <div class="links">
+            <button class="go" id="c-bench" type="button">Bench node</button>
+            <button class="go ghost" id="c-ble" type="button">Bluetooth</button>
+            <button class="go ghost" id="c-usb" type="button">USB cable</button>
+            <button class="go ghost" id="c-off" type="button" hidden>Disconnect</button>
+          </div>
+          <p class="hint" id="c-note">The bench node is the node's own firmware, built from the same C as the ESP32-S3 image, run in this page on NASA test 2, bearing 1. Bluetooth and the cable speak the same lines to a built node. No board is built yet, so those two have not met hardware.</p>
+        </div>
+        <div id="node" hidden>
+          <h2 class="pt"><span id="n-title">Node</span><span>Status</span></h2>
+          <p class="state" id="s-state"></p>
+          <dl class="res" id="n-status">
+            <div class="res-row"><dt>Health index, alarm at 6</dt><dd id="s-hi"></dd></div>
+            <div class="res-row"><dt>Named part</dt><dd id="s-part"></dd></div>
+            <div class="res-row"><dt>Line strengths</dt><dd id="s-lines"></dd></div>
+            <div class="res-row"><dt>Vibration level</dt><dd id="s-level"></dd></div>
+            <div class="res-row"><dt>Last snapshot</dt><dd id="s-last"></dd></div>
+            <div class="res-row"><dt>Fitted to</dt><dd id="s-fit"></dd></div>
+          </dl>
+          <div class="pad" id="bench" hidden>
+            <div class="links">
+              <button class="go" id="b-next" type="button">Next ten minutes</button>
+              <button class="go ghost" id="b-run" type="button">Run on</button>
+              <button class="go ghost" id="b-reset" type="button">Start again</button>
+            </div>
+            <p class="hint" id="b-note"></p>
+          </div>
+          <h2 class="pt"><span>Last 48 hours</span><span>Health index, from the node's own log</span></h2>
+          <figure class="fig">
+            <svg class="chart" id="trend" viewBox="0 0 820 170" role="img" aria-label="Health index over the last 48 hours"></svg>
+            <figcaption id="trend-cap"></figcaption>
+          </figure>
+          <div id="jobwrap" hidden>
+            <h2 class="pt"><span>Job card</span></h2>
+            <div class="pad" id="job"></div>
+          </div>
+        </div>
+      </section>
 
-    <h2>How it was tested</h2>
-    <p>Every figure on this page, the method, the C firmware for the node, what failed first and what is not built yet: <a href="results.html">the results</a>. The code and the analysis are <a href="https://github.com/amayakavya/vigil">open</a>.</p>
-  </article>
-</main>
-<footer>© 2026 Amaya Kavya · Team HEISENBUG</footer>
+      <section class="pane">
+        <div id="node-tools" hidden>
+          <h2 class="pt"><span>At the machine</span><span>A spot reading never moves the alarm</span></h2>
+          <div class="pad">
+            <div class="links">
+              <button class="go ghost" id="a-spot" type="button">Spot reading</button>
+              <button class="go ghost" id="a-raw" type="button">Pull the recording</button>
+            </div>
+            <p class="hint err" id="a-err" hidden></p>
+          </div>
+          <dl class="res" id="spot" hidden>
+            <div class="res-row"><dt>Spot reading, health index</dt><dd id="p-hi"></dd></div>
+            <div class="res-row"><dt>This reading alone points at</dt><dd id="p-points"></dd></div>
+            <div class="res-row"><dt>Line strengths</dt><dd id="p-lines"></dd></div>
+          </dl>
+          <div id="ev" hidden>
+            <h2 class="pt"><span>Node and phone, same samples</span><span id="e-agree"></span></h2>
+            <dl class="res">
+              <div class="res-row"><dt>Recording</dt><dd id="e-rec"></dd></div>
+              <div class="res-row"><dt>The node's line strengths</dt><dd id="e-node"></dd></div>
+              <div class="res-row"><dt>This device's</dt><dd id="e-phone"></dd></div>
+              <div class="res-row"><dt>Band the impacts ring in</dt><dd id="e-band"></dd></div>
+              <div class="res-row"><dt>This recording alone points at</dt><dd id="e-verdict"></dd></div>
+            </dl>
+            <figure class="fig">
+              <svg class="chart" id="n-ses" viewBox="0 0 820 250" role="img" aria-label="Envelope spectrum of the node's recording with the predicted defect lines"></svg>
+              <figcaption id="n-ses-cap"></figcaption>
+            </figure>
+            <div class="pad"><button class="go ghost" id="e-save" type="button">Save the recording</button></div>
+          </div>
+
+          <h2 class="pt"><span>Installation</span><span>A new bearing, speed or axis starts a new normal</span></h2>
+          <div class="pad">
+            <div class="grid">
+              <label class="field wide"><span>Node id, as on the asset register</span><input id="i-id" maxlength="23" autocomplete="off" autocapitalize="characters" spellcheck="false"></label>
+              <label class="field"><span>Bearing</span><select id="i-brg"><option value="16/0.331/2.815/15.17">Rexnord ZA-2115</option><option value="9/7.94/39.04/0">SKF 6205-2RS JEM</option><option value="custom">Other: enter its geometry</option></select></label>
+              <label class="field"><span>Shaft speed (rpm)</span><input type="number" id="i-rpm" min="60" max="30000" step="0.1" inputmode="decimal"></label>
+              <label class="field" data-custom hidden><span>Rolling elements (per row)</span><input type="number" id="i-n" min="3" max="60" step="1" inputmode="numeric"></label>
+              <label class="field" data-custom hidden><span>Element diameter</span><input type="number" id="i-d" min="0" step="any" inputmode="decimal"></label>
+              <label class="field" data-custom hidden><span>Pitch diameter, same unit</span><input type="number" id="i-p" min="0" step="any" inputmode="decimal"></label>
+              <label class="field" data-custom hidden><span>Contact angle (degrees)</span><input type="number" id="i-a" min="0" max="45" step="any" inputmode="decimal"></label>
+              <label class="field"><span>Sensor axis facing the machine</span><select id="i-axis"><option value="0">X</option><option value="1">Y</option><option value="2">Z</option></select></label>
+              <label class="field"><span>New passkey, six digits (optional)</span><input id="i-key" maxlength="6" inputmode="numeric" autocomplete="off"></label>
+            </div>
+            <div class="links">
+              <button class="go" id="i-write" type="button">Write to the node</button>
+              <button class="go ghost" id="i-relearn" type="button">Learn again</button>
+            </div>
+            <p class="hint" id="i-note"></p>
+          </div>
+        </div>
+
+        <h2 class="pt"><span>The round</span><span>Kept on this device only</span></h2>
+        <div class="tablewrap"><table id="round"><thead><tr><th>Read</th><th>Node</th><th>State</th><th>Index</th><th>Part</th></tr></thead><tbody></tbody></table></div>
+        <p class="none" id="round-empty">Nothing read yet.</p>
+        <div class="pad">
+          <div class="links">
+            <button class="go ghost" id="r-csv" type="button">Save as CSV</button>
+            <button class="go ghost" id="r-clear" type="button">Forget the round</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- ================= one recording, diagnosed here ================= -->
+  <main class="view" id="recording" hidden>
+    <div class="cols2">
+      <section class="pane">
+        <h2 class="pt"><span>Recording</span><span>The method, run in this browser</span></h2>
+        <div class="pad">
+          <div class="tabs" role="tablist">
+            <button class="btn" role="tab" id="t-rec" aria-selected="true" type="button">Reference recordings</button>
+            <button class="btn" role="tab" id="t-file" aria-selected="false" type="button">Your own recording</button>
+          </div>
+          <div id="p-rec">
+            <div class="grid">
+              <label class="field wide"><span>Recording</span><select id="sample"></select></label>
+            </div>
+            <p class="hint" id="sample-note"></p>
+          </div>
+          <div id="p-file" hidden>
+            <p class="hint">An accelerometer on the bearing housing, at least one second, at a steady speed. CSV or text with one number per line, or a 16-bit or 32-bit float WAV. The file is read in this tab and never leaves it.</p>
+            <div class="grid">
+              <label class="field wide"><span>File</span><input type="file" id="file" accept=".csv,.txt,.wav,.dat"></label>
+              <label class="field"><span>Sample rate (Hz)</span><input type="number" id="fs" min="2000" step="1" value="20480"></label>
+              <label class="field"><span>Shaft speed (rpm)</span><input type="number" id="rpm" min="60" step="0.1" value="2000"></label>
+              <label class="field"><span>Bearing</span><select id="brg"><option value="ZA-2115">Rexnord ZA-2115</option><option value="6205">SKF 6205-2RS JEM</option><option value="custom">Other: enter its geometry</option></select></label>
+              <label class="field" data-custom hidden><span>Rolling elements (per row)</span><input type="number" id="g-n" min="3" step="1" value="9"></label>
+              <label class="field" data-custom hidden><span>Element diameter (mm)</span><input type="number" id="g-d" min="0.1" step="0.001" value="7.94"></label>
+              <label class="field" data-custom hidden><span>Pitch diameter (mm)</span><input type="number" id="g-p" min="1" step="0.01" value="39.04"></label>
+              <label class="field" data-custom hidden><span>Contact angle (degrees)</span><input type="number" id="g-a" min="0" max="45" step="0.01" value="0"></label>
+            </div>
+          </div>
+          <div class="links"><button class="go" id="run" type="button">Diagnose</button></div>
+          <p class="hint">On the nine reference recordings this page gives the Python analysis's answer to within 0.0001 dB. The NASA snapshots were picked by rule, not by result, which is why two of them come back declined.</p>
+        </div>
+      </section>
+      <section class="pane">
+        <h2 class="pt"><span>Diagnosis</span><span>A part is named when its line stands 10 dB clear</span></h2>
+        <p class="none" id="out-empty">No recording diagnosed yet.</p>
+        <div class="out" id="out" hidden>
+          <p class="state" id="o-verdict"></p>
+          <dl class="res">
+            <div class="res-row"><dt>Outer race line</dt><dd id="o-BPFO"></dd></div>
+            <div class="res-row"><dt>Inner race line</dt><dd id="o-BPFI"></dd></div>
+            <div class="res-row"><dt>Rolling element line</dt><dd id="o-BSF"></dd></div>
+            <div class="res-row"><dt>Band the impacts ring in</dt><dd id="o-band"></dd></div>
+            <div class="res-row" id="o-truth-row"><dt>What the bearing actually had</dt><dd id="o-truth"></dd></div>
+          </dl>
+          <figure class="fig">
+            <svg class="chart" id="ses" viewBox="0 0 820 250" role="img" aria-label="Envelope spectrum with the predicted defect lines"></svg>
+            <figcaption id="ses-cap"></figcaption>
+          </figure>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="status">
+    <span id="status-left">Replay of NASA's IMS run-to-failure recordings. Every reading, warning and named part is the analysis's own result for that snapshot.</span>
+    <span>Seva First Innovation Challenge 2026, Defence · Team HEISENBUG · © 2026 Amaya Kavya</span>
+  </footer>
+</div>
 
 <div id="printcard" aria-hidden="true"></div>
-<script src="console.js"></script>
+<script src="app.js"></script>
+<script src="link.js"></script>
+<script src="handset.js"></script>
 <script src="diagnose.js"></script>
 </body>
 </html>

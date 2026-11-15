@@ -42,11 +42,29 @@ cc -std=c99 -O2 -o check_float check_core.c ../core/vigil.c -lm && ./check_float
 python3 replay_ims.py      # all twelve NASA bearings through the firmware's own learning and alarm logic
 ```
 
-`firmware/node` is the ESP32-S3 application (PlatformIO, Arduino framework, NimBLE): an IIS3DWB driver written from datasheet DS12569 Rev 4, a 32,768-sample snapshot every ten minutes with the sample rate measured on each one, the day's learning kept through deep sleep and power cuts, and results over paired, encrypted Bluetooth or the USB cable. It builds with `pio run` to 555,357 bytes of flash and 36,880 of static RAM. It has not run on a board.
+`firmware/node` is the ESP32-S3 application (PlatformIO, Arduino framework, NimBLE): an IIS3DWB driver written from datasheet DS12569 Rev 4, a 32,768-sample snapshot every ten minutes with the sample rate measured on each one, the day's learning kept through deep sleep and power cuts, and results over paired, encrypted Bluetooth or the USB cable. A press of the button wakes it for a handset, and it stays up for two minutes after the handset's last word. It builds with `pio run` to 562,257 bytes of flash and 30,784 of static RAM. It has not run on a board.
+
+What the node learns, decides, keeps and says is `firmware/core/node.c`, portable C with nothing of the board in it. `firmware/node/src/main.cpp` is only pins, sensor, radio, flash and sleep. `firmware/wasm/build.sh` builds the same source to `docs/node.wasm` with zig, and `node analysis/check_node.mjs --nasa` runs that build through all twelve NASA bearings as a node would live them: every alarm and every name on the analysis's snapshot, 12 of 12 bearings, 37,856 snapshots.
+
+## The handset
+
+The handset view of the console (`docs/handset.js`) is the phone on the maintenance round. It reads a node over Bluetooth or the USB cable with one set of lines (`docs/link.js`): its state, its last 48 hours of health index, a spot reading that never moves the alarm, and its raw recording with a CRC, which the phone analyses again with `docs/vigil.js` and sets beside the node's own answer. It writes the installation, clears a warning after the repair, prints or shares a job card, and keeps the round on the phone with no connection.
+
+No board exists yet, so the handset carries a bench node: `docs/node.wasm`, started from the memory the firmware held after NASA test 2, bearing 1's first 570 snapshots, then given the next twelve recordings one at a time. `node analysis/check_node.mjs` drives the handset's own link code against it. The status, the trend and every sample arrive as the node holds them, the phone's line strengths are within 0.0001 dB of the node's in the same band, a spot reading leaves the node's memory byte for byte as it was, bad settings are refused, and a warning survives a power cut.
+
+Bluetooth from a web page needs Chrome or Edge on Android or a computer. An iPhone's own browser does not allow it, so there the handset reads the bench node and keeps the round. A phone's accelerometer reaches a web page some sixty times a second, far short of a bearing's impacts, so the phone is the handset and never the sensor.
 
 ## The console
 
-The landing page, `docs/index.html`, is the live demonstration: the maintenance board run on NASA's three run-to-failure tests, three shafts with four bearings each, every card showing when its snapshot was recorded, every warning raised as a job card with its evidence, the spares to draw, the log and each machine's life. followed by the diagnosis tool. It works offline once opened (`docs/sw.js`) and can read a built node over Web Bluetooth. The results, method and limits are in `docs/results.html`.
+`docs/index.html` is the live demonstration, one full-screen console in plain HTML, CSS and JavaScript with three views.
+
+**Board.** NASA's three run-to-failure tests replayed, three shafts with four bearings each. The left pane lists every bearing with its state and health index. The centre shows the selected bearing: its health index on a log scale, and under it, on the same time axis, the envelope spectrum of every snapshot as a waterfall, so a defect is seen arriving as a line at the frequency the bearing's geometry predicts. The right pane holds the job cards, the spares to draw and the log. Nothing is drawn ahead of the replay clock. The waterfall is real data: `analysis/waterfall.py` computes each column from one NASA snapshot with the method's own steps, and leaves a column empty where the rig was stopped.
+
+**Handset.** The phone on the maintenance round, described below.
+
+**Recording.** The method run in the browser on nine reference recordings or on a file you choose.
+
+It works offline once opened (`docs/sw.js`) and installs to a phone's home screen. The results, method and limits are in `docs/results.html`.
 
 ## Rerun
 
@@ -59,7 +77,9 @@ python3 cwru.py
 python3 ims.py 2 1 3
 python3 export.py
 python3 presets.py
+python3 waterfall.py
 node check_js.mjs
+node check_node.mjs --nasa   # the node application and the handset link, about 15 minutes
 python3 verify_claims.py
 ```
 
@@ -67,7 +87,7 @@ About six minutes on an 8-core laptop.
 
 ## Not yet done
 
-The hardware node (ESP32-S3 with ST's IIS3DWB accelerometer, within 3 dB to 6 kHz) is designed, not built. Nothing here has run on a police or forces machine. A machine damaged before installation would teach the node a damaged normal, and the fleet and ISO 20816 checks meant to catch that are not built. Vehicles need speed tracking, which is not built.
+The hardware node (ESP32-S3 with ST's IIS3DWB accelerometer, within 3 dB to 6 kHz) is designed, not built, so the handset's Bluetooth pairing, its notification pacing and the cable have met no board. Nothing here has run on a police or forces machine. A machine damaged before installation would teach the node a damaged normal, and the fleet and ISO 20816 checks meant to catch that are not built. Vehicles need speed tracking, which is not built.
 
 ## Data
 

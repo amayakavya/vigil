@@ -105,14 +105,14 @@ async function run() {
   finally { pending = false; btn.disabled = false; btn.textContent = "Diagnose"; $("out").classList.remove("stale"); }
 }
 function show({ r, truth, note, error }) {
-  $("out").hidden = false;
+  $("out").hidden = false; $("out-empty").hidden = true;
   $("out").dataset.runs = String(+($("out").dataset.runs || 0) + 1);
   if (error) {
-    $("o-verdict").innerHTML = ""; $("o-verdict").textContent = error; $("o-verdict").className = "err";
+    $("o-verdict").innerHTML = ""; $("o-verdict").textContent = error; $("o-verdict").className = "state err";
     ["BPFO", "BPFI", "BSF", "band", "truth"].forEach(k => $("o-" + k).textContent = ""); $("ses").innerHTML = ""; $("ses-cap").textContent = "";
     return;
   }
-  $("o-verdict").className = "";
+  $("o-verdict").className = r.verdict ? "state warn" : "state";
   $("o-verdict").textContent = r.verdict ? `${PART[r.verdict][0].toUpperCase() + PART[r.verdict].slice(1)} defect` : "Declined, inspect";
   for (const k of ["BPFO", "BPFI", "BSF"]) $("o-" + k).textContent = `${r.scores[k].toFixed(1)} dB at ${(k === "BSF" ? 2 * r.lines[k] : r.lines[k]).toFixed(1)} Hz`;
   $("o-band").textContent = `${Math.round(r.band[0]).toLocaleString("en-IN")} to ${Math.round(r.band[1]).toLocaleString("en-IN")} Hz`;
@@ -148,10 +148,10 @@ fetch("data/samples.json").then(r => r.json()).then(meta => {
   const sel = $("sample");
   for (const s of meta.samples) { const o = document.createElement("option"); o.value = s.id; o.textContent = s.label; sel.appendChild(o); }
   const note = () => { const s = meta.samples.find(s => s.id === sel.value); $("sample-note").textContent = s.source + "."; };
-  sel.onchange = () => { note(); $("out").hidden = true; };
+  sel.onchange = () => { note(); $("out").hidden = true; $("out-empty").hidden = false; };
   note();
 }).catch(() => { $("sample-note").textContent = "The reference recordings did not load. Reload the page."; });
-$("file").onchange = () => { $("out").hidden = true; };
+$("file").onchange = () => { $("out").hidden = true; $("out-empty").hidden = false; };
 let rt = 0;
 addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { if (LAST_SES) drawSES(LAST_SES); }, 150); });
 })();

@@ -1,8 +1,11 @@
 /* Keeps VIGIL usable with no connection, the way a workshop computer runs it.
    Network first, so a published change is seen at once when online; the
    cached copy only when the network is not there. */
-const CACHE = "vigil-v3";
-const CORE = ["./", "index.html", "results.html", "house.css", "console.css", "console.js", "diagnose.js", "vigil.js", "worker.js",
+const CACHE = "vigil-v5";
+const CORE = ["./", "index.html", "results.html", "app.css", "app.js", "house.css", "doc.css", "diagnose.js", "vigil.js", "worker.js",
+  "handset.js", "link.js", "bench.js", "benchnode.js", "node.wasm",
+  "data/bench/bench.json", "data/bench/node.img", "data/bench/ims2-b1.i16",
+  "data/waterfall.json", "data/waterfall-1.bin", "data/waterfall-2.bin", "data/waterfall-3.bin",
   "sheet.svg", "fonts/inter.woff2", "icon-192.png", "manifest.webmanifest",
   "data/replay.json", "data/cwru.json", "data/samples.json"];
 self.addEventListener("install", e => e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting())));

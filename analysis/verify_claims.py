@@ -37,6 +37,10 @@ claims = {
 L = json.load(open(os.path.join(ROOT, "docs", "data", "learned.json")))
 claims["learned model"] = f"named {L['headline']['model_alone']['right']} right and {L['headline']['model_alone']['wrong']} wrong"
 claims["physics on held-out"] = f"names {L['physics']['right']} right and {L['physics']['wrong']} wrong"
+# the node application through NASA's data (analysis/check_node.mjs --nasa)
+NR = json.load(open(os.path.join(ROOT, "firmware", "test", "node_result.json")))
+assert NR["passed"] == NR["bearings"] == 12, "the node application missed an alarm or a name on NASA's data"
+claims["node application"] = f"{NR['passed']} of {NR['bearings']} bearings, {NR['snapshots']:,} snapshots"
 print("from the data:", json.dumps(claims), f"| single crossings {crossings}, post-fault healthy alarms {after}, traced {traced}")
 assert crossings == 7 and after == 8, "the page's 'seven single readings' or 'eight healthy bearings' is out of date"
 assert f"{0.1 / 13.73 * 100:.2f}" == "0.73"
@@ -81,7 +85,7 @@ need = {
     "page": ["failures warned", "sustained range", "earlier than level doubled", "named in last 72 h", "pre-fault running hours"],
     "deck": ["failures warned", "sustained range", "earlier than level doubled", "named in last 72 h", "pre-fault running hours"],
     "form": ["sustained range", "earlier than level doubled", "named in last 72 h", "pre-fault running hours"],
-    "readme": [],
+    "readme": ["node application"],
     "results": ["learned model", "physics on held-out"],
 }
 bad = 0
@@ -95,7 +99,7 @@ for where, keys in need.items():
         ctx = sources[where][max(0, m.start() - 50):m.end() + 20].replace("\n", " ")
         print(f"PUNCTUATION in {where}: ...{ctx}..."); bad += 1
 # stale figures from earlier drafts must be gone everywhere
-for stale in ("42 to 603", "5,366", "flat to about 6 kHz", "Motor Transport section, about 60", "named all 4", "FW_REPLAY", "FW_DECK_LINE", "FW_FORM_LINE", "FW_QA_LINE"):
+for stale in ("42 to 603", "5,366", "555,357", "36,880", "flat to about 6 kHz", "Motor Transport section, about 60", "named all 4", "FW_REPLAY", "FW_DECK_LINE", "FW_FORM_LINE", "FW_QA_LINE"):
     for where, text in sources.items():
         if stale in text:
             print(f"STALE in {where}: {stale!r}"); bad += 1
