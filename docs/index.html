@@ -24,17 +24,63 @@
 <body>
 <div class="app">
   <header class="bar">
-    <a class="brand" href="#/home">VIGIL</a>
+    <a class="brand" href="#/simple">VIGIL</a>
     <a class="back" id="back" href="#/home" hidden>‹ Menu</a>
     <span class="brand-sub" id="where">Vibration Intelligence Grid for Integrity and Lifecycle</span>
     <nav class="out-links" aria-label="More">
+      <a href="#/home" id="mode">Full version</a>
       <a href="results.html">Results</a>
       <a href="https://github.com/amayakavya/vigil">Code</a>
     </nav>
   </header>
 
+  <!-- ================= the simple version: one check, one verdict ================= -->
+  <main class="view" id="simple">
+    <div class="col">
+      <p class="eyebrow">Machine check</p>
+      <button class="big" id="q-check" type="button">
+        <b>Check a machine</b>
+        <span>Press the button on its sensor, then press here</span>
+      </button>
+      <button class="big ghost" id="q-demo" type="button">
+        <b>Demonstration</b>
+        <span>No sensor here. Run a real check on recorded data.</span>
+      </button>
+      <p class="hint" id="q-note"></p>
+      <p class="hint"><button class="text-btn" id="q-usb" type="button">Use the USB cable instead</button></p>
+    </div>
+  </main>
+
+  <main class="view" id="check" hidden>
+    <div class="col tight">
+      <div class="q-head"><span id="q-id">Sensor</span><span id="q-via"></span></div>
+      <div class="verdict" id="q-box" role="status" aria-live="polite">
+        <b id="q-word"></b>
+        <span id="q-line"></span>
+      </div>
+      <div class="gauge" aria-hidden="true">
+        <div class="gauge-bar"><i class="gauge-alarm"></i><i class="gauge-pin" id="q-pin"></i></div>
+        <div class="gauge-scale"><span>0</span><span>Healthy</span><span>6, alarm line</span><span>Warning</span><span>12+</span></div>
+      </div>
+      <dl class="reads four" id="q-reads">
+        <div><dt>Health score</dt><dd id="q-score"></dd></div>
+        <div><dt>Alarm line</dt><dd>6.00</dd></div>
+        <div><dt>Part named</dt><dd id="q-part"></dd></div>
+        <div><dt>Last reading</dt><dd id="q-last"></dd></div>
+      </dl>
+      <div class="q-actions">
+        <button class="go" id="q-next" type="button">Check again</button>
+        <button class="go ghost" id="q-send" type="button" hidden>Send the job card</button>
+        <button class="go ghost" id="q-print" type="button" hidden>Print it</button>
+        <button class="go ghost" id="q-done" type="button">Done</button>
+      </div>
+      <p class="hint" id="q-step"></p>
+      <p class="hint"><a href="#/node">More detail on this sensor</a></p>
+    </div>
+  </main>
+
   <!-- ================= the first question ================= -->
-  <main class="view" id="home">
+  <main class="view" id="home" hidden>
     <div class="col">
       <h1 class="q">Do you have a VIGIL node with you?</h1>
       <p class="q-sub">The node is the sensor clipped to the machine. This app reads it, sets it up, and shows what it has found.</p>

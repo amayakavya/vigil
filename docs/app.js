@@ -570,12 +570,13 @@ function story() {
 }
 
 /* ---------- the three views ---------- */
-const VIEWS = { home: "home", connect: "connect", try: "try", node: "node-view", round: "round-view", board: "board", recording: "recording" };
-const WHERE = { home: "Vibration Intelligence Grid for Integrity and Lifecycle", connect: "Connect a node", try: "Without a node", node: "A connected node",
+const VIEWS = { simple: "simple", check: "check", home: "home", connect: "connect", try: "try", node: "node-view", round: "round-view", board: "board", recording: "recording" };
+const WHERE = { simple: "Vibration Intelligence Grid for Integrity and Lifecycle", check: "Machine check", home: "Full version", connect: "Connect a node", try: "Without a node", node: "A connected node",
   round: "The round", board: "Watch it catch a failure", recording: "Test a recording" };
 const UP = { board: "#/try", recording: "#/try" };              // where Back leads, when it is not the first question
 const DATA = "With no node built yet, the app runs on public recordings of bearings run to failure: the IMS set from NASA's data repository, and Case Western's.";
 const FOOT = {
+  simple: DATA, check: "One sensor, one verdict. The score is how far the machine is from its own normal, and 6 is where the alarm goes.",
   home: DATA, connect: DATA, try: DATA,
   node: "One node, read over Bluetooth, the USB cable or as the demo. The demo node is the node's own firmware, run in this app on recorded data.",
   round: "The round is kept on this device and sent nowhere.",
@@ -586,9 +587,15 @@ function show() {
   let v = location.hash.replace(/^#\/?/, "");
   if (v === "demo") v = "board";
   const hs = window.VigilHandset, linked = hs && hs.connected();
-  if (!VIEWS[v] || (v === "node" && !linked)) { v = "home"; history.replaceState(null, "", "#/home"); }
+  if (!VIEWS[v] || (v === "check" && !linked)) { v = "simple"; history.replaceState(null, "", "#/simple"); }
+  if (v === "node" && !linked) { v = "home"; history.replaceState(null, "", "#/home"); }
+  // the simple version is two screens, and everything else is the full one
+  const simple = v === "simple" || v === "check";
+  document.querySelector(".app").classList.toggle("simple-mode", simple);
+  $("mode").href = simple ? "#/home" : "#/simple";
+  put($("mode"), simple ? "Full version" : "Simple version");
   for (const k in VIEWS) $(VIEWS[k]).hidden = k !== v;
-  $("back").hidden = v === "home";
+  $("back").hidden = simple || v === "home";
   $("back").href = UP[v] || "#/home";
   put($("back"), UP[v] ? "‹ Back" : "‹ Menu");
   put($("where"), WHERE[v]);

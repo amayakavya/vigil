@@ -56,7 +56,9 @@ Bluetooth from a web page needs Chrome or Edge on Android or a computer. An iPho
 
 ## The console
 
-`docs/index.html` is one app in plain HTML, CSS and JavaScript, built for a phone first and driven by menus. It opens on a single question, whether a VIGIL node is with you. Yes leads to connecting it over Bluetooth or the USB cable, then to that node's own menu: its readings, a spot reading, its recording checked on the phone, its last 48 hours, the job card, its set-up. No leads to what can be seen with no hardware: the demonstration, the demo node, and a recording test.
+`docs/index.html` is one app in plain HTML, CSS and JavaScript, built for a phone first, in two versions that share everything underneath.
+
+The simple version is what opens. It has two buttons, check a machine and demonstration, and then one screen: a verdict in a word (healthy, learning, check soon, replace bearing, not running), one sentence on what to do, a gauge of the health score against the alarm line, four readings, and the job card to send or print. The full version is one tap away and is driven by menus. It opens on a single question, whether a VIGIL node is with you. Yes leads to connecting it over Bluetooth or the USB cable, then to that node's own menu: its readings, a spot reading, its recording checked on the phone, its last 48 hours, the job card, its set-up. No leads to what can be seen with no hardware: the demonstration, the demo node, and a recording test.
 
 The demonstration opens on a guide: seven steps through one real bearing failure, one sentence and one lit instrument at a time, with Back and Next. The last step opens the live board. The three test rigs on it are the three IMS run-to-failure tests from NASA's data repository, shown as rigs 1 to 3.
 

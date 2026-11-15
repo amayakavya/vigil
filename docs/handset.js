@@ -48,7 +48,8 @@ function stateText(s) {
 }
 
 /* ---------- three ways to reach a node ---------- */
-function lost(why) { if (link) disconnect("#/connect").then(() => note(why, true)); }
+function lost(why) { if (link) disconnect(simple ? "#/simple" : "#/connect").then(() => (simple ? tell($("q-note"), why, true) : note(why, true))); }
+function tell(el, text, bad) { el.textContent = text; el.classList.toggle("err", !!bad); }
 
 function openBench() {
   return new Promise((resolve, reject) => {
@@ -104,8 +105,9 @@ async function connect(kind) {
 }
 async function connectTo(kind) {
   await disconnect();
-  const say = (t, bad) => { if (kind === "bench") { $("t-note").textContent = t; $("t-note").classList.toggle("err", !!bad); } else note(t, bad); };
-  say(kind === "bench" ? "Starting the demo node." : kind === "ble" ? "Choose the node. The phone will ask for the passkey on its label." : "Choose the node's serial port.");
+  // the answer goes back to the screen that asked: the simple version's, or the full version's two menus
+  const say = (t, bad) => tell(simple ? $("q-note") : kind === "bench" ? $("t-note") : $("c-note"), t, bad);
+  say(kind === "bench" ? "Starting the demonstration." : kind === "ble" ? "Choose the sensor. The phone will ask for the passkey on its label." : "Choose the sensor's serial port.");
   try {
     link = new VigilLink.Link(() => { throw new Error("Not connected."); });
     link.onstatus = showStatus;
@@ -116,7 +118,7 @@ async function connectTo(kind) {
     $("c-via").textContent = kind === "bench" ? "Demo node, in this app" : kind === "ble" ? "Over Bluetooth" : "Over the USB cable";
     await refresh();
     say("");
-    location.hash = "#/node";                   // the menu moves on to the node itself
+    location.hash = simple ? "#/check" : "#/node";   // on to the verdict, or to the node's own menu
     if (window.VigilApp) window.VigilApp.show();
   } catch (e) {
     await disconnect();
@@ -132,7 +134,7 @@ async function disconnect(to) {
   hideResults();
   note(INTRO);
   if (window.VigilApp) window.VigilApp.panel("", false);
-  if (location.hash === "#/node") { location.hash = to || "#/home"; }
+  if (location.hash === "#/node" || location.hash === "#/check") { location.hash = to || (simple ? "#/simple" : "#/home"); }
 }
 function hideResults() { $("spot").hidden = true; $("ev").hidden = true; $("a-err").hidden = true; $("i-note").textContent = ""; }
 
@@ -165,6 +167,7 @@ function showStatus(s) {
   }
   showJob(s);
   logRound(s);
+  showVerdict(s);
   // a node that has just taken its ten-minute snapshot has a new point for the trend
   if (newSnap && link) link.trend().then(drawTrend).catch(() => {});
 }
@@ -341,6 +344,7 @@ async function showJob(s) {
   const why = link ? await link.why().catch(() => null) : null;
   if (wrap.dataset.sig !== sig) return;          // a newer reading came in while the node was asked
   wrap.hidden = false;
+  card0 = { s, why, read: new Date().toLocaleString("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) };
   const named = s.part !== "none", host = $("job"), card = h("div", "job" + (named ? " replace" : ""));
   const read = new Date().toLocaleString("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
   host.innerHTML = "";
@@ -351,16 +355,81 @@ async function showJob(s) {
   card.appendChild(dl);
   const bar = h("div", "links"), pr = h("button", null, "Print job card"), sh = h("button", null, "Share"), cl = h("button", null, "Clear after the repair");
   pr.onclick = () => printCard(s, read, why);
-  sh.onclick = async () => {
-    const text = [`VIGIL job card, read ${read}`, ...rows.map(([k, v]) => `${k}: ${v}`)].join("\n");
-    try {
-      if (navigator.share) await navigator.share({ title: `VIGIL job card, ${s.id}`, text });
-      else { await navigator.clipboard.writeText(text); sh.textContent = "Copied"; setTimeout(() => { sh.textContent = "Share"; }, 2000); }
-    } catch { /* the share sheet was closed */ }
-  };
+  sh.onclick = () => shareCard(sh, s, read, why);
   twice(cl, "Press again to clear", async () => { try { await link.clear(); await refresh(); } catch (e) { $("a-err").textContent = e.message; $("a-err").hidden = false; } });
   bar.append(pr, sh, cl); card.appendChild(bar); host.appendChild(card);
 }
+async function shareCard(btn, s, read, why) {
+  const text = [`VIGIL job card, read ${read}`, ...jobRows(s, why).map(([k, v]) => `${k}: ${v}`)].join("\n"), was = btn.textContent;
+  try {
+    if (navigator.share) await navigator.share({ title: `VIGIL job card, ${s.id}`, text });
+    else { await navigator.clipboard.writeText(text); btn.textContent = "Copied"; setTimeout(() => { btn.textContent = was; }, 2000); }
+  } catch { /* the share sheet was closed */ }
+}
+
+/* ---------- the simple version: one verdict ---------- */
+let simple = false, card0 = null;
+// what the sensor's state means for the person standing at the machine, in one word and one sentence
+function verdict(s) {
+  if (s.error) return { word: "Sensor fault", cls: "warn", line: "The sensor cannot take a reading. Report it to the workshop." };
+  if (s.phase === "learning") return { word: "Learning", cls: "quiet", line: `It is learning this machine's normal: ${s.learned} of ${s.base} readings. Nothing to do yet.` };
+  if (s.phase === "warning") return s.part !== "none"
+    ? { word: "Replace bearing", cls: "warn solid", line: `${cap(s.part)} defect. Tell the workshop to change the bearing at the next planned stop.` }
+    : { word: "Check soon", cls: "warn", line: "Its vibration has changed. Tell the workshop to inspect it at the next round." };
+  if (s.read === "stopped") return { word: "Not running", cls: "quiet", line: "The machine was stopped at the last reading. Nothing to report." };
+  return { word: "Healthy", cls: "", line: "Nothing to do. It checks itself again in ten minutes." };
+}
+function showVerdict(s) {
+  const v = verdict(s), warn = s.phase === "warning", scored = s.hi != null && s.hi >= 0 && s.phase !== "learning";
+  $("q-id").textContent = `Sensor ${s.id}`;
+  $("q-via").textContent = via === "bench" ? "Demonstration, on recorded data" : via === "ble" ? "Over Bluetooth" : "Over the USB cable";
+  $("q-box").className = "verdict " + v.cls;
+  $("q-word").textContent = v.word; $("q-line").textContent = v.line;
+  // the gauge runs 0 to 12 with the alarm line in the middle, and a score beyond it rests at the end
+  $("q-pin").style.left = `${scored ? Math.min(100, s.hi / 12 * 100) : 0}%`;
+  $("q-pin").hidden = !scored;
+  $("q-score").textContent = scored ? s.hi.toFixed(2) : s.phase === "learning" ? "Learning" : "None";
+  $("q-part").textContent = s.part === "none" ? "None" : cap(s.part);
+  $("q-last").textContent = s.read === "none" ? "None yet" : ago(s.age);
+  $("q-send").hidden = !warn; $("q-print").hidden = !warn;
+  $("q-next").textContent = via === "bench" ? "Next reading, ten minutes on" : "Check again";
+  if (via !== "bench") $("q-step").textContent = "";
+}
+$("q-check").onclick = () => {
+  simple = true;
+  $("q-next").disabled = false; $("q-step").textContent = "";
+  if (!navigator.bluetooth) { tell($("q-note"), "This phone's browser cannot use Bluetooth. Chrome on an Android phone can. On a computer, use the USB cable.", true); return; }
+  connect("ble");
+};
+$("q-usb").onclick = () => {
+  simple = true;
+  if (!navigator.serial) { tell($("q-note"), "This browser cannot open a serial port. Chrome or Edge on a computer can.", true); return; }
+  connect("usb");
+};
+$("q-demo").onclick = () => { simple = true; $("q-next").disabled = false; $("q-step").textContent = ""; connect("bench"); };
+$("q-next").onclick = async () => {
+  if (!link) return;
+  const btn = $("q-next");
+  btn.disabled = true;
+  try {
+    if (bench) {
+      const m = await advance();
+      $("q-step").textContent = `Recording ${benchStep + 1} of ${benchInfo.files.length}, taken ${fileTime(benchInfo.files[benchStep])}.${m.end ? " That is the last one. Press Done to start over." : ""}`;
+      if (m.end) return;                     // nothing further to give it
+    } else await refresh();
+  } catch (e) { tell($("q-step"), e.message, true); }
+  finally { btn.disabled = bench ? benchStep + 1 >= benchInfo.files.length : false; }
+};
+// the job card is asked for when the warning is first seen; if the button is pressed sooner, it is built on the spot
+async function card() {
+  if (card0 && now && card0.s.id === now.id && card0.s.snap === now.snap) return card0;
+  const why = link ? await link.why().catch(() => null) : null;
+  return { s: now, why, read: new Date().toLocaleString("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) };
+}
+$("q-send").onclick = async () => { if (now) { const c = await card(); shareCard($("q-send"), c.s, c.read, c.why); } };
+$("q-print").onclick = async () => { if (now) { const c = await card(); printCard(c.s, c.read, c.why); } };
+$("q-done").onclick = () => disconnect();
+
 function printCard(s, read, why) {
   const pc = $("printcard"), named = s.part !== "none";
   pc.innerHTML = "";
@@ -461,9 +530,9 @@ twice($("r-clear"), "Press again to forget", async () => {
 });
 
 /* ---------- start ---------- */
-$("c-bench").onclick = () => connect("bench");
-$("c-ble").onclick = () => connect("ble");
-$("c-usb").onclick = () => connect("usb");
+$("c-bench").onclick = () => { simple = false; connect("bench"); };
+$("c-ble").onclick = () => { simple = false; connect("ble"); };
+$("c-usb").onclick = () => { simple = false; connect("usb"); };
 $("c-off").onclick = () => disconnect();
 drawRound();
 let rt = 0;

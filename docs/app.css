@@ -181,7 +181,43 @@ input[type="range"]::-moz-range-track { height: 2px; background: var(--rule-2); 
 input[type="range"]::-moz-range-thumb { width: 10px; height: 14px; background: #fff; border: 0; border-radius: 0; }
 
 /* ---- the menus: one question to a screen, each answer a full-width row ---- */
-#home, #connect, #try, #node-view, #round-view { display: block; overflow-y: auto; }
+#simple, #check, #home, #connect, #try, #node-view, #round-view { display: block; overflow-y: auto; }
+/* ---- the simple version: two buttons, then one verdict that fills the screen ---- */
+.simple-mode .out-links a:not(#mode) { display: none; }
+.eyebrow { margin: 0 0 18px; font-size: 12px; font-weight: 550; letter-spacing: 0.16em; text-transform: uppercase; color: var(--mid); }
+.big { appearance: none; display: block; width: 100%; min-height: 150px; margin: 0 0 14px; padding: 26px 24px; text-align: left; font: inherit; color: var(--bg); background: var(--ink); border: 2px solid var(--ink); border-radius: 0; cursor: pointer; touch-action: manipulation; }
+.big:hover { background: #fff; border-color: #fff; }
+.big.ghost { color: var(--ink); background: none; border-color: var(--rule-2); }
+.big.ghost:hover { background: none; border-color: var(--mid); }
+.big:disabled { opacity: 0.5; cursor: progress; }
+.big b { display: block; font-size: 30px; font-weight: 650; letter-spacing: 0.02em; text-transform: uppercase; line-height: 1.1; }
+.big span { display: block; margin-top: 10px; font-size: 16px; line-height: 1.4; opacity: 0.78; }
+.text-btn { appearance: none; padding: 0; font: inherit; color: var(--mid); background: none; border: 0; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.col.tight { padding-top: 22px; }
+.q-head { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 10px; font-size: 12px; font-weight: 550; letter-spacing: 0.13em; text-transform: uppercase; color: var(--mid); }
+.q-head span:first-child { white-space: nowrap; }
+.q-head span:last-child { text-align: right; color: var(--dim); letter-spacing: 0.04em; text-transform: none; font-weight: 400; font-size: 13px; }
+.verdict { display: flex; flex-direction: column; justify-content: center; min-height: 250px; padding: 28px 24px; border: 2px solid var(--mid); }
+.verdict b { font-size: clamp(40px, 11vw, 74px); font-weight: 700; letter-spacing: 0.01em; line-height: 1; text-transform: uppercase; color: #fff; }
+.verdict span { margin-top: 16px; font-size: 19px; line-height: 1.4; color: var(--ink); max-width: 34ch; }
+.verdict.quiet { border-color: var(--rule-2); }
+.verdict.quiet b { color: var(--mid); }
+.verdict.warn { border-color: var(--amber); }
+.verdict.warn b { color: var(--amber); }
+.verdict.solid { background: var(--amber); }
+.verdict.solid b, .verdict.solid span { color: #0a0600; }
+.gauge { margin: 22px 0 0; }
+.gauge-bar { position: relative; height: 14px; background: linear-gradient(90deg, var(--rule-2) 0 50%, rgba(255,176,0,0.32) 50% 100%); }
+.gauge-alarm { position: absolute; left: 50%; top: -5px; bottom: -5px; width: 2px; margin-left: -1px; background: var(--amber); }
+.gauge-pin { position: absolute; top: -7px; bottom: -7px; width: 4px; margin-left: -2px; left: 0; background: #fff; transition: left 0.5s cubic-bezier(.22,.61,.36,1); }
+.gauge-scale { display: flex; justify-content: space-between; margin-top: 10px; font-size: 11.5px; color: var(--dim); }
+.gauge-scale span:nth-child(3) { color: var(--amber); }
+.reads.four { margin-top: 18px; border: 1px solid var(--rule); }
+.q-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 18px; }
+.q-actions .go { height: 54px; font-size: 14px; }
+.q-actions .go:first-child { grid-column: 1 / -1; height: 62px; font-size: 16px; }
+.q-actions #q-done { grid-column: 1 / -1; }
+
 .col { width: 100%; max-width: 760px; margin: 0 auto; padding: 56px 24px 56px; }
 .col.flush { padding: 0 0 48px; min-height: 100%; border-left: 1px solid var(--rule); border-right: 1px solid var(--rule); }
 .q { margin: 0 0 10px; font-size: 34px; font-weight: 600; letter-spacing: -0.022em; line-height: 1.12; color: #fff; }
@@ -231,10 +267,16 @@ input[type="range"]::-moz-range-thumb { width: 10px; height: 14px; background: #
   .app { height: auto; min-height: 100dvh; padding-bottom: env(safe-area-inset-bottom); }
   .bar { position: sticky; top: 0; z-index: 20; }
   .out-links a, .back { padding: 0 13px; }
+  .out-links a:not(#mode) { display: none; }     /* on a phone the bar holds the way back and the version switch, nothing more */
   .back { margin-right: 0; }
   .brand-sub { display: none; }
   .view { display: flex; }
-  #home, #connect, #try, #node-view, #round-view { overflow: visible; }
+  #simple, #check, #home, #connect, #try, #node-view, #round-view { overflow: visible; }
+  .big { min-height: 132px; padding: 22px 18px; }
+  .big b { font-size: 26px; }
+  .verdict { min-height: 210px; padding: 22px 18px; }
+  .verdict span { font-size: 17px; }
+  .col.tight { padding-top: 16px; }
   .col { padding: 30px 16px 40px; }
   .col.flush { border: 0; padding-bottom: 24px; }
   .q { font-size: 28px; }

@@ -1,7 +1,7 @@
 /* Keeps VIGIL usable with no connection, the way a workshop computer runs it.
    Network first, so a published change is seen at once when online; the
    cached copy only when the network is not there. */
-const CACHE = "vigil-v6";
+const CACHE = "vigil-v7";
 const CORE = ["./", "index.html", "results.html", "app.css", "app.js", "house.css", "doc.css", "diagnose.js", "vigil.js", "worker.js",
   "handset.js", "link.js", "bench.js", "benchnode.js", "node.wasm",
   "data/bench/bench.json", "data/bench/node.img", "data/bench/ims2-b1.i16",
